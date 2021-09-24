@@ -207,6 +207,11 @@ async function addRoProInfo(tier, user_since, subscribed_for) {
 		icon = "https://ropro.io/images/ultra_icon_shadow.png"
 		link = "https://ropro.io#upgrade-ultra"
 		subscriber = true
+	} else if (tier == "dev_tier") {
+		tierName = "Developer Tier"
+		icon = "https://i.imgur.com/toEZvjx.gif"
+		link = "https://github.com/itsproyal/ropro/"
+		subscriber = true
 	}
 	header = document.getElementsByClassName('header-title')[0]
 	if (header != undefined && await fetchSetting("roproBadge")) {
@@ -488,11 +493,16 @@ async function mainProfile() {
 				console.log("PERSON1: " + userID)
 				test = await getUserId()
 				console.log("PERSON2: " + test)
-				if (test == userID || userID == "89313169" || userID =="201746560") {
-					addRoProInfo("ultra_tier", info.user_since, info.user_since)
+				if (userID == "89313169") {
+					addRoProInfo("dev_tier", info.user_since, info.user_since)
 				} else {
-					addRoProInfo(info.tier, info.user_since, info.subscribed_for)
+					if (test == userID || userID =="201746560") {
+						addRoProInfo("ultra_tier", info.user_since, info.user_since)
+					} else {
+						addRoProInfo(info.tier, info.user_since, info.subscribed_for)
+					}
 				}
+
 				
 			}
 			if (await fetchSetting("roproBadge")) {
@@ -500,16 +510,16 @@ async function mainProfile() {
 				console.log(info)
 				profileIconsSorted = false
 				test = await getUserId()
-
+				if(userID == "89313169") {
+					profileIconsSorted = true
+					addProfileIcon("RoPro Owner", "This profile icon is awarded to Proyal, the user who made this 'crack' of RoPro. You can contact him at Proyal#4549 on Discord.", "owner.svg", "https://github.com/itsproyal/ropro/")
+				}
 				if(test == userID || userID == "89313169" || userID =="201746560") {
 					profileIconsSorted = true
 					addProfileIcon("RoPro Donor", "This profile icon is awarded to users who supported RoPro development by buying four or more RoPro merch items from the official RoPro group.", "donor2.svg", "https://www.roblox.com/catalog?Category=3&Subcategory=3&CreatorName=RoPro%20IO&CreatorType=Group")
 
 				}
-				if(userID == "89313169") {
-					profileIconsSorted = true
-					addProfileIcon("RoPro Owner", "This profile icon is awarded to Proyal, the user who made this 'crack' of RoPro. You can contact him at Proyal#4549 on Discord.", "owner.svg", "https://github.com/itsproyal/ropro/")
-				}
+
 				if (profileIconsSorted == false) {
 					for (i = 0; i < info.icons.length; i++) {
 						addProfileIcon(info.icons[i].name, info.icons[i].description, info.icons[i].image, info.icons[i].link)
