@@ -1,0 +1,87 @@
+.light-theme .sandbox-icon .new-menu-icon{
+	background-position:0px -305px;
+	background-size:56px 532px;
+	background-image:url(https://ropro.io/images/custom_icons5_lightmode.svg);
+}
+.light-theme .sandbox-icon:hover .new-menu-icon{
+	background-position:-28px -305px;
+	background-size:56px 532px;
+	background-image:url(https://ropro.io/images/custom_icons5_lightmode.svg);
+}
+
+.light-theme .offers-icon .new-menu-icon{
+	background-position:0px -248px;
+	background-size:56px 532px;
+	background-image:url(https://ropro.io/images/custom_icons5_lightmode.svg);
+}
+.light-theme .offers-icon:hover .new-menu-icon{
+	background-position:-29px -248px;
+	background-size:56px 532px;
+	background-image:url(https://ropro.io/images/custom_icons5_lightmode.svg);
+}
+.dark-theme .sandbox-icon .new-menu-icon{
+	background-position:2px -299px;
+	background-image:url(https://ropro.io/images/custom_icons5.svg);
+}
+.dark-theme .sandbox-icon:hover .new-menu-icon{
+	background-position:-26px -299px;
+	background-image:url(https://ropro.io/images/custom_icons5.svg);
+}
+
+.dark-theme .offers-icon .new-menu-icon{
+	background-position:2px -242px;
+	background-image:url(https://ropro.io/images/custom_icons5.svg);
+}
+
+.dark-theme .offers-icon:hover .new-menu-icon{
+	background-position:-26px -242px;
+	background-image:url(https://ropro.io/images/custom_icons5.svg);
+}
+
+.ropro-icon {
+	margin-top:6px;
+	margin-left:0px;
+	width:30px;
+}
+
+.ropro-icon:hover {
+	cursor: pointer;
+}
+
+.dark-theme .ropro-icon:hover {
+    border:2px solid white;
+    border-radius: 500px;
+    -webkit-border-radius: 500px;
+    -moz-border-radius: 500px;
+}
+
+.light-theme .ropro-icon:hover {
+    border:2px solid black;
+    border-radius: 500px;
+    -webkit-border-radius: 500px;
+    -moz-border-radius: 500px;
+}
+
+  /* Tooltip text */
+  .buttontooltip .tooltiptext {
+    visibility: hidden;
+    width: 260px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+   
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+  }
+  
+  /* Show the tooltip text when you mouse over the tooltip container */
+  .buttontooltip:hover .tooltiptext {
+    visibility: visible;
+  }
+
+  .alert-close:hover {
+    opacity: 1!important;
+  }

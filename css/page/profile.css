@@ -1,0 +1,6 @@
+.rolilike:hover{
+	content: url("https://ropro.io/images/like2.png");
+}
+.ropro-user-info:hover .ropro-info-card{
+	display:block!important;
+}

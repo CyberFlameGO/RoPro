@@ -1,0 +1,74 @@
+#likeRatio{
+	border-radius: 25px;
+}
+/* The switch - the box around the slider */
+.ropro-switch {
+	position: relative;
+	display: inline-block;
+	width: 45px;
+	height: 25.5px;
+}
+  
+  /* Hide default HTML checkbox */
+  .ropro-switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+  }
+  
+  /* The slider */
+  .ropro-slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	-webkit-transition: .1s;
+	transition: .1s;
+  }
+  
+  .ropro-slider:before {
+	position: absolute;
+	content: "";
+	height: 19.5px;
+	width: 19.5px;
+	left: 3px;
+	bottom: 3px;
+	background-color: white;
+	-webkit-transition: .1s;
+	transition: .1s;
+  }
+  
+  input:checked + .ropro-slider {
+	background-color: #0082DB;
+  }
+  
+  input:focus + .ropro-slider {
+	box-shadow: 0 0 1px #0082DB;
+  }
+  
+  input:checked + .ropro-slider:before {
+	-webkit-transform: translateX(19.5px);
+	-ms-transform: translateX(19.5px);
+	transform: translateX(19.5px);
+  }
+  
+  /* Rounded sliders */
+  .ropro-slider.ropro-round {
+	border-radius: 25.5px;
+  }
+  
+  .ropro-slider.ropro-round:before {
+	border-radius: 50%;
+	/*background-color: #2A2A2A;
+	background-image: url(https://ropro.io/images/free_icon.png);
+	background-size: 19.5px 19.5px;
+	filter: drop-shadow(0px 0px 2px #363636);*/
+  }
+
+ /* input:checked + .ropro-slider.ropro-round:before {
+	background-color: #2A2A2A;
+	background-image: url(https://ropro.io/images/standard_icon.png);
+  } */
