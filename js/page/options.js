@@ -250,12 +250,15 @@ function getSettings() {
 		"underOverRAP": check("underOverRAP"),
 		"winLossDisplay": check("winLossDisplay"),
 		"mostPlayedGames": check("mostPlayedGames"),
+		"avatarEditorChanges": check("avatarEditorChanges"),
 		"playtimeTracking": check("playtimeTracking"),
 		"activeServerCount": check("activeServerCount"),
 		"morePlaytimeSorts": check("morePlaytimeSorts"),
 		"roproBadge": check("roproBadge"),
 		"mutualFriends": check("mutualFriends"),
-		"moreMutuals": check("moreMutuals")
+		"moreMutuals": check("moreMutuals"),
+		"serverInviteLinks": check("serverInviteLinks"),
+		"randomServer": check("randomServer")
 	}
 	changed = typeof settings == 'undefined' || !shallowEqual(settings, newSettings)
 	if (changed) {

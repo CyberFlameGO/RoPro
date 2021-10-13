@@ -92,4 +92,21 @@
     to {top: -webkit-calc(50% - 250px); opacity: 1}
   }
 
-  
+  .copied-to-clipboard {
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .copied-to-clipboard.active {
+    display:block!important;
+    opacity: 1;
+    transition: opacity 0.2s;
+  }
+
+  .random-server-button:hover .random-server-tooltip {
+    display: block!important;
+  }
+
+  .light-theme .popover.bottom>.ropro-arrow.arrow, .light-theme .popover.bottom>.ropro-arrow.arrow:after {
+    border-bottom-color: #393B3D;
+  }

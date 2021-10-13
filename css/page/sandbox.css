@@ -263,3 +263,7 @@
     from {top: -300px; opacity: 0}
     to {top: -webkit-calc(50% - 250px); opacity: 1}
   }
+
+  .sandbox-iframe {
+	  border-radius: 10px;
+  }

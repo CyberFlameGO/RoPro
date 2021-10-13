@@ -234,3 +234,72 @@
 .light-theme #outfitRandomizerButton:hover .outfit-randomizer-icon {
 	filter:invert(0)!important;
 }
+
+/**.ropro-changes .scale-container {
+  transform:scale(0.6);
+  position:absolute;
+  z-index:1000;
+  top:295px;
+  left:-10px;
+  width:140px!important;
+}
+
+.ropro-changes .section-sliders {
+  padding-top:0px;
+  padding-bottom:10px;
+}
+
+.ropro-avatar-menu {
+  height: 311px;
+  transition: height 0.2s!important;
+  overflow: hidden;
+}
+
+.ropro-avatar-menu.closed {
+  height: 35px;
+  overflow: hidden;
+  transition: height 0.2s!important;
+}**/
+
+@media (min-width: 991px) {
+  #wrap.pinned .ropro-avatar-menu {
+    margin-top: 352px;
+  }
+}
+
+#bodySelectorContainer {
+  width:260px!important;
+  transition: width 0.2s!important;
+}
+
+#bodySelectorContainer:hover {
+  width:535px!important;
+  transition: width 0.2s!important;
+}
+
+.head-slider input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance: none!important;
+  background:initial!important;
+  background-image: url(https://ropro.io/images/selector_icon.png)!important;
+  background-size: contain!important;
+  border: 0px!important;
+  transform:scale(0.9)!important;
+  margin-left:5px;
+}
+
+.ropro-active-radio {
+  background-color:#0084DD!important;
+  color: white!important;
+}
+
+.light-theme #bodySelectorContainer {
+  background-color: #AAADAE!important;
+}
+
+.avatar-back {
+  border-radius: 10px;
+}
+
+.changes-disabled .avatar-back {
+  border-radius: 0px!important;
+}

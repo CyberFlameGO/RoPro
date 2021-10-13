@@ -204,6 +204,13 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse)
 				}
 				getServerList()
 				break;
+		case "GetRandomServer":
+				async function getRandomServer(){
+					randomServerElement = await randomServer(request.gameID)
+					sendResponse(randomServerElement)
+				}
+				getRandomServer()
+				break;
 		case "GetSetting":
 			async function getSettings(){
 				setting = await loadSettings(request.setting)
@@ -311,6 +318,22 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse)
 			}
 			doGetMutualItems()
 			break;
+		case "CreateInviteTab":
+			chrome.tabs.create({url: 'https://roblox.com/games/' + parseInt(request.placeid), active: false}, function(tab) {
+				chrome.tabs.onUpdated.addListener(function tempListener (tabId , info) {
+					if (tabId == tab.id && info.status === 'complete') {
+						chrome.tabs.sendMessage(
+							tabId,
+							{type: "invite", key: request.key}
+						  )
+						chrome.tabs.onUpdated.removeListener(tempListener);
+						setTimeout(function() {
+							sendResponse(tab)
+						}, 2000)
+					}
+				});
+			})
+			break;
 	}
 
 	return true;
@@ -374,7 +397,9 @@ var defaultSettings = {
 	livePlayers: true,
 	liveVisits: true,
 	moreGameFilters: true,
+	serverInviteLinks: true,
 	mostRecentServer: true,
+	randomServer: true,
 	tradeAge: true,
 	notificationThreshold: 30,
 	itemInfoCard: true,
@@ -420,7 +445,8 @@ var defaultSettings = {
 	underOverRAP: true,
 	winLossDisplay: true,
 	mostPlayedGames: true,
-	playtimeTracking: false,
+	avatarEditorChanges: true,
+	playtimeTracking: true,
 	activeServerCount: true,
 	morePlaytimeSorts: true,
 	roproBadge: true,
@@ -593,6 +619,42 @@ async function lowPingServers(gameID, startIndex, maxServers) {
 	}
 }
 
+async function randomServer(gameID) {
+	return new Promise(resolve => {
+		$.get('https://www.roblox.com/games/getfriendsgameinstances?placeId=' + gameID, function(data) {
+			friendServers = []
+			for (i = 0; i < data.Collection.length; i++) {
+				friendServers.push(data.Collection[i]['Guid'])
+			}
+			$.get('https://www.roblox.com/games/getgameinstancesjson?placeId=' + gameID + '&startIndex=0', async function(data) {
+				totalCollectionSize = data.TotalCollectionSize
+				var rangeArray = range(0, parseInt(totalCollectionSize / 10))
+				var serversList = []
+				var numLoops = 0
+				async function loadServer(gameID) {
+					numLoops++
+					idx = Math.floor(Math.random() * rangeArray.length)
+					startIndex = rangeArray[idx]
+					rangeArray.splice(idx, 1);
+					$.get('https://www.roblox.com/games/getgameinstancesjson?placeId=' + gameID + '&startIndex=' + startIndex * 10, async function(data) {
+						for (i = 0; i < data.Collection.length; i++) {
+							if (data.Collection[i].Capacity > data.Collection[i].CurrentPlayers.length && !friendServers.includes(data.Collection[i].Guid) && data.Collection[i].UserCanJoin) {
+								serversList.push([data.Collection[i].PlaceId, data.Collection[i].Guid])
+							}
+						}
+						if (rangeArray.length > 0 && numLoops < 20 && serversList.length < 30) {
+							loadServer(gameID)
+						} else {
+							resolve(serversList[Math.floor(Math.random() * serversList.length)])
+						}
+					})
+				}
+				loadServer(gameID)
+			})
+		})
+	})
+}
+
 async function serverSearch(username, gameID) {
 	return new Promise(resolve => {
 		$.get('https://api.roblox.com/users/get-by-username?username=' + username, function(data) {
@@ -695,6 +757,14 @@ async function getTimePlayed() {
 }
 
 setInterval(getTimePlayed, 60000)
+
+function range(start, end) {
+    var foo = [];
+    for (var i = start; i <= end; i++) {
+        foo.push(i);
+    }
+    return foo;
+}
 
 function stripTags(s) {
 	if (typeof s == "undefined") {

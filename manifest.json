@@ -1,5 +1,5 @@
 {
-"update_url": "https://clients2.google.com/service/update2/crx",
+	"update_url": "https://clients2.google.com/service/update2/crx",
 	"name": "__MSG_name__",
 	"short_name": "RoPro",
 	"description": "__MSG_description__",
@@ -8,7 +8,7 @@
 	"icons": { "16": "icon16.png",
 		   "48": "icon48.png",
 		  "128": "icon128.png" },
-	"version": "1.2.6",
+	"version": "1.2.7",
 	"permissions": [
 		"notifications",
 		"storage",
@@ -215,6 +215,26 @@
 				"*://*.roblox.com/my/avatar*"
 			],
 			"run_at": "document_start"
+		},
+		{
+			"js": [
+				"/js/libraries/jquery-3.5.1.min.js",
+				"/js/page/invite.js"
+			],
+			"matches": [
+				"*://*.ropro.io/join/*"
+			],
+			"run_at": "document_end"
+		},
+		{
+			"js": [
+				"/js/libraries/jquery-3.5.1.min.js",
+				"/js/page/subscription.js"
+			],
+			"matches": [
+				"*://*.ropro.io/subscription/*"
+			],
+			"run_at": "document_end"
 		}
 	],
 	"background":

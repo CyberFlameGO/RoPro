@@ -39,7 +39,7 @@ if ($('.light-theme').length > 0) {
 
 mostPlayedHTML = `<div id="scrollLeft" style="margin-top:33px;height:95px;margin-left:6px;width:20px;" class="scroller prev disabled" role="button" aria-hidden="true"><div class="arrow"><span style="transform:scale(0.8);margin-left:-4px;" class="icon-games-carousel-left"></span></div></div>
 <div class="container-header games-filter-changer">
-<h3 style="font-size:17px;margin-top:2px;margin-bottom:-10px;position:absolute;">Your Most Played<img src="https://ropro.io/images/ropro_logo_small.png" style="filter: drop-shadow(1px 1px 1px #363636);width:35px;margin-left:5px;margin-bottom:2px;"></h3>
+<h3 style="font-size:17px;margin-top:2px;margin-bottom:-10px;position:absolute;">My Most Played<!--<img src="https://ropro.io/images/ropro_logo_small.png" style="filter: drop-shadow(1px 1px 1px #363636);width:35px;margin-left:5px;margin-bottom:2px;">--></h3>
 <div id="timeDropdown" style="overflow:visible;margin-top:-2px;margin-left:10px;float:right;width:150px;transform:scale(0.8);margin-right:-12px;z-index:10;margin-bottom:-10px;" class="input-group-btn group-dropdown">
 <button style="border:none;" type="button" class="input-dropdown-btn" data-toggle="dropdown" aria-expanded="false"> 
 <span style="float:right;" class="icon-down-16x16"></span><span id="timeLabel" class="rbx-selection-label ng-binding" ng-bind="layout.selectedTab.label" style="font-size:14px;float:right;margin-right:5px;">Past Week</span> 
@@ -177,7 +177,7 @@ function addGame(name, id, url, thumbnail, time) {
     <div class="game-card-thumb-container" style="width:90px;height:90px;"><div style="width:90px;height:90px;" class="game-card-thumb">
     <span class="thumbnail-2d-container"><img style="width:90px;height:90px;" class="game-card-thumb" src="${stripTags(thumbnail)}" alt="${stripTags(name)}" title="${stripTags(name)}"></span>
     </div></div><div style="margin-top:-3px;font-size:12px;padding:0px;text-overflow: ellipsis;white-space: nowrap;" class="game-card-name game-name-title" title="${stripTags(name)}">${stripTags(name)}</div><div style="margin-top:-5px;" class="game-card-info">
-    <img style="background-image:none;margin:-6px;margin-top:0px;margin-bottom:0.5px;transform:scale(0.4);border:none;margin-left:-8px;margin-right:-5px;margin-top:-0.6px;" src="https://ropro.io/images/timericon_${theme}.png" class="info-label icon-pastname"><span style="padding:0px;font-size:10.5px;" title="Played for ${parseInt(time)} minutes" class="info-label vote-percentage-label">${formatTime(time)}</span>
+    <img style="background-image:none;margin:-6px;margin-top:0px;margin-bottom:0.5px;transform:scale(0.4);border:none;margin-left:-8px;margin-right:-5px;margin-top:-0.6px;" src="https://ropro.io/images/timer_${theme}.svg" class="info-label icon-pastname"><span style="padding:0px;font-size:10.5px;" title="Played for ${parseInt(time)} minutes" class="info-label vote-percentage-label">${formatTime(time)}</span>
     </div></a></div>`
     li = document.createElement('li')
     li.setAttribute("style", "height:120px;width:100px;")
@@ -294,7 +294,7 @@ async function renderMostPlayed(time) {
         }
         console.log(pages)
     } else {
-        enableHTML = `<div style="text-align:center;font-size:14px;margin-top:-3px;"><span style="font-size:12px;margin-top:-8px;">RoPro will keep track of the games you spend<br>the most time playing, and show them here!<br>(This feature is disabled by default.)</span><br><li class="rbx-upgrade-now" style="margin-top:5px;display: inline-block;"><a class="btn-growth-md btn-secondary-md" id="enablePlaytimeTracking">Enable RoPro Playtime Tracking</a></li><p style="margin-top:3px;font-size:10px;">
+        enableHTML = `<div style="text-align:center;font-size:14px;margin-top:-3px;"><span style="font-size:12px;margin-top:-8px;">RoPro will keep track of the games you spend<br>the most time playing, and show them here!</span><br><li class="rbx-upgrade-now" style="margin-top:5px;display: inline-block;"><a class="btn-growth-md btn-secondary-md" id="enablePlaytimeTracking">Enable RoPro Playtime Tracking</a></li><p style="margin-top:3px;font-size:10px;">
         You can toggle this feature in the RoPro Settings.</p></div>`
         document.getElementById("mostPlayedContainer").innerHTML = enableHTML
         document.getElementById('enablePlaytimeTracking').addEventListener('click', async function(){

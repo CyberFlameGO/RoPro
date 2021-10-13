@@ -85,3 +85,12 @@ document.addEventListener('equipItem', function(event) {
 document.addEventListener('reloadAvatar', function(event) {
 	angular.element(document.getElementById('UserAvatar')).scope().redrawThumbnail()
 })
+
+document.addEventListener('setScales', function(event) {
+	angular.element(document.getElementById('proportions-scale')).scope().$parent.$parent.scales.height.value = event.detail.height
+	angular.element(document.getElementById('proportions-scale')).scope().$parent.$parent.scales.width.value = event.detail.width
+	angular.element(document.getElementById('proportions-scale')).scope().$parent.$parent.scales.proportion.value = event.detail.proportion
+	angular.element(document.getElementById('proportions-scale')).scope().$parent.$parent.scales.bodyType.value = event.detail.bodyType
+	angular.element(document.getElementById('proportions-scale')).scope().$parent.$parent.scales.head.value = event.detail.head
+	angular.element(document.getElementById('proportions-scale')).scope().$parent.$parent.updateScales()
+})

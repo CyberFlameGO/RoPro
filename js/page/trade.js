@@ -2134,7 +2134,7 @@ async function addTradePanel() {
 					</li>
 					<li class="panel-button" style="display: block;margin:10px;padding-bottom:15px;border-bottom: 3px solid #FFFFFF;position:relative;">
 						<a style="width:100%;color:white;background-color:#0084DD;" class="btn-growth-md btn-secondary-md" id="declineOldTrades">
-							<img src="https://ropro.io/images/timericon_light.png" style="width:30px;float:left;filter:invert(1);margin-left:-3px;margin-top:-2px;margin-bottom:-5px;">
+							<img src="https://ropro.io/images/timer_light.svg" style="width:30px;float:left;filter:invert(1);margin-left:-3px;margin-top:-2px;margin-bottom:-5px;">
 							<p style="font-weight:bold;color:white;">Decline Old Trades</p>
 						</a>
 						<span style="position:absolute;top:-15px;left:535px;width:210px;background-color:black;padding:10px;border-radius:10px;display:none;" class="panel-button-info">Decline trades which are older than a certain age in hours/days.</span>
@@ -2738,7 +2738,9 @@ async function main() {
 					if (cardContainer != undefined && cardContainer.getAttribute("class").indexOf("checked") == -1) {
 						cardContainer.setAttribute("class", stripTags(cardContainer.getAttribute("class")) + " checked")
 						if (tradeValueCalculator || tradeDemandRatingCalculator || tradeItemValue || tradeItemDemand) {
-							checkTradeWindowFree()
+							checkTradeWindow()
+						} else if (itemInfoCard) {
+							checkTradeFree()
 						}
 					}
 				}

@@ -40,7 +40,7 @@ fetchAvatar.onload = function() {
     fetchAvatar.remove();
 }
 
-var wearingHTML = `<div style="float:left;position:relative;width:277px;margin-bottom:20px;" id="wearing">
+var wearingHTML = `<div style="float:left;position:relative;width:277px;margin-bottom:20px;" class="ropro-avatar-menu" id="wearing">
 <h5 style="padding-bottom:0px;" class="ng-binding"><span class="outfitCostText">Outfit Cost:</span> <span>
 	<span id="outfitCostLoading" style="margin:-7px;transform: scale(0.6); width: 100px; height: 25px; visibility: initial !important;" class="spinner spinner-default"></span>
 	<div id="outfitCostDiv" style="display:none;">
@@ -50,13 +50,16 @@ var wearingHTML = `<div style="float:left;position:relative;width:277px;margin-b
 </h5>
 <h3 style="padding-bottom:0px;" class="ng-binding currentlyWearingText">Currently Wearing</h3>
 <p style="margin-top:-2px;font-size:13px;display:inline-block;" class="ng-binding clickAnItemText">Click an item to unequip it.</p>
-<div style="display:inline-block;width:14px;height:14px;margin-bottom:2px;cursor:pointer;font-size:10px;align:right;margin-right:55px;right:-5px;top:50px;transform:scale(0.9);margin-left:0px;" id="refreshAvatar"><div style="margin-left:38px;" class="rbx-refresh refresh-link-icon"></div>Redraw</div>
+<div style="display:inline-block;width:25px;height:14px;margin-bottom:2px;font-size:10px;align:right;margin-right:25px;right:-5px;top:50px;transform:scale(0.9);margin-left:0px;white-space:nowrap;"><b style="cursor:pointer;" id="refreshAvatar">Refresh</b> | <b style="cursor:pointer;" id="redrawAvatar">Redraw</b></div>
 <div style="line-height:0px;pointer-events:initial;margin-top:5px;" id="wearingContainer"><span>
 	<span id="outfitCostLoading" style="margin:0px;transform: scale(0.8); width: 100px; height: 25px; visibility: initial !important;" class="spinner spinner-default"></span>
 	<div id="outfitCostDiv" style="display:none;">
 	<span style="margin-left:-5px;margin-right:-8px;margin-bottom:2px;transform: scale(0.6);" id="nav-robux" class="icon-robux-28x28 roblox-popover-close"></span>
 	<span style="font-size:15px;" class="rbx-text-navbar-right text-header" id="outfitCostRobux">
 </span></div></span></div>
+<h3 style="padding-bottom:0px;margin-top:10px;position:relative;" class="ng-binding bodySelectorText">Body Selector <div style="position: absolute; top: 7px; right: 53px; z-index: 100;border-radius:0px;background:none;transform:scale(0.8);" class="avatar-type-toggle pill-toggle ng-scope" data-toggle="tooltip" title="Switch between classic R6 avatar and more expressive next generation R15 avatar"> <input type="radio" id="radio-R6" value="R6" onclick="document.getElementsByClassName('ropro-R6-label')[0].classList.add('ropro-active-radio');document.getElementsByClassName('ropro-R15-label')[0].classList.remove('ropro-active-radio');" class="ng-pristine ng-untouched ng-valid ng-not-empty" name="15"> <label onclick="document.getElementsByClassName('ropro-R6-label')[0].classList.add('ropro-active-radio');document.getElementsByClassName('ropro-R15-label')[0].classList.remove('ropro-active-radio');" class="ropro-R6-label" for="radio-R6">R6</label> <input type="radio" onclick="document.getElementsByClassName('ropro-R6-label')[0].classList.remove('ropro-active-radio');document.getElementsByClassName('ropro-R15-label')[0].classList.add('ropro-active-radio');" id="radio-R15" value="R15" class="ng-pristine ng-untouched ng-valid ng-not-empty" name="16"> <label onclick="document.getElementsByClassName('ropro-R6-label')[0].classList.remove('ropro-active-radio');document.getElementsByClassName('ropro-R15-label')[0].classList.add('ropro-active-radio');" class="ropro-R15-label" for="radio-R15">R15</label> </div><p id="defaultScales" style="position:absolute;right:17px;font-size:9px;display:inline-block;cursor:pointer;top:13px;font-weight:bold;" class="ng-binding clickAnItemText">Default</p><div></div>
+</h3>
+<div style="line-height:0px;pointer-events:initial;height:150px;width:275px;background-color:#1A1B1C;margin-top:5px;padding:5px;border-radius:15px;overflow:hidden;position:relative;" id="bodySelectorContainer"><div id="bodyColorContainer" style="float:left;transform:scaleX(0.8) scaleY(0.8);background-color:initial;padding:17px;margin:-17px;margin-top:-12px;border-radius:20px;margin-left:-7px;position:absolute;top:7px;left:0px;"><div style="width: 25px; height: 25px; margin-left: 37.5px; cursor: pointer; background-color: initial;" id="roproHeadColor"></div><div style="width: 25px; height: 50px; margin-left: 0px; margin-top: 2px; float: left; cursor: pointer; background-color: initial;" id="roproLeftArmColor"></div><div style="width: 46px; height: 50px; margin-left: 2px; margin-top: 2px; float: left; cursor: pointer; background-color: initial;" id="roproTorsoColor"></div><div style="width: 25px; height: 50px; margin-left: 2px; margin-top: 2px; float: left; cursor: pointer; background-color: initial;" id="roproRightArmColor"></div><br><div style="width: 22px; height: 50px; margin-left: 27px; margin-top: 2px; float: left; cursor: pointer; background-color: initial;" id="roproLeftLegColor"></div><div style="width: 22px; height: 50px; margin-left: 2px; margin-top: 2px; float: left; cursor: pointer; background-color: initial;" id="roproRightLegColor"></div></div><div id="bodyStyleBox" style="width:150px;float:right;position:absolute;top:16px;left:105px;"><img id="bodyStyleSelector" style="position:absolute;height:20px;top:88px;left:64.5px;cursor:pointer;-webkit-user-drag: none; user-select: none; display: none;" src="https://ropro.io/images/selector_icon.png"><img src="https://ropro.io/images/body_selector.svg"></div><div id="bodySizeBox" style="width:130px;float:right;margin-top:0px;position:absolute;top:5px;left:265px;"><img id="bodySizeSelector" style="position: absolute; height: 20px; top: 38.875px; left: 104.5px; cursor: pointer; -webkit-user-drag: none; user-select: none; display: none;" src="https://ropro.io/images/selector_icon.png"><img style="pointer-events:none;" src="https://ropro.io/images/body_size.svg"></div><div class="head-slider" id="headSizeBox" style="width:110px;float:right;margin-top:0px;position:absolute;top:25px;left:405px;"><img style="pointer-events: none; height: 80px; margin-left: 20px; transform: scale(1);" src="https://ropro.io/images/head_light.png" id="headSizeImage"><input type="range" oninput="document.getElementById('headSizeImage').style.transform='scale('+(0.9+this.value/50)+')';this.classList.remove('pr100');this.classList.remove('pr80');this.classList.remove('pr60');this.classList.remove('pr40');this.classList.remove('pr20');this.classList.remove('pr0');this.classList.add('pr' + (this.value * 20));" class="pr100" id="headSlider" step="1" min="0" max="5" value="5"></div></div>
 <h3 style="padding-bottom:0px;margin-top:5px;" class="ng-binding backgroundText">Background
 <button id="saveBackgroundButton" type="button" class="btn-fixed-width-lg btn-growth-lg" style="margin-top:7px;background-color:#0084dd;border:0px;width:130px;font-size:12px;padding:2px;float:right;display:none;">Save Background</button>
 </h3>
@@ -73,6 +76,18 @@ var backgrounds = ["default"]
 var backgroundsPage = 0
 var avatarBackground = "default"
 var savedAvatarBackground = "default"
+var scales = null
+var scalesDetails = {height: -1, width: -1, proportion: -1, bodyType: -1, head: -1}
+var rules = null
+var bodyColorPalette = null
+var mouseHeldBodySize = false
+var mouseHeldBodyStyle = false
+var bodySizeX = 0
+var bodySizeY = 0
+var bodySizeOffsetX = 55
+var bodySizeOffsetY = 62.5
+var bodyStyleX = 0
+var bodyStyleY = 0
 
 function getStorage(key) {
 	return new Promise(resolve => {
@@ -87,6 +102,16 @@ function setStorage(key, value) {
 		chrome.storage.sync.set({[key]: value}, function(){
 			resolve()
 		})
+	})
+}
+
+function fetchSetting(setting) {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "GetSetting", setting: setting}, 
+			function(data) {
+				resolve(data)
+			}
+		)
 	})
 }
 
@@ -112,6 +137,15 @@ function fetchInventory(userId, cursor, type) {
 function fetchAssetDetails(assetId) {
 	return new Promise(resolve => {
 		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.roblox.com/marketplace/productinfo?assetId=" + assetId}, 
+			function(data) {
+					resolve(data)
+			})
+	})
+}
+
+function fetchAvatarRules() {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://avatar.roblox.com/v1/avatar-rules"}, 
 			function(data) {
 					resolve(data)
 			})
@@ -191,6 +225,11 @@ function equipItem(assetId, assetTypeName) {
 	setTimeout(function() {
 		loadCurrentlyWearing()
 	}, 250)
+}
+
+function setScales(height, width, proportion, bodyType, head) {
+	scalesDetails = {height: height, width: width, proportion: proportion, bodyType: bodyType, head: head}
+	document.dispatchEvent(new CustomEvent('setScales', {detail: scalesDetails}))
 }
 
 var inventory = []
@@ -355,7 +394,7 @@ function createUpgradeModal() {
     modalDiv.style.zIndex = 100000
     modalHTML = `<div id="standardUpgradeModal" style="z-index:10000;display:block;" class="upgrade-modal"><div style="background-color:#232527;position:absolute;width:500px;height:500px;left:-webkit-calc(50% - 250px);top:-webkit-calc(50% - 250px);" class="modal-content upgrade-modal-content">
     <span style="margin-top:5px;margin-right:5px;font-size:40px;" class="upgrade-modal-close">×</span>
-    <h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:20px;left:40px;"><img style="width:70px;left:0px;" src="https://ropro.io/images/standard_icon.png"> Standard Tier Feature</h2><div style="font-family:HCo Gotham SSm;color:white;font-size:16px;position:absolute;top:115px;left:200px;width:270px;">RoPro Outfit Randomizer is only available for<br><b><img style="width:20px;margin-top:-3px;margin-right:3px;" src="https://ropro.io/images/standard_icon.png">RoPro Standard Tier+</b><br>subscribers. This feature switches your avatar to a randomly chosen outfit you've made at a chosen time interval.</div><div style="font-family:HCo Gotham SSm;color:white;font-size:18px;position:absolute;top:270px;left:200px;width:270px;"><u>More Subscription Benefits:</u>
+    <h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:20px;left:40px;"><img style="width:70px;left:0px;" src="https://ropro.io/images/standard_icon.png"> Standard Tier Feature</h2><div style="font-family:HCo Gotham SSm;color:white;font-size:16px;position:absolute;top:115px;left:200px;width:270px;">RoPro Outfit Swapper is only available for<br><b><img style="width:20px;margin-top:-3px;margin-right:3px;" src="https://ropro.io/images/standard_icon.png">RoPro Standard Tier+</b><br>subscribers. This feature switches your avatar to a randomly chosen outfit you've made at a chosen time interval.</div><div style="font-family:HCo Gotham SSm;color:white;font-size:18px;position:absolute;top:270px;left:200px;width:270px;"><u>More Subscription Benefits:</u>
     <ul style="margin-left:20px;font-size:12px;font-family:HCo Gotham SSm;">
     <li style="list-style-type:circle;">Fastest Server &amp; Server Size Sort</li>
     <li style="list-style-type:circle;">More Game Filters &amp; Like Ratio Filter</li><li style="list-style-type:circle;">Trade Value &amp; Demand Calculator</li><li style="list-style-type:circle;">More Game Playtime Sorts</li><li style="list-style-type:circle;">And many more! Find a full list <a style="text-decoration:underline;cursor:pointer;" href="https://ropro.io#standard" target="_blank">here</a>.</li></ul>
@@ -370,15 +409,28 @@ function createUpgradeModal() {
     })
 }
 
+function checkCharacterType() {
+	inputs = document.getElementsByClassName('avatar-type-toggle')[0].getElementsByTagName('input')
+	for (i = 0; i < inputs.length; i++) {
+		if (inputs[i].checked == true) {
+			if (i == 0) {
+				document.getElementsByClassName('left-wrapper')[0].getElementsByClassName('scale-container')[0].style.display = "none"
+			} else {
+				document.getElementsByClassName('left-wrapper')[0].getElementsByClassName('scale-container')[0].style.display = "block"
+			}
+		}
+	}
+}
+
 function upgradeModal() {
     createUpgradeModal()
     document.getElementById('standardUpgradeModal').getElementsByTagName('video')[0].src = `https://ropro.io/dances/dance${(Math.floor(Math.random() * 18) + 1)}.webm`
     document.getElementById('standardUpgradeModal').style.display = "block"
 }
 
-async function addOutfitRandomizer() {
+async function addOutfitSwapper() {
 	div = document.createElement('div')
-	outfitRandomizerButtonHTML = `<button id="outfitRandomizerButton" style="margin-right:150px;" ng-if="selectedMenu.name !== 'PresetCostumes'" ng-type="button" class="btn-secondary-xs btn-float-right ng-binding ng-scope" ng-click="createOutfitClicked()"> <img class="outfit-randomizer-icon" style="width:15px;margin-top:-12px;margin-bottom:-10px;margin-right:4px;" src="https://ropro.io/images/random_game.svg">Outfit Randomizer </button>`
+	outfitRandomizerButtonHTML = `<button id="outfitRandomizerButton" style="margin-right:150px;" ng-if="selectedMenu.name !== 'PresetCostumes'" ng-type="button" class="btn-secondary-xs btn-float-right ng-binding ng-scope" ng-click="createOutfitClicked()"> <img class="outfit-randomizer-icon" style="width:15px;margin-top:-12px;margin-bottom:-10px;margin-right:4px;" src="https://ropro.io/images/random_game.svg">Outfit Swapper </button>`
 	div.innerHTML = outfitRandomizerButtonHTML
 	button = div.childNodes[0]
 	document.getElementsByClassName('btn-secondary-xs btn-float-right ng-binding ng-scope')[0].parentNode.appendChild(button)
@@ -439,7 +491,13 @@ function setAvatarBackground(backgroundName) {
 	}
 	avatarBackground = backgroundName.length >= 5 ? 'default' : backgroundName
 	imageSrc = backgroundName.length >= 5 ? 'https://images.rbxcdn.com/a9755c3db57524e4bae224d4e5e99ba7-avatar-upsell-background.svg' : 'https://ropro.io/avatar_backgrounds/' + backgroundName + '.png'
-	document.getElementsByClassName('avatar-back')[0].setAttribute('style', avatarBackground == 'default' ? '' : `background-image: url(${imageSrc});background-size:contain;`)
+	if (avatarBackground == 'default') {
+		document.getElementsByClassName('avatar-back')[0].style.backgroundImage = ''
+		document.getElementsByClassName('avatar-back')[0].style.backgroundSize = ''
+	} else {
+		document.getElementsByClassName('avatar-back')[0].style.backgroundImage = `url(${imageSrc})`
+		document.getElementsByClassName('avatar-back')[0].style.backgroundSize = 'contain'
+	}
 }
 
 function updateCurrentlyWearing() {
@@ -469,7 +527,7 @@ function updateCurrentlyWearing() {
 		listen(itemImage)
 	}
 	div = document.createElement('div')
-	div.innerHTML += `<div class="wearing-div"><div style="height:25px!important;margin-top:15px;z-index:1000;" class="wearing-name input-group input-field"><a style="font-size:13px;font-weight:bold;"><img src="https://ropro.io/images/ropro_logo_small.png" style="height:18px;margin-top:-2px;"> Quick Equip</a>
+	div.innerHTML += `<div class="wearing-div"><div style="height:25px!important;margin-top:15px;z-index:1000;" class="wearing-name input-group input-field"><a style="font-size:13px;font-weight:bold;"><img src="https://ropro.io/images/ropro_logo_small.png" style="height:18px;margin-top:-2px;filter: drop-shadow(rgb(57,59,61) 2px 2px 1px);"> Quick Equip</a>
 	<br>
 	</div>
 	<div style="display:inline-block;width:50px;height:50px;" class="thumbnail-2d-container wearing-card">
@@ -533,6 +591,23 @@ async function calculateCost(assetId) {
 	updateCurrentlyWearing()
 }
 
+function selectBodyPart(type) {
+	document.getElementById('bodyColors').getElementsByClassName('advanced-link')[0].click()
+	if (type == "roproHeadColor") {
+		document.getElementById('radio-headColorId').click()
+	} else if (type == "roproLeftArmColor") {
+		document.getElementById('radio-leftArmColorId').click()
+	} else if (type == "roproTorsoColor") {
+		document.getElementById('radio-torsoColorId').click()
+	} else if (type == "roproRightArmColor") {
+		document.getElementById('radio-rightArmColorId').click()
+	} else if (type == "roproLeftLegColor") {
+		document.getElementById('radio-leftLegColorId').click()
+	} else if (type == "roproRightLegColor") {
+		document.getElementById('radio-rightLegColorId').click()
+	}
+}
+
 async function loadCurrentlyWearing() {
 	userID = parseInt(document.getElementsByName("user-data")[0].getAttribute("data-userid"))
 	currentlyWearing = await fetchCurrentlyWearing(userID)
@@ -545,70 +620,295 @@ async function loadCurrentlyWearing() {
 			calculateCost(asset.id)
 		}
 	}
+	bodyColors = currentlyWearing.bodyColors
+	document.getElementById('roproHeadColor').style.backgroundColor = stripTags(bodyColorPalette[bodyColors['headColorId']])
+	document.getElementById('roproLeftArmColor').style.backgroundColor = stripTags(bodyColorPalette[bodyColors['leftArmColorId']])
+	document.getElementById('roproTorsoColor').style.backgroundColor = stripTags(bodyColorPalette[bodyColors['torsoColorId']])
+	document.getElementById('roproRightArmColor').style.backgroundColor = stripTags(bodyColorPalette[bodyColors['rightArmColorId']])
+	document.getElementById('roproLeftLegColor').style.backgroundColor = stripTags(bodyColorPalette[bodyColors['leftLegColorId']])
+	document.getElementById('roproRightLegColor').style.backgroundColor = stripTags(bodyColorPalette[bodyColors['rightLegColorId']])
+	scales = currentlyWearing.scales
+	if ((scalesDetails.width / 100).toFixed(2) != scales.width) {
+		bodySizeX = ((scales.width - rules.scales.width.min) / (rules.scales.width.max - rules.scales.width.min)) * 100
+		bodySizeLeft = (bodySizeOffsetX - 50 + ((scales.width - rules.scales.width.min) / (rules.scales.width.max - rules.scales.width.min) * 100)).toFixed(1)
+		document.getElementById('bodySizeSelector').style.left = parseFloat(bodySizeLeft) + "px"	
+	}
+	if ((scalesDetails.height / 100).toFixed(2) != scales.height) {
+		bodySizeY = ((scales.height - rules.scales.height.min) / (rules.scales.height.max - rules.scales.height.min)) * 100
+		bodySizeTop = (bodySizeOffsetY - 50 + 100 - ((scales.height - rules.scales.height.min) / (rules.scales.height.max - rules.scales.height.min) * 100)).toFixed(1)
+		document.getElementById('bodySizeSelector').style.top = parseFloat(bodySizeTop) + "px"
+	}
+	if ((scalesDetails.bodyType / 100).toFixed(2) != scales.bodyType) {
+		bodyStyleY = ((scales.bodyType - rules.scales.bodyType.min) / (rules.scales.bodyType.max - rules.scales.bodyType.min)) * 100
+		bodyStyleTop = 95 - ((scales.bodyType - rules.scales.bodyType.min) / (rules.scales.bodyType.max - rules.scales.bodyType.min) * 100).toFixed(1)
+		document.getElementById('bodyStyleSelector').style.top = parseFloat(bodyStyleTop) + "px"
+	}
+	if ((scalesDetails.proportion / 100).toFixed(2) != scales.proportion) {
+		bodyStyleX = 55 - ((scales.proportion - rules.scales.proportion.min) / (rules.scales.proportion.max - rules.scales.proportion.min)) * 110
+		bounds = [bodyStyleY / - (5 / 3), bodyStyleY / (5 / 3)]
+		if (bodyStyleX > bounds[0]) {
+			if (bodyStyleX < bounds[1]) {
+				bodyStyleLeft = bodyStyleX
+			} else {
+				bodyStyleLeft = bounds[1]
+			}
+		} else {
+			bodyStyleLeft = bounds[0]
+		}
+		bodyStyleLeft += 64.5
+		document.getElementById('bodyStyleSelector').style.left = parseFloat(bodyStyleLeft) + "px"
+	}
+	if ((scalesDetails.head / 100).toFixed(2) != scales.head) {
+		document.getElementById('headSlider').setAttribute('class', '')
+		document.getElementById('headSlider').value = ((scales.head - rules.scales.head.min) * 100).toFixed()
+		document.getElementById('headSlider').classList.add('pr' + (parseInt(document.getElementById('headSlider').value) * 20));
+		document.getElementById('headSizeImage').style.transform='scale('+(0.9+parseInt(document.getElementById('headSlider').value)/50)+')';
+	}
+	document.getElementById('bodySizeSelector').style.display = "block"
+	document.getElementById('bodyStyleSelector').style.display = "block"
+	height = scales.height
+	width = scales.width
+	proportion = scales.proportion
+	bodyType = scales.bodyType
+	document.getElementById('bodyColorContainer').style.transform = "scaleX(" + (0.8 * width - (0.1 * (0.5 - (1 - proportion)))) + ") scaleY(" + (0.9 * height - (0.2 * (0.25 - bodyType))) + ")"
+	if (currentlyWearing.playerAvatarType == "R6") {
+		document.getElementsByClassName('ropro-R6-label')[0].classList.add('ropro-active-radio')
+		document.getElementsByClassName('ropro-R15-label')[0].classList.remove('ropro-active-radio')
+	} else {
+		document.getElementsByClassName('ropro-R15-label')[0].classList.add('ropro-active-radio')
+		document.getElementsByClassName('ropro-R6-label')[0].classList.remove('ropro-active-radio')
+	}
+}
+
+function calculateDistance(elem, mouseX, mouseY) {
+	return [mouseX - (elem.offset().left+(elem.width()/2)), mouseY - (elem.offset().top+(elem.height()/2))]
+}
+
+function getDistance(x1, y1, x2, y2){
+    let y = x2 - x1;
+    let x = y2 - y1;
+    
+    return Math.sqrt(x * x + y * y);
 }
 
 async function mainAvatar() {
-	avatarBox = $("[avatar-back]")
-	if (avatarBox.length > 0) {
-		div = document.createElement('div')
-		div.innerHTML = wearingHTML
-		insertAfter(div.childNodes[0], avatarBox.get(0))
-		document.getElementById('refreshAvatar').addEventListener('click', function() {
-			reloadAvatar()
-		})
-		loadCurrentlyWearing()
-		backgroundDiv = document.createElement('div')
-		backgroundDiv.innerHTML = backgroundContainerHTML
-		document.getElementById('wearing').appendChild(backgroundDiv)
-		document.getElementsByClassName('content')[0].setAttribute('style', "margin-bottom:400px;")
-		document.getElementsByClassName('backgrounds-scroll-right')[0].addEventListener('click', function() {
-			if (backgroundsPage * 5 < backgrounds.length - 5) {
-				backgroundsPage++
-				loadBackgroundPage()
-				if (backgroundsPage * 5 >= backgrounds.length - 5) {
-					this.classList.add('disabled')
-				}
-				document.getElementsByClassName('backgrounds-scroll-left')[0].classList.remove('disabled')
+	if (await fetchSetting("avatarEditorChanges")) {
+		avatarBox = $("[avatar-back]")
+		if (avatarBox.length > 0) {
+			div = document.createElement('div')
+			div.innerHTML = wearingHTML
+			insertAfter(div.childNodes[0], avatarBox.get(0))
+			try{
+				hideUI = document.createElement('a')
+				hideUI.classList.add('text-link')
+				hideUI.setAttribute('style', 'margin-right:10px')
+				hideUI.innerText = 'Hide UI'
+				document.getElementsByClassName('redraw-avatar')[0].appendChild(hideUI)
+				hideUI.addEventListener('click', function() {
+					if (document.getElementsByClassName('avatar-type-toggle')[0].style.display == "none") {
+						document.getElementsByClassName('avatar-type-toggle')[0].style.display = "block"
+						document.getElementsByClassName('toggle-three-dee btn-control')[0].style.display = "block"
+						//document.getElementsByClassName('left-wrapper')[0].getElementsByClassName('scale-container')[0].style.display = "block"
+						this.innerText = "Hide UI"
+						//checkCharacterType()
+					} else {
+						document.getElementsByClassName('avatar-type-toggle')[0].style.display = "none"
+						document.getElementsByClassName('toggle-three-dee btn-control')[0].style.display = "none"
+						//document.getElementsByClassName('left-wrapper')[0].getElementsByClassName('scale-container')[0].style.display = "none"
+						this.innerText = "Show UI"
+					}
+				})
+				document.getElementsByClassName('avatar-type-toggle')[0].addEventListener('click', function() {
+					//checkCharacterType()
+				})
+				document.getElementsByClassName('left-wrapper')[0].classList.remove('left-wrapper')
+				document.getElementsByClassName('avatar-back')[0].classList.add('left-wrapper')
+				document.getElementsByClassName('avatar-back')[0].style.height = "initial"
+				document.getElementsByClassName('avatar-back')[0].style.zIndex = 2
+				document.getElementsByClassName('ropro-avatar-menu')[0].style.zIndex = 1
+			} catch(e) {
+				console.log(e)
 			}
-		})
-		document.getElementsByClassName('backgrounds-scroll-left')[0].addEventListener('click', function() {
-			if (backgroundsPage > 0) {
-				backgroundsPage--
-				loadBackgroundPage()
-				if (backgroundsPage == 0) {
-					this.classList.add('disabled')
-				}
-				document.getElementsByClassName('backgrounds-scroll-right')[0].classList.remove('disabled')
+			document.getElementById('redrawAvatar').addEventListener('click', function() {
+				reloadAvatar()
+			})
+			document.getElementById('refreshAvatar').addEventListener('click', function() {
+				setScales(scales.height * 100, scales.width * 100, scales.proportion * 100, scales.bodyType * 100, scales.head * 100)
+			})
+			rules = await fetchAvatarRules()
+			bodyColorPalette = {}
+			for (const [key, value] of Object.entries(rules.bodyColorsPalette)) {
+				bodyColorPalette[value['brickColorId']] = value['hexColor']
 			}
-		})
-		savedAvatarBackground = await getStorage("avatarBackground")
-		avatarBackground = savedAvatarBackground
-		addBackgrounds()
-		if (avatarBackground != "default" || typeof avatarBackground != "undefined") {
-			setAvatarBackground(avatarBackground)
+			loadCurrentlyWearing()
+			backgroundDiv = document.createElement('div')
+			backgroundDiv.innerHTML = backgroundContainerHTML
+			document.getElementById('wearing').insertBefore(backgroundDiv, document.getElementsByClassName('backgroundText')[0].nextElementSibling)
+			document.getElementsByClassName('content')[0].setAttribute('style', "margin-bottom:400px;")
+			document.getElementsByClassName('backgrounds-scroll-right')[0].addEventListener('click', function() {
+				if (backgroundsPage * 5 < backgrounds.length - 5) {
+					backgroundsPage++
+					loadBackgroundPage()
+					if (backgroundsPage * 5 >= backgrounds.length - 5) {
+						this.classList.add('disabled')
+					}
+					document.getElementsByClassName('backgrounds-scroll-left')[0].classList.remove('disabled')
+				}
+			})
+			document.getElementsByClassName('backgrounds-scroll-left')[0].addEventListener('click', function() {
+				if (backgroundsPage > 0) {
+					backgroundsPage--
+					loadBackgroundPage()
+					if (backgroundsPage == 0) {
+						this.classList.add('disabled')
+					}
+					document.getElementsByClassName('backgrounds-scroll-right')[0].classList.remove('disabled')
+				}
+			})
+			savedAvatarBackground = await getStorage("avatarBackground")
+			avatarBackground = savedAvatarBackground
+			addBackgrounds()
+			if (avatarBackground != "default" || typeof avatarBackground != "undefined") {
+				setAvatarBackground(avatarBackground)
+			}
+			//addOutfitSwapper()
+			$("#roproHeadColor").click(function(){
+				selectBodyPart(this.id)
+			})
+			$("#roproLeftArmColor").click(function(){
+				selectBodyPart(this.id)
+			})
+			$("#roproTorsoColor").click(function(){
+				selectBodyPart(this.id)
+			})
+			$("#roproRightArmColor").click(function(){
+				selectBodyPart(this.id)
+			})
+			$("#roproLeftLegColor").click(function(){
+				selectBodyPart(this.id)
+			})
+			$("#roproRightLegColor").click(function(){
+				selectBodyPart(this.id)
+			})
+			document.getElementById('bodySizeSelector').addEventListener('mousedown', e => {
+				mouseHeldBodySize = true
+			});
+			document.getElementById('bodyStyleSelector').addEventListener('mousedown', e => {
+				mouseHeldBodyStyle = true
+			});
+			$(document).mouseup(function(e){
+				if (mouseHeldBodySize == true) {
+					mouseHeldBodySize = false
+					width = 0
+					height = 0
+					if (bodySizeX > 50) {
+						width = (rules.scales.width.min + (rules.scales.width.max - rules.scales.width.min) * (Math.ceil(bodySizeX) / 100)).toFixed(2)
+					} else {
+						width = (rules.scales.width.min + (rules.scales.width.max - rules.scales.width.min) * (Math.floor(bodySizeX) / 100)).toFixed(2)
+					}
+					if (bodySizeY > 50) {
+						height = (rules.scales.height.min + (rules.scales.height.max - rules.scales.height.min) * (Math.ceil(bodySizeY) / 100)).toFixed(2)
+					} else {
+						height = (rules.scales.height.min + (rules.scales.height.max - rules.scales.height.min) * (Math.floor(bodySizeY) / 100)).toFixed(2)
+					}
+					setScales(height * 100, width * 100, scales.proportion * 100, scales.bodyType * 100, scales.head * 100)
+				}
+				if (mouseHeldBodyStyle == true) {
+					mouseHeldBodyStyle = false
+					distance = calculateDistance($("#bodyStyleBox"), e.pageX, e.pageY)
+					proportion = (rules.scales.proportion.min + (rules.scales.proportion.max - rules.scales.proportion.min) * (1 - Math.floor(Math.min(getDistance(-54.599, 91, bodyStyleX, bodyStyleY), 90)) / 90).toFixed(2)).toFixed(2)
+					bodyType = (rules.scales.bodyType.min + (rules.scales.bodyType.max - rules.scales.bodyType.min) * (Math.round(bodyStyleY) / 91)).toFixed(2)
+					setScales(scales.height * 100, scales.width * 100, proportion * 100, bodyType * 100, scales.head * 100)
+				}
+			});
+			document.addEventListener('mousemove', function(e) {
+				if (mouseHeldBodySize) {
+					distance = calculateDistance($("#bodySizeBox"), e.pageX, e.pageY)
+					if (Math.abs(distance[1]) <= 50) {
+						bodySizeY = 100 - (distance[1] + 50)
+						document.getElementById('bodySizeSelector').style.top = (distance[1] + bodySizeOffsetY) + "px"
+						//document.getElementById('bodyColorContainer').style.transform = "scaleX(" + parseFloat(document.getElementById('bodyColorContainer').style.transform.split("scaleX(")[1].split(")")[0]) + ") scaleY(" + (0.8 * (rules.scales.height.min + (rules.scales.height.max - rules.scales.height.min) * (Math.ceil(bodySizeY) / 100)).toFixed(2)) + ")"
+					}
+					if (Math.abs(distance[0]) <= 50) {
+						bodySizeX = distance[0] + 50
+						document.getElementById('bodySizeSelector').style.left = (distance[0] + bodySizeOffsetX) + "px"
+						//document.getElementById('bodyColorContainer').style.transform = "scaleX(" + (0.8 * (rules.scales.width.min + (rules.scales.width.max - rules.scales.width.min) * (Math.ceil(bodySizeX) / 100)).toFixed(2)) + ") scaleY(" + parseFloat(document.getElementById('bodyColorContainer').style.transform.split("scaleY(")[1].split(")")[0]) + ")"
+					}
+					height = (rules.scales.height.min + (rules.scales.height.max - rules.scales.height.min) * (Math.floor(bodySizeY) / 100)).toFixed(2)
+					width = (rules.scales.width.min + (rules.scales.width.max - rules.scales.width.min) * (Math.ceil(bodySizeX) / 100)).toFixed(2)
+					proportion = (rules.scales.proportion.min + (rules.scales.proportion.max - rules.scales.proportion.min) * (1 - Math.floor(Math.min(getDistance(-54.599, 91, bodyStyleX, bodyStyleY), 90)) / 90).toFixed(2)).toFixed(2)
+					bodyType = (rules.scales.bodyType.min + (rules.scales.bodyType.max - rules.scales.bodyType.min) * (Math.round(bodyStyleY) / 91)).toFixed(2)
+					document.getElementById('bodyColorContainer').style.transform = "scaleX(" + (0.8 * width - (0.1 * (0.5 - (1 - proportion)))) + ") scaleY(" + (0.9 * height - (0.2 * (0.25 - bodyType))) + ")"
+				}
+				if (mouseHeldBodyStyle) {
+					distance = calculateDistance($("#bodyStyleBox"), e.pageX, e.pageY)
+					if (distance[1] <= 38 && distance[1] >= -55) {
+						bodyStyleY = Math.max(0, parseInt(92 - (distance[1] + 55)))
+						document.getElementById('bodyStyleSelector').style.top = (distance[1] + 50) + "px"
+					}
+					if (distance[0] >= 0) {
+						bodyStyleX = Math.max(0, parseInt(distance[0]))
+						bodyStyleX = Math.min(bodyStyleX, bodyStyleY / (5 / 3))
+						document.getElementById('bodyStyleSelector').style.left = (bodyStyleX + 64.5) + "px"
+					} else {
+						bodyStyleX = Math.min(0, parseInt(distance[0]))
+						bodyStyleX = Math.max(bodyStyleX, -bodyStyleY / (5 / 3))
+						document.getElementById('bodyStyleSelector').style.left = (bodyStyleX + 64.5) + "px"
+					}
+					height = (rules.scales.height.min + (rules.scales.height.max - rules.scales.height.min) * (Math.floor(bodySizeY) / 100)).toFixed(2)
+					width = (rules.scales.width.min + (rules.scales.width.max - rules.scales.width.min) * (Math.ceil(bodySizeX) / 100)).toFixed(2)
+					proportion = (rules.scales.proportion.min + (rules.scales.proportion.max - rules.scales.proportion.min) * (1 - Math.floor(Math.min(getDistance(-54.599, 91, bodyStyleX, bodyStyleY), 90)) / 90).toFixed(2)).toFixed(2)
+					bodyType = (rules.scales.bodyType.min + (rules.scales.bodyType.max - rules.scales.bodyType.min) * (Math.round(bodyStyleY) / 91)).toFixed(2)
+					document.getElementById('bodyColorContainer').style.transform = "scaleX(" + (0.8 * width - (0.1 * (0.5 - (1 - proportion)))) + ") scaleY(" + (0.9 * height - (0.2 * (0.25 - bodyType))) + ")"
+				}
+			});
+			document.getElementById('headSlider').addEventListener('change', function() {
+				setScales(scales.height * 100, scales.width * 100, scales.proportion * 100, scales.bodyType * 100, (((rules.scales.head.max - rules.scales.head.min) * (parseInt(this.value) / 5) + rules.scales.head.min) * 100).toFixed())
+			})
+			document.getElementById('defaultScales').addEventListener('click', function() {
+				setScales(100, 100, 0, 0, 100)
+				scalesDetails = {height: -1, width: -1, proportion: -1, bodyType: -1, head: -1}
+			})
+		} else {
+			setTimeout(function() {
+				mainAvatar()
+			}, 100)
 		}
-		//addOutfitRandomizer()
-	} else {
-		setTimeout(function() {
-			mainAvatar()
-		}, 100)
 	}
 }
 
 mainAvatar()
 
-window.addEventListener('load', (event) => {
-	//loadCurrentlyWearing()
-});
-
-thumbnailExists = 0
-setInterval(function() {
-	if ($('#UserAvatar thumbnail-2d').length != thumbnailExists) {
-		thumbnailExists = $('#UserAvatar thumbnail-2d').length
-		if (thumbnailExists == 1 || thumbnailExists == 0) {
-			setTimeout(function() {
-				loadCurrentlyWearing()
-			}, 100)
-		}
+var thumbnailExists = 0
+var loadingWearing = false
+async function mainInterval() {
+	if (await fetchSetting("avatarEditorChanges")) {
+		setInterval(function() {
+			if (loadingWearing == false) {
+				if (Math.max($('#UserAvatar thumbnail-2d').length, $('#UserAvatar thumbnail-3d').length) != thumbnailExists) {
+					thumbnailExists = Math.max($('#UserAvatar thumbnail-2d').length, $('#UserAvatar thumbnail-3d').length)
+					if (thumbnailExists == 1 || thumbnailExists == 0) {
+						setTimeout(function() {
+							loadingWearing = true
+							setTimeout(function() {
+								loadingWearing = false
+							}, 2000)
+							loadCurrentlyWearing()
+						}, 100)
+					}
+				}
+			}
+		}, 10)
+		$(document).ready(function() {
+			document.getElementsByTagName('body')[0].classList.add('ropro-changes')
+		})
+		window.addEventListener('load', (event) => {
+			//checkCharacterType()
+		});
+	} else {
+		$(document).ready(function() {
+			document.getElementsByTagName('body')[0].classList.add('changes-disabled')
+		})
 	}
-}, 10)
+}
+mainInterval()

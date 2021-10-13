@@ -56,8 +56,8 @@ function stripTags(s) {
  }
 
 async function quicksearchMain() {
-	if (document.getElementById('navbar-universal-search') != null) {
-		dropdown = document.getElementById('navbar-universal-search').getElementsByClassName('dropdown-menu')[0]
+	if (document.getElementsByClassName('navbar-search').length > 0) {
+		dropdown = document.getElementsByClassName('navbar-search')[0].getElementsByClassName('dropdown-menu')[0]
 		listItem = document.createElement('li')
 		listItem.setAttribute("class", "navbar-search-option rbx-clickable-li")
 		searchHTML = '<a id="userSearch" class="new-navbar-search-anchor" href=""><span class="icon-menu-profile navbar-list-option-icon"></span><span class="navbar-list-option-text"></span><span class="navbar-list-option-suffix">with <img style="width:20px;" src="https://ropro.io/images/standard_icon.png"> User Search.</span></a>'
@@ -75,10 +75,10 @@ async function quicksearchMain() {
 		if (await fetchSetting("quickItemSearch")) {
 			itemSearchAdded = true
 			if (userSearchAdded) {
-				dropdown = document.getElementById('navbar-universal-search').getElementsByClassName('dropdown-menu')[0]
+				dropdown = document.getElementsByClassName('navbar-search')[0].getElementsByClassName('dropdown-menu')[0]
 				insertAfter(listItem, dropdown.childNodes[dropdown.childNodes.length - 1])
 			} else {
-				dropdown = document.getElementById('navbar-universal-search').getElementsByClassName('dropdown-menu')[0]
+				dropdown = document.getElementsByClassName('navbar-search')[0].getElementsByClassName('dropdown-menu')[0]
 				insertAfter(listItem, dropdown.childNodes[dropdown.childNodes.length - 1])
 			}
 		}

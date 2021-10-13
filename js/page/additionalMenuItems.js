@@ -124,9 +124,35 @@ async function checkAlerts() {
 }
 
 async function insertMenuItems() {
+	tradeOffersPage = await fetchSetting('tradeOffersPage')
+	sandbox = await fetchSetting('sandbox')
+	offerLI = document.createElement('li')
+	newButtonHTML = '<a class="sandbox-icon dynamic-overflow-container text-nav" href="/offers" id="nav-inventory"><div><span style="transform:scale(1.2);" class="new-menu-icon icon-nav-trade"></span></div><span class="font-header-2 dynamic-ellipsis-item">Trade Offers</span></a>'
+	offerLI.innerHTML += newButtonHTML
+	sandboxLI = document.createElement('li')
+	newButtonHTML = '<a class="offers-icon dynamic-overflow-container text-nav" href="/sandbox" id="nav-inventory"><div><span class="new-menu-icon icon-nav-charactercustomizer"></span></div><span class="font-header-2 dynamic-ellipsis-item">Sandbox</span></a>'
+	sandboxLI.innerHTML += newButtonHTML
+	while(!document.querySelector(".left-col-list")) {
+		await new Promise(r => setTimeout(r, 10));
+	}
+	menu = document.getElementsByClassName('left-col-list')[0]
+	if (tradeOffersPage) {
+		menu.insertBefore(offerLI, menu.childNodes[7])
+	}
+	if (sandbox) {
+		menu.insertBefore(sandboxLI, menu.childNodes[5])
+	}
+	for (i = 0; i < document.getElementsByClassName('left-col-list')[0].getElementsByTagName('li').length; i++) {
+		listItem = document.getElementsByClassName('left-col-list')[0].getElementsByTagName('li')[i]
+		listItem.style.display = "block"
+		if (listItem.getElementsByTagName('a').length > 0) {
+			listItem.getElementsByTagName('a')[0].style.display = ""
+		}
+	}
 	while(!document.querySelector(".navbar-right.rbx-navbar-icon-group")) {
 		await new Promise(r => setTimeout(r, 10));
 	}
+	console.log('loaded')
 	if (await fetchSetting('roproIcon') && document.getElementsByClassName('nav navbar-right rbx-navbar-icon-group').length > 0) {
 		subscription = await fetchSubscription()
 		if (subscription.includes("free")) {
@@ -153,26 +179,6 @@ async function insertMenuItems() {
 		li3.addEventListener('click', function() {
 			openOptions()
 		})
-	}
-	offerLI = document.createElement('li')
-	newButtonHTML = '<a class="sandbox-icon dynamic-overflow-container text-nav" href="/offers" id="nav-inventory"><div><span style="transform:scale(1.2);" class="new-menu-icon icon-nav-trade"></span></div><span class="font-header-2 dynamic-ellipsis-item">Trade Offers</span></a>'
-	offerLI.innerHTML += newButtonHTML
-	sandboxLI = document.createElement('li')
-	newButtonHTML = '<a class="offers-icon dynamic-overflow-container text-nav" href="/sandbox" id="nav-inventory"><div><span class="new-menu-icon icon-nav-charactercustomizer"></span></div><span class="font-header-2 dynamic-ellipsis-item">Sandbox</span></a>'
-	sandboxLI.innerHTML += newButtonHTML
-	while(!document.querySelector(".left-col-list")) {
-		await new Promise(r => setTimeout(r, 250));
-	}
-	menu = document.getElementsByClassName('left-col-list')[0]
-	if (await fetchSetting('tradeOffersPage')) {
-		menu.insertBefore(offerLI, menu.childNodes[7])
-	}
-	if (await fetchSetting('sandbox')) {
-		menu.insertBefore(sandboxLI, menu.childNodes[5])
-	}
-	for (i = 0; i < document.getElementsByClassName('left-col-list')[0].getElementsByTagName('li').length; i++) {
-		listItem = document.getElementsByClassName('left-col-list')[0].getElementsByTagName('li')[i]
-		listItem.style.display = "block"
 	}
 	while(!document.querySelector(".nav-settings-icon")) {
 		await new Promise(r => setTimeout(r, 250));

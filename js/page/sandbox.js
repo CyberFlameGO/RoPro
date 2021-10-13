@@ -611,20 +611,21 @@ async function createOutfit(name) {
 	}
 }
 
-class paidList {
-	paidItems
-	constructor() {
-		this.paidItems = []
+const paidList = () => {
+	let paidItems = []
+	const addPaidItem = (item) => {
+		paidItems.push(item)
 	}
-	addPaidItem(item) {
-		this.paidItems.push(item)
+	const getPaidItems = () => {
+		return paidItems
 	}
-	getPaidItems() {
-		return this.paidItems
+	return {
+		addPaidItem,
+		getPaidItems
 	}
 }
 
-var paidItemsList = new paidList()
+const paidItemsList = paidList()
 
 function createItem(name, assetId, price, limited, limitedU, itemType, thumbnail) {
 	li = document.createElement('li')
