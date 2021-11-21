@@ -40,7 +40,6 @@ var sandboxHTML = `
 	<a style="display:inline-block;" class="btn-primary-md ng-binding upgradeButtonText" target="_blank" href="https://ropro.io#upgrade-standard">Upgrade</a> </div>
 	<div style="pointer-events: none;position:relative;display:inline-block;float:left;max-height:610px;" id = "maincontent">
 		<div style="pointer-events:initial;position:relative;width:970px;z-index:1;" class="sandbox-frame" id="sandboxFrame">
-			<iframe class="sandbox-iframe" style="z-index:1;position:absolute;display:none;width:970px;" id="loaderView" src="https://ropro.io/3dviewer/?load"></iframe>
 			<iframe class="sandbox-iframe" style="z-index:1;" id="sandboxView" src="https://ropro.io/3dviewer/?load"></iframe>
 			<span id="fullscreenToggle" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'" style="opacity:0.5;position:absolute;bottom:10px;right:10px;z-index:100;width:40px;height:37px;" class="sandbox-fullscreen-toggle fullscreen toggle-three-dee btn-control btn-control-small ng-binding"><img id="fullscreenImage" src="https://ropro.io/images/fullscreen_0.png" style="height:20px;margin:-10px;" onclick=""></span>
 			<div style="position: absolute; bottom: 10px; left: 10px; z-index: 100; " class="avatar-type-toggle pill-toggle ng-scope" data-toggle="tooltip" title="Switch between classic R6 avatar and more expressive next generation R15 avatar"> <input type="radio" id="radio-R6" value="R6" class="ng-pristine ng-untouched ng-valid ng-not-empty" name="15"> <label for="radio-R6">R6</label> <input type="radio" id="radio-R15" value="R15" class="ng-pristine ng-untouched ng-valid ng-not-empty" name="16"> <label for="radio-R15">R15</label> </div>
@@ -1015,6 +1014,7 @@ var userID;
 
 async function loadCurrentlyWearing() {
 	userID = await getStorage("rpUserID")
+	console.log(userID)
 	document.getElementById('sandboxView').src = "https://ropro.io/sandbox_test/?user=" + userID + "&background=" + background
 	currentlyWearing = await fetchCurrentlyWearing(userID)
 	playerType = currentlyWearing.playerAvatarType
@@ -1322,10 +1322,10 @@ async function sandboxMain() {
 }
 
 function doMain() {
-	setTimeout(function() {
+	setTimeout(async function() {
 		try{
 			document.getElementsByClassName('content')[0].setAttribute('style','height:2000px;')
-			sandboxMain()
+			await sandboxMain()
 			loadCurrentlyWearing()
 			document.title = 'RoPro Avatar Sandbox'
 		}catch{

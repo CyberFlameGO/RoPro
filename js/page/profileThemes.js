@@ -135,7 +135,8 @@ function addThemeBox() {
 	div = document.createElement('div')
 	div.setAttribute('id', 'profileThemesSelectorBox')
 	div.innerHTML += profileThemeBoxHTML
-	profileContainer.childNodes[0].insertBefore(div, profileHeader.nextElementSibling)
+	console.log(profileContainer.childNodes[0])
+	profileHeader.parentNode.insertBefore(div, profileHeader.nextElementSibling)
 	document.getElementById('saveTheme').addEventListener("click", async function(){
 		if (this.innerHTML == chrome.i18n.getMessage("SaveTheme")) {
 			responseElement = document.getElementById('themeResponseText').innerHTML = ""

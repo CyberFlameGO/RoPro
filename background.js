@@ -1250,8 +1250,8 @@ function loadToken() {
 				url:'https://roblox.com',
 				type:'GET',
 				success: function(data) {
-					token = data.split('data-token=')[1].split(">")[0].replace('"', '').replace('"', '')
-					restrictSettings = !data.includes('data-isunder13=false')
+					token = data.split('data-token=')[1].split(">")[0].replace('"', '').replace('"', '').split(" ")[0]
+					restrictSettings = !(data.includes('data-isunder13=false') || data.includes('data-isunder13="false"') || data.includes('data-isunder13=\'false\''))
 					myToken = token
 					chrome.storage.sync.set({'token': myToken})
 					chrome.storage.sync.set({'restrictSettings': restrictSettings})
@@ -1262,7 +1262,7 @@ function loadToken() {
 					url:'https://roblox.com/home',
 					type:'GET',
 					success: function(data) {
-						token = data.split('data-token=')[1].split(">")[0].replace('"', '').replace('"', '')
+						token = data.split('data-token=')[1].split(">")[0].replace('"', '').replace('"', '').split(" ")[0]
 						restrictSettings = !data.includes('data-isunder13=false')
 						myToken = token
 						chrome.storage.sync.set({'token': token})
@@ -1274,7 +1274,7 @@ function loadToken() {
 						url:'https://www.roblox.com/home',
 						type:'GET',
 						success: function(data) {
-							token = data.split('data-token=')[1].split(">")[0].replace('"', '').replace('"', '')
+							token = data.split('data-token=')[1].split(">")[0].replace('"', '').replace('"', '').split(" ")[0]
 							restrictSettings = !data.includes('data-isunder13=false')
 							myToken = token
 							chrome.storage.sync.set({'token': token})
@@ -1286,7 +1286,7 @@ function loadToken() {
 							url:'https://web.roblox.com/home',
 							type:'GET',
 							success: function(data) {
-								token = data.split('data-token=')[1].split(">")[0].replace('"', '').replace('"', '')
+								token = data.split('data-token=')[1].split(">")[0].replace('"', '').replace('"', '').split(" ")[0]
 								restrictSettings = !data.includes('data-isunder13=false')
 								myToken = token
 								chrome.storage.sync.set({'token': token})

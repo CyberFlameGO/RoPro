@@ -851,7 +851,7 @@ function addServerInviteButton(elem, serverid, placeid) {
 		div = document.createElement('div')
 		div.innerHTML = serverInviteButtonHTML
 		button = div.childNodes[0]
-		elem.getElementsByClassName('rbx-friends-game-server-join')[0].style.width = "84%"
+		elem.getElementsByClassName('rbx-friends-game-server-join')[0].style.width = "81%"
 		elem.getElementsByClassName('rbx-friends-game-server-details')[0].appendChild(button)
 		button.addEventListener('click', function(event) {
 			createInviteLink(this, this.getAttribute('data-serverid'), this.getAttribute('data-placeid'))
@@ -862,7 +862,7 @@ function addServerInviteButton(elem, serverid, placeid) {
 		div = document.createElement('div')
 		div.innerHTML = serverInviteButtonHTML
 		button = div.childNodes[0]
-		elem.getElementsByClassName('rbx-game-server-join')[0].style.width = "84%"
+		elem.getElementsByClassName('rbx-game-server-join')[0].style.width = "81%"
 		elem.getElementsByClassName('rbx-game-server-details')[0].appendChild(button)
 		button.addEventListener('click', function(event) {
 			createInviteLink(this, this.getAttribute('data-serverid'), this.getAttribute('data-placeid'))
