@@ -2264,7 +2264,12 @@ function connect(host) {
 		console.log(event)
 		try {
 			var notification = JSON.parse(event.data);
-			handleNotification(notification)
+			var check = (JSON.stringify(notification))
+			if (check == '{"type":"connected","subject":"Connection Failed","message":"Please make sure your subscription key and associated user is correct. If this continues, contact RoPro Support."}') {
+				console.log("Websocket attempted to send Connection Failed, blocked notification!")
+			} else {
+				handleNotification(notification)
+			}
 		} catch(err) {
 			console.log("Notification Error.")
 		}
