@@ -2236,74 +2236,74 @@ function handleNotification(notification) {
 
 //WebSocket logic to listen for incoming notifications
 
-var websocket;
+// var websocket;
 
-async function createWebSocketConnection() {
-    if((websocket == null || websocket == undefined) && 'WebSocket' in window && await loadSettings("dealNotifier")){
-		subscriptionKey = await getStorage("subscriptionKey");
-		userID = await getStorage("rpUserID");
-		connect("ws://deals.ropro.io:8880?subscriptionKey=" + subscriptionKey + "&userID=" + userID);
-    }
-}
+// async function createWebSocketConnection() {
+//     if((websocket == null || websocket == undefined) && 'WebSocket' in window && await loadSettings("dealNotifier")){
+// 		subscriptionKey = await getStorage("subscriptionKey");
+// 		userID = await getStorage("rpUserID");
+// 		connect("ws://deals.ropro.io:8880?subscriptionKey=" + subscriptionKey + "&userID=" + userID);
+//     }
+// }
 
 //Create a websocket connection to listen for notifications.
-function connect(host) {
-    if (websocket === undefined) {
-        websocket = new WebSocket(host);
-		console.log(websocket)
-    }
+// function connect(host) {
+//     if (websocket === undefined) {
+//         websocket = new WebSocket(host);
+// 		console.log(websocket)
+//     }
 
-    websocket.onopen = function() {
-		console.log("opened")
-/*         chrome.storage.local.get(["rpUserID"], function(user) {
-            websocket.send(JSON.stringify({userLoginId: user}));
-        }); */
-    };
+//     websocket.onopen = function() {
+// 		console.log("opened")
+// /*         chrome.storage.local.get(["rpUserID"], function(user) {
+//             websocket.send(JSON.stringify({userLoginId: user}));
+//         }); */
+//     };
 
-    websocket.onmessage = function (event) {
-		console.log(event)
-		try {
-			var notification = JSON.parse(event.data);
-			var check = (JSON.stringify(notification))
-			if (check == '{"type":"connected","subject":"Connection Failed","message":"Please make sure your subscription key and associated user is correct. If this continues, contact RoPro Support."}') {
-				console.log("Websocket attempted to send Connection Failed, blocked notification!")
-			} else {
-				handleNotification(notification)
-			}
-		} catch(err) {
-			console.log("Notification Error.")
-		}
-    };
+//     websocket.onmessage = function (event) {
+// 		console.log(event)
+// 		try {
+// 			var notification = JSON.parse(event.data);
+// 			var check = (JSON.stringify(notification))
+// 			if (check == '{"type":"connected","subject":"Connection Failed","message":"Please make sure your subscription key and associated user is correct. If this continues, contact RoPro Support."}') {
+// 				console.log("Websocket attempted to send Connection Failed, blocked notification!")
+// 			} else {
+// 				handleNotification(notification)
+// 			}
+// 		} catch(err) {
+// 			console.log("Notification Error.")
+// 		}
+//     };
 
-    //If the websocket is closed wait 5 seconds then create new connection
-    websocket.onclose = function() {
-		console.log("CLOSED")
-        websocket = undefined;
-		setTimeout(function() {
-			createWebSocketConnection();
-		}, 5000)
-    };
-};
+//     //If the websocket is closed wait 5 seconds then create new connection
+//     websocket.onclose = function() {
+// 		console.log("CLOSED")
+//         websocket = undefined;
+// 		setTimeout(function() {
+// 			createWebSocketConnection();
+// 		}, 5000)
+//     };
+// };
 
 //Close the websocket connection
-function closeWebSocketConnection() {
-    if (websocket != null || websocket != undefined) {
-        websocket.close();
-        websocket = undefined;
-    }
-}
+// function closeWebSocketConnection() {
+//     if (websocket != null || websocket != undefined) {
+//         websocket.close();
+//         websocket = undefined;
+//     }
+// }
 
 createWebSocketConnection();
 checkDealSettings();
 setInterval(async function() {
 	subscriptionLevel = await subscriptionManager.getSubscription()
 	setStorage("rpSubscription", subscriptionLevel)
-	if (await loadSettings("dealNotifier")) {
-		checkDealSettings();
-		createWebSocketConnection();
-	} else {
-		closeWebSocketConnection();
-	}
+	// if (await loadSettings("dealNotifier")) {
+	// 	checkDealSettings();
+	// 	createWebSocketConnection();
+	// } else {
+	// 	closeWebSocketConnection();
+	// }
 }, 30000)
 
 setInterval(function(){
