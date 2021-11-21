@@ -1,7 +1,9 @@
 
-# RoPro
+# RoPro v1.2.7.4
 
-This project is a fork of RoPro v1.2, giving you most of the features for free.
+This project is a fork of RoPro giving you most of the features for free.
+
+
 
 
 
