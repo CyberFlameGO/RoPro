@@ -1,6 +1,6 @@
 /**
 
-RoPro (https://ropro.io) v1.2
+RoPro (https://ropro.io) v1.3
 
 RoPro was wholly designed and coded by:
                                
@@ -693,7 +693,7 @@ tabHTML = `
 <div id="navbar-universal-search" style="margin-top:10px;margin-right:14px;float:right;width:680px;" role="search">
    <div class="search-container">
       <div class="input-group">
-         <input style="width:530px;" class="form-control input-field search-input sandbox-search" placeholder="Search" maxlength="50" ng-keypress="onKeywordKeypress($event, true)" ng-model="searchLayout.keyword"> 
+         <input style="width:530px;unicode-bidi:bidi-override;direction:LTR;" class="form-control input-field search-input sandbox-search" placeholder="Search" maxlength="50" ng-keypress="onKeywordKeypress($event, true)" ng-model="searchLayout.keyword"> 
          <div style="width:150px;" class="input-group-btn">
             <button style="height:38px;" type="button" class="input-dropdown-btn category-options ng-scope"> <span style="font-size:13px;" class="text-overflow rbx-selection-label ng-binding">${stripTags(firstTab)}</span> <span class="icon-down-16x16"></span> </button> 
             <ul page="0" style="width:150px;display:block;" class="dropdown_menu dropdown_menu-4 dropdown-menu dropdown-custom">

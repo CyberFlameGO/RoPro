@@ -73,7 +73,7 @@ function stripTags(s) {
  }
 
 async function addEmbeds(sectionContent) {
-	if (document.getElementsByClassName('social-link-icon Discord').length > 0 && await fetchSetting("groupDiscord")) {
+	/**if (document.getElementsByClassName('social-link-icon Discord').length > 0 && await fetchSetting("groupDiscord")) {
 		discordUrl = document.getElementsByClassName('social-link-icon Discord')[0].parentNode.href
 		discordID = await fetchDiscordID(discordUrl)
 		if (isNormalInteger(discordID)) {
@@ -82,12 +82,12 @@ async function addEmbeds(sectionContent) {
 			div.innerHTML = discordFrameHTML
 			sectionContent.appendChild(div)
 		}
-	}
+	}**/
 	if (document.getElementsByClassName('social-link-icon Twitter').length > 0 && await fetchSetting("groupTwitter")) {
 		twitterUrl = document.getElementsByClassName('social-link-icon Twitter')[0].parentNode.href
 		twitterProfile = twitterUrl.split('twitter.com/')[1]
 		div = document.createElement('div')
-		twitterFrameHTML = `<iframe src="https://ropro.io/twitterFrame.php?account=${stripTags(twitterProfile)}" width="342" height="500" allowtransparency="true" frameborder="0" style="position:absolute;right:-333px;top:510px;" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>`
+		twitterFrameHTML = `<iframe src="https://ropro.io/twitterFrame.php?account=${stripTags(twitterProfile)}" width="342" height="1000" allowtransparency="true" frameborder="0" style="position:absolute;right:-333px;top:0px;" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>`
 		div.innerHTML = twitterFrameHTML
 		sectionContent.appendChild(div)
 	}

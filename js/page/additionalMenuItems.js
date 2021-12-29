@@ -1,6 +1,6 @@
 /**
 
-RoPro (https://ropro.io) v1.2
+RoPro (https://ropro.io) v1.3
 
 RoPro was wholly designed and coded by:
                                
@@ -174,7 +174,7 @@ async function insertMenuItems() {
 		li3 = document.createElement('li')
 		li3.style.marginLeft = "6px"
 		li3.classList.add('buttontooltip')
-		li3.innerHTML = '<img class="ropro-icon" style="margin-top:6px;margin-left:0px;width:30px;" src="https://ropro.io/images/' + stripTags(subscriptionPrefix) + '_icon_shadow.png"><span style="margin-top:-5.5px;margin-left:3px;top:45px;left:-160px;width:190px;" class="tooltiptext"><p style="color:white;"><b>RoPro v1.2</b></p>' + stripTags(subscriptionName) + ' Active</span>'
+		li3.innerHTML = '<img class="ropro-icon" style="margin-top:6px;margin-left:0px;width:30px;" src="https://ropro.io/images/' + stripTags(subscriptionPrefix) + '_icon_shadow.png"><span style="margin-top:-5.5px;margin-left:3px;top:45px;left:-160px;width:190px;" class="tooltiptext"><p style="color:white;"><b>RoPro v1.3</b></p>' + stripTags(subscriptionName) + ' Active</span>'
 		document.getElementsByClassName('nav navbar-right rbx-navbar-icon-group')[0].appendChild(li3)
 		li3.addEventListener('click', function() {
 			openOptions()

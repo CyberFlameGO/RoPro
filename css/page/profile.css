@@ -4,3 +4,32 @@
 .ropro-user-info:hover .ropro-info-card{
 	display:block!important;
 }
+
+.ropro-offline .icon-offline-outer {
+	transition: all 0.25s;
+}
+
+.ropro-offline .ropro-offline-text {
+	width: 0px!important;
+	opacity: 0;
+	transition: all 0.2s;
+}
+
+.ropro-offline:hover .icon-offline-outer {
+	width: 150px!important;
+	transition: all 0.25s;
+	margin-right: -50px!important;
+}
+
+.ropro-offline:hover .icon-offline-inner {
+	width: 133.5px!important;
+	transform: scaleY(1.5) scaleX(1.05);
+	transition: all 0.25s;
+}
+
+.ropro-offline:hover .ropro-offline-text {
+	width: 133px!important;
+	text-align: center;
+	opacity: 1;
+	transition: all 0.25s;
+}

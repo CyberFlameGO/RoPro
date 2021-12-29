@@ -1,6 +1,6 @@
 /**
 
-RoPro (https://ropro.io) v1.2
+RoPro (https://ropro.io) v1.3
 
 RoPro was wholly designed and coded by:
                                
@@ -36,7 +36,7 @@ https://ropro.io/privacy-policy
 
 genreDropdownHTML = `<div id = "genreDropdown" style="overflow:visible;margin-top:-5px;margin-left:0px;float:left;width:150px;margin-left:10px;" class="input-group-btn group-dropdown">
 <button type="button" style="border-radius:0px;border:none;" class="input-dropdown-btn" data-toggle="dropdown" aria-expanded="false"> 
-<span id="genreLabel" class="rbx-selection-label ng-binding" style="width:110px;overflow:hidden;" ng-bind="layout.selectedTab.label">Game Genre</span> 
+<span id="genreLabel" class="rbx-selection-label ng-binding" style="width:110px;overflow:hidden;" ng-bind="layout.selectedTab.label">Genre Filter</span> 
 <span class="icon-down-16x16"></span></button>
 <ul style="max-height:1000px;" id="genreOptions" data-toggle="dropdown-menu" class="dropdown-menu" role="menu"> 
 </ul></div>`
@@ -344,7 +344,7 @@ function filterLikeRatio(ratio) {
 				if (gameRatio < ratio) {
 					gameCard.style.display = "none"
 				} else {
-					if (currentGames == null || currentGames.includes(gameCard)) {
+					if (currentGames.length == 0 || currentGames.includes(gameCard)) {
 						gameCard.style.display = "inline-block"
 					}
 				}
@@ -372,6 +372,9 @@ async function doBatch() {
 	if (typeof cards != "undefined" && cards.length == 0) {
 		cards = $(".hover-game-tile:not('.checked')")
 	}
+	if (typeof cards != "undefined" && cards.length == 0) {
+		cards = $(".game-card-container:not('.checked')")
+	}
 	for (i = 0; i < Math.min(cards.length, 100); i++) {
 		card = cards.get(i)
 		gameBatch.push(card)
@@ -398,8 +401,10 @@ async function doBatch() {
 			gameDetail = gameDetails[i]
 			allGames[gameDetail.id.toString()].push(gameDetail)
 		}
-		filterGenres()
-		filterLikeRatio(document.getElementById("likeRatio").value)
+		if (genreFilter != null) {
+			filterGenres()
+		}
+		//filterLikeRatio(document.getElementById("likeRatio").value)
 		if (customFilter != null) {
 			filterCustom(customFilter)
 		}
@@ -423,9 +428,10 @@ var inserted = false
 
 document.getElementsByTagName('body')[0].style.minHeight="1000px"
 
-setInterval(function(){
+const initialInterval = setInterval(function(){
 	//if (window.location.href.includes("sortName")) {
-		if (document.getElementById("genreDropdown") == null && inserted == false) { //First page load
+		if (document.getElementById("genreDropdown") == null && inserted == false && (typeof $('.container-header.games-filter-changer h3').get(0) != 'undefined' || typeof $('.search-result-header').get(0) != 'undefined' || typeof $('.game-sort-detail-container').get(0) != 'undefined')) { //First page load
+			clearInterval(initialInterval)
 			containers = document.getElementsByClassName('games-list-container is-windows')
 			if (containers.length > 0) {
 				link = containers[0].childNodes[0]
@@ -436,7 +442,10 @@ setInterval(function(){
 			async function addDropdowns() {
 				firstHeader = $('.container-header.games-filter-changer h3').get(0)
 				if (typeof firstHeader == "undefined") {
-					firstHeader = document.getElementsByClassName('search-result-header')[0]
+					firstHeader = $('.search-result-header h3').get(0)
+				}
+				if (typeof firstHeader == "undefined") {
+					firstHeader = $('.game-sort-detail-container h3').get(0)
 				}
 				contentDiv = document.createElement("div")
 				contentDiv.style.position = "static"
@@ -458,15 +467,19 @@ setInterval(function(){
 					$('.search-result-header').get(0).parentNode.insertBefore(document.createElement("br"), $('.search-result-header').get(0))
 					$('.search-result-header').get(0).parentNode.insertBefore(document.createElement("br"), $('.search-result-header').get(0))
 				}
-				if (await fetchSetting("genreFilters")) {
+				var genreFiltersSetting = await fetchSetting("genreFilters")
+				var moreGameFiltersSetting = await fetchSetting("moreGameFilters")
+				var gameLikeRatioFilterSetting = await fetchSetting("gameLikeRatioFilter")
+				if (document.getElementById('randomGameButton') != null) {
+					document.getElementById('randomGameButton').style.display = "block"
+				}
+				if (genreFiltersSetting) {
 					if (document.getElementById('genreDropdown') == null) {
-						if (mainGamesPage) {
+						if (mainGamesPage || document.getElementsByClassName('game-sort-detail-container').length > 0) {
 							contentDiv.innerHTML += genreDropdownHTML
 						} else {
 							if (document.getElementsByClassName('search-result-header').length > 0) {
 								contentDiv.innerHTML += genreDropdownHTML
-							} else {
-								document.getElementsByClassName('container-header games-filter-changer')[0].innerHTML += genreDropdownHTML
 							}
 						}
 					}
@@ -475,25 +488,21 @@ setInterval(function(){
 					div.setAttribute("id", "genreDropdown")
 					contentDiv.appendChild(div)
 				}
-				if (await fetchSetting("moreGameFilters") && document.getElementById('customDropdown') == null) {
-					if (mainGamesPage) {
+				if (moreGameFiltersSetting && document.getElementById('customDropdown') == null) {
+					if (mainGamesPage || document.getElementsByClassName('game-sort-detail-container').length > 0) {
 						contentDiv.innerHTML += customDropdownHTML
 					} else {
 						if (document.getElementsByClassName('search-result-header').length > 0) {
 							contentDiv.innerHTML += customDropdownHTML
-						} else {
-							document.getElementsByClassName('container-header games-filter-changer')[0].innerHTML += customDropdownHTML
 						}
 					}
 				}
-				if (await fetchSetting("gameLikeRatioFilter") && document.getElementById('likeRatio') == null) {
-					if (mainGamesPage) {
+				if (gameLikeRatioFilterSetting && document.getElementById('likeRatio') == null) {
+					if (mainGamesPage || document.getElementsByClassName('game-sort-detail-container').length > 0) {
 						contentDiv.innerHTML += likeRatioSliderHTML
 					} else {
 						if (document.getElementsByClassName('search-result-header').length > 0) {
 							contentDiv.innerHTML += likeRatioSliderHTML
-						} else {
-							document.getElementsByClassName('container-header games-filter-changer')[0].innerHTML += likeRatioSliderHTML
 						}
 					}
 					$('input[type="range"]:not("#choicesRatio")').on("change mousemove", function () {
@@ -517,8 +526,11 @@ setInterval(function(){
 				}
 			}, 1000)
 		}
-		doBatch()
 	//}
+}, 10)
+
+setInterval(function() {
+	doBatch()
 }, 1000)
 
 function addCommas(nStr){

@@ -96,3 +96,7 @@
 .trade-with-user:hover .disabled-trades {
 	display:block!important;
 }
+
+.light-theme .ropro-special-icon {
+	filter: invert(0.7)!important;
+}

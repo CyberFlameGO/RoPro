@@ -8,7 +8,7 @@
 	"icons": { "16": "icon16.png",
 		   "48": "icon48.png",
 		  "128": "icon128.png" },
-	"version": "1.2.7.4",
+	"version": "1.3.0",
 	"permissions": [
 		"notifications",
 		"storage",
@@ -49,7 +49,8 @@
 			],
 			"css": [
 				"/css/page/profile.css",
-				"/css/page/trade.css"
+				"/css/page/trade.css",
+				"/css/page/profileThemes.css"
 			],
 			"matches": [
 				"*://*.roblox.com/users/*"
@@ -103,6 +104,9 @@
 			"js": [
 				"/js/libraries/jquery-3.5.1.min.js",
 				"/js/page/quickSearch.js"
+			],
+			"css": [
+				"/css/page/quickSearch.css"
 			],
 			"matches": [
 				"*://*.roblox.com/*"

@@ -1,6 +1,6 @@
 /**
 
-RoPro (https://ropro.io) v1.2
+RoPro (https://ropro.io) v1.3
 
 RoPro was wholly designed and coded by:
                                
@@ -190,9 +190,59 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse)
 				}
 				getServer()
 				break;
+		case "ServerFilterReverseOrder":
+				async function getServerFilterReverseOrder(){
+					var serverList = await serverFilterReverseOrder(request.gameID)
+					sendResponse(serverList)
+				}
+				getServerFilterReverseOrder()
+				break;
+		case "ServerFilterNotFull":
+				async function getServerFilterNotFull(){
+					var serverList = await serverFilterNotFull(request.gameID)
+					sendResponse(serverList)
+				}
+				getServerFilterNotFull()
+				break;
+		case "ServerFilterRandomShuffle":
+				async function getServerFilterRandomShuffle(){
+					var serverList = await serverFilterRandomShuffle(request.gameID)
+					sendResponse(serverList)
+				}
+				getServerFilterRandomShuffle()
+				break;
+		case "ServerFilterRegion":
+				async function getServerFilterRegion(){
+					var serverList = await serverFilterRegion(request.gameID, request.serverLocation)
+					sendResponse(serverList)
+				}
+				getServerFilterRegion()
+				break;
+		case "ServerFilterBestConnection":
+				async function getServerFilterBestConnection(){
+					var serverList = await serverFilterBestConnection(request.gameID)
+					sendResponse(serverList)
+				}
+				getServerFilterBestConnection()
+				break;
+		case "ServerFilterNewestServers":
+			async function getServerFilterNewestServers(){
+				var serverList = await serverFilterNewestServers(request.gameID)
+				sendResponse(serverList)
+			}
+			getServerFilterNewestServers()
+			break;
+		case "ServerFilterOldestServers":
+			async function getServerFilterOldestServers(){
+				var serverList = await serverFilterOldestServers(request.gameID)
+				sendResponse(serverList)
+			}
+			getServerFilterOldestServers()
+			break;
 		case "GetMaxPlayerIndex":
 				async function getIndex(){
-					index = await maxPlayerCount(request.gameID, request.count)
+					//index = await maxPlayerCount(request.gameID, request.count)
+					index = await binarySearchServers(request.gameID, request.count)
 					sendResponse(index)
 				}
 				getIndex()
@@ -251,7 +301,7 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse)
 		case "GetSubscription":
 			async function doGetSubscription() {
 				subscription = await getStorage("rpSubscription")
-				sendResponse("ultra_tier")
+				sendResponse(subscription)
 			}
 			doGetSubscription()
 			break;
@@ -397,7 +447,10 @@ var defaultSettings = {
 	livePlayers: true,
 	liveVisits: true,
 	moreGameFilters: true,
+	additionalServerInfo: true,
+	moreServerFilters: true,
 	serverInviteLinks: true,
+	serverFilters: true,
 	mostRecentServer: true,
 	randomServer: true,
 	tradeAge: true,
@@ -405,6 +458,7 @@ var defaultSettings = {
 	itemInfoCard: true,
 	ownerHistory: true,
 	profileThemes: true,
+	lastOnline: true,
 	profileStatus: true,
 	profileValue: true,
 	projectedWarningItemPage: true,
@@ -445,13 +499,15 @@ var defaultSettings = {
 	underOverRAP: true,
 	winLossDisplay: true,
 	mostPlayedGames: true,
+	experienceQuickSearch: true,
 	avatarEditorChanges: true,
 	playtimeTracking: true,
 	activeServerCount: true,
 	morePlaytimeSorts: true,
 	roproBadge: true,
 	mutualFriends: true,
-	moreMutuals: true
+	moreMutuals: true,
+	animatedProfileThemes: true
 }
 
 async function initializeSettings() {
@@ -481,69 +537,535 @@ async function initializeSettings() {
 }
 initializeSettings()
 
-async function maxPlayerCount(gameID, count) {
-	if(await loadSettings("serverSizeSort")) {
-		return new Promise(resolve => {
-			$.get("https://www.roblox.com/games/getgameinstancesjson?placeId=" + gameID + "&startIndex=0", function(data){
-				var i = 0;
-				var j = data.TotalCollectionSize;
-				var done = false;
-				var closest = 9999;
-				var closestIndex = 0;
-				var lastIndex = -1;
-				for (k = 0; k < data.Collection.length; k++) {
-					if (data.Collection[k].CurrentPlayers.length <= count) {
-						resolve(k)
-					}
-				}
-				function getServer(index) { //Binary search algorithm to search servers by max player count - O(log(n))
-					if (index == lastIndex) {
-						resolve(closestIndex)
-					} else {
-						lastIndex = index
-						$.get("https://www.roblox.com/games/getgameinstancesjson?placeId=" + gameID + "&startIndex=" + index, function(data){
-							min = 9999
-							if (data.Collection.length > 0) {
-								for (k = 0; k < data.Collection.length; k++) {
-									collection = data.Collection[k]
-									if (Math.abs((collection.CurrentPlayers.length - count)) < closest) {
-										closest = Math.abs((collection.CurrentPlayers.length - count))
-										closestIndex = index + k + 1
-									}
-									if (collection.CurrentPlayers.length == count) {
-										resolve(index + k)
-										done = true
-									} else {
-										min = Math.min(collection.CurrentPlayers.length, min)
-									}
-								}
-							}
-							if (done == false) {
-								if (min == 9999 || min < count) { //Gotta check larger servers
-									j = index
-									if (j - 1 > i) {
-										getServer(Math.floor((j + i) / 2) + 1)
-									} else {
-										resolve(closestIndex)
-									}
-								} else { //Gotta check smaller servers
-									i = index
-									if (i + 1 < j) {
-										getServer(Math.floor((j + i) / 2) - 1)
-									} else {
-										resolve(closestIndex)
-									}
-								}
-							}
-						})
-					}
-				}
-				getServer(Math.floor((j + i) / 2))
+async function binarySearchServers(gameID, playerCount, maxLoops = 100) {
+	function getServer(gameIndex) {
+		return new Promise(resolve2 => {
+			$.get("https://www.roblox.com/games/getgameinstancesjson?placeId=" + gameID + "&startIndex=" + gameIndex, function(data){
+				resolve2(data.Collection);
+			}).fail(async function() {
+				var result = await getServer(gameIndex)
+				resolve2(result)
 			})
 		})
-	} else {
-		return 0
 	}
+	return new Promise(resolve => {
+		var closest = [999999, 0]
+		var idx = 0
+		var numLoops = 0
+		$.get("https://www.roblox.com/games/getgameinstancesjson?placeId=" + gameID + "&startIndex=0", async function(data){
+			for (var i = 0; i < data.Collection.length; i++) {
+				if (data.Collection[i].CurrentPlayers.length < playerCount) {
+					resolve(Math.max(i, 0))
+					return
+				} else if (data.Collection[i].CurrentPlayers.length == playerCount) {
+					resolve(i)
+					return
+				}
+			}
+			async function binarySearch(l, r, x) {
+				numLoops++
+				if (r >= l && numLoops < maxLoops) {
+					var mid = l + Math.floor((r - l) / 2)
+					var result = await getServer(mid)
+					if (result.length > 0) {
+						min = result[0].CurrentPlayers.length
+						minIndex = mid
+						for (var i = 0; i < result.length; i++) {
+							if (result[i].CurrentPlayers.length < min) {
+								min = result[i].CurrentPlayers.length
+								minIndex = mid + i
+							}
+						}
+						if ((closest[0] > min && min >= x)) {
+							closest[0] = min
+							closest[1] = minIndex
+						}
+						if (min == x) {
+							return closest[1]
+						} else if (min < x) {
+							return binarySearch(l, mid - 1, x)
+						} else {
+							return binarySearch(mid + 1, r, x)
+						}
+					} else {
+						if (idx > 2) {
+							idx = 0
+							return binarySearch(l, mid - 1, x)
+						} else {
+							idx++
+							return binarySearch(l, r - 1, x)
+						}
+					}
+				} else {
+					return closest[1] + 1
+				}
+			}
+			resolve(await binarySearch(0, data.TotalCollectionSize, playerCount))
+		})
+	})
+}
+
+async function getNumServers(gameID) {
+	return new Promise(resolve => {
+		$.get("https://www.roblox.com/games/getgameinstancesjson?placeId=" + gameID + "&startIndex=0", function(data){
+			resolve(data.TotalCollectionSize)
+		})
+	})
+}
+
+async function maxPlayerCount(gameID, count) {
+	return new Promise(resolve => {
+		$.get("https://www.roblox.com/games/getgameinstancesjson?placeId=" + gameID + "&startIndex=0", function(data){
+			var i = 0;
+			var j = data.TotalCollectionSize;
+			var done = false;
+			var closest = 9999;
+			var closestIndex = 0;
+			var lastIndex = -1;
+			for (k = 0; k < data.Collection.length; k++) {
+				if (data.Collection[k].CurrentPlayers.length <= count) {
+					resolve(k)
+				}
+			}
+			function getServer(index) { //Binary search algorithm to search servers by max player count - O(log(n))
+				if (index == lastIndex) {
+					console.log("resolve-1")
+					resolve(closestIndex)
+				} else {
+					lastIndex = index
+					$.get("https://www.roblox.com/games/getgameinstancesjson?placeId=" + gameID + "&startIndex=" + index, function(data){
+						min = 999999
+						console.log(data.Collection.length)
+						if (data.Collection.length > 0) {
+							for (k = 0; k < data.Collection.length; k++) {
+								collection = data.Collection[k]
+								if (Math.abs((collection.CurrentPlayers.length - count)) < closest) {
+									closest = Math.abs((collection.CurrentPlayers.length - count))
+									closestIndex = index + k + 1
+								}
+								if (collection.CurrentPlayers.length == count) {
+									console.log("resolve0")
+									resolve(index + k)
+									done = true
+									break
+								} else {
+									min = Math.min(collection.CurrentPlayers.length, min)
+								}
+							}
+						}
+						if (done == false) {
+							if (min == 999999 || min < count) { //Gotta check larger servers
+								j = index
+								if (j - 1 > i) {
+									getServer(Math.floor((j + i) / 2) - 1)
+								} else {
+									console.log("resolve1")
+									resolve(closestIndex)
+								}
+							} else { //Gotta check smaller servers
+								i = index
+								if (i + 1 < j) {
+									getServer(Math.floor((j + i) / 2) + 1)
+								} else {
+									console.log("resolve2")
+									resolve(closestIndex)
+								}
+							}
+						}
+					}).fail(function() {
+						console.log("FAIL")
+						setTimeout(function() {
+							getServer(index)
+						}, 250)
+					})
+				}
+			}
+			getServer(Math.floor((j + i) / 2))
+		})
+	})
+}
+
+async function serverFilterReverseOrder(gameID) {
+	return new Promise(resolve => {
+		async function doReverseOrder(gameID, resolve) {
+			var serverArray = []
+			var idx = 0
+			var startIndex = await maxPlayerCount(gameID, 1)
+			startIndex = Math.max(startIndex - 10, 0)
+			function getServer(gameIndex) {
+				return new Promise(resolve => {
+					$.get("https://www.roblox.com/games/getgameinstancesjson?placeId=" + gameID + "&startIndex=" + gameIndex, function(data){
+						for (j = data.Collection.length - 1; j >= 0; j--) {
+							serverArray.push(data.Collection[j]);
+						}
+						resolve();
+					});
+				});
+			}
+			var promises = []
+			while (idx == 0 || (startIndex != 0 && idx < 10)) {
+				promises.push(getServer(startIndex))
+				idx++
+				startIndex = Math.max(startIndex - 10, 0)
+			}
+			Promise.all(promises).then((values) => {
+				resolve(serverArray)
+			})
+		}
+		doReverseOrder(gameID, resolve)
+	})
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+async function serverFilterRandomShuffle(gameID) {
+	return new Promise(resolve => {
+		async function doRandomShuffle(gameID, resolve) {
+			var serverArray = []
+			var idx = 0
+			var startIndex = await binarySearchServers(gameID, 0)
+			startIndex = Math.max(startIndex - 10, 0)
+			function getServer(gameIndex) {
+				return new Promise(resolve => {
+					$.get("https://www.roblox.com/games/getgameinstancesjson?placeId=" + gameID + "&startIndex=" + gameIndex, function(data){
+						for (j = data.Collection.length - 1; j >= 0; j--) {
+							serverArray.push(data.Collection[j]);
+						}
+						resolve();
+					});
+				});
+			}
+			var randomIndexes = []
+			for (var i = 0; i < parseInt(startIndex / 10) + 1; i++) {
+				randomIndexes.push(i)
+			}
+			shuffleArray(randomIndexes)
+			var promises = []
+			for (var i = 0; i < Math.min(randomIndexes.length, 10); i++) {
+				promises.push(getServer(randomIndexes[i] * 10))
+			}
+			Promise.all(promises).then((values) => {
+				shuffleArray(serverArray)
+				resolve(serverArray)
+			})
+		}
+		doRandomShuffle(gameID, resolve)
+	})
+}
+
+async function fetchServerInfo(placeID, servers) {
+	return new Promise(resolve => {
+		$.post({url:"https://ropro.io/api/getServerInfo.php", data: {'placeID':placeID, 'servers': servers}}, 
+			function(data) {
+				resolve(data)
+			}
+		)
+	})
+}
+
+async function fetchServerConnectionScore(placeID, servers) {
+	return new Promise(resolve => {
+		$.post({url:"https://ropro.io/api/getServerConnectionScore.php", data: {'placeID':placeID, 'servers': servers}}, 
+			function(data) {
+				resolve(data)
+			}
+		)
+	})
+}
+
+async function fetchServerAge(placeID, servers) {
+	return new Promise(resolve => {
+		$.post({url:"https://ropro.io/api/getServerAge.php", data: {'placeID':placeID, 'servers': servers}}, 
+			function(data) {
+				resolve(data)
+			}
+		)
+	})
+}
+
+async function serverFilterRegion(gameID, location) {
+	return new Promise(resolve => {
+		async function doRandomShuffle(gameID, resolve) {
+			var initialIndex = await getNumServers(gameID)
+			var serverArray = []
+			var serverList = []
+			var serverSet = {}
+			var idx = 0
+			var startIndex = initialIndex < 500 ? initialIndex : parseInt(initialIndex / 3)
+			startIndex = Math.max(startIndex - 10, 0)
+			function getServer(gameIndex) {
+				return new Promise(resolve => {
+					$.get("https://www.roblox.com/games/getgameinstancesjson?placeId=" + gameID + "&startIndex=" + gameIndex, function(data){
+						for (j = data.Collection.length - 1; j >= 0; j--) {
+							serverArray.push(data.Collection[j]);
+						}
+						resolve();
+					}).fail(function(){
+						resolve();
+					});
+				});
+			}
+			var randomIndexes = []
+			for (var i = 0; i < parseInt(startIndex / 10) + 1; i++) {
+				randomIndexes.push(i)
+			}
+			var totalPages = randomIndexes.length
+			shuffleArray(randomIndexes)
+			function checkIndexes() {
+				var promises = []
+				for (var i = idx; i < Math.min(totalPages + idx, 10 + idx); i++) {
+					promises.push(getServer(randomIndexes[i] * 10))
+				}
+				Promise.all(promises).then((values) => {
+					shuffleArray(serverArray)
+					async function checkLocations(serverArray) {
+						var serversDict = {}
+						for (var i = 0; i < serverArray.length; i++) {
+							serversDict[serverArray[i].Guid] = serverArray[i]
+						}
+						serverInfo = await fetchServerInfo(gameID, Object.keys(serversDict))
+						for (var i = 0; i < serverInfo.length; i++) {
+							if (serverInfo[i].location == location && !(serverInfo[i].server in serverSet)) {
+								serverList.push(serversDict[serverInfo[i].server])
+								serverSet[serverInfo[i].server] = true
+							}
+						}
+						if (serverList.length < 10 && totalPages > idx + 10 && (idx < 50 || (idx < 100 && serverList.length == 0))) {
+							idx += 10
+							serverArray = []
+							checkIndexes()
+						} else {
+							console.log(serverList)
+							resolve(serverList)	
+						}
+					}
+					checkLocations(serverArray)
+				})
+			}
+			checkIndexes()
+		}
+		doRandomShuffle(gameID, resolve)
+	})
+}
+
+async function serverFilterBestConnection(gameID) {
+	return new Promise(resolve => {
+		async function doRandomShuffle(gameID, resolve) {
+			var initialIndex = await getNumServers(gameID)
+			var serverArray = []
+			var serverList = []
+			var serverSet = {}
+			var idx = 0
+			var startIndex = initialIndex
+			startIndex = Math.max(startIndex - 10, 0)
+			function getServer(gameIndex) {
+				return new Promise(resolve => {
+					$.get("https://www.roblox.com/games/getgameinstancesjson?placeId=" + gameID + "&startIndex=" + gameIndex, function(data){
+						for (j = data.Collection.length - 1; j >= 0; j--) {
+							serverArray.push(data.Collection[j]);
+						}
+						resolve();
+					}).fail(function(){
+						resolve();
+					});
+				});
+			}
+			var randomIndexes = []
+			for (var i = 0; i < parseInt(startIndex / 10) + 1; i++) {
+				randomIndexes.push(i)
+			}
+			var totalPages = randomIndexes.length
+			shuffleArray(randomIndexes)
+			function checkIndexes() {
+				var promises = []
+				for (var i = idx; i < Math.min(totalPages, 40); i++) {
+					promises.push(getServer(randomIndexes[i] * 10))
+				}
+				Promise.all(promises).then((values) => {
+					shuffleArray(serverArray)
+					async function checkLocations(serverArray) {
+						var serversDict = {}
+						for (var i = 0; i < serverArray.length; i++) {
+							serversDict[serverArray[i].Guid] = serverArray[i]
+						}
+						serverInfo = await fetchServerConnectionScore(gameID, Object.keys(serversDict))
+						for (var i = 0; i < serverInfo.length; i++) {
+							serversDict[serverInfo[i].server]['score'] = serverInfo[i].score
+							serverList.push(serversDict[serverInfo[i].server])
+						}
+						serverList = serverList.sort(function(a, b) {
+							return ((a['score'] < b['score']) ? -1 : ((a['score'] > b['score']) ? 1 : 0));
+						})
+						resolve(serverList)
+					}
+					checkLocations(serverArray)
+				})
+			}
+			checkIndexes()
+		}
+		doRandomShuffle(gameID, resolve)
+	})
+}
+
+async function serverFilterNewestServers(gameID) {
+	return new Promise(resolve => {
+		async function doRandomShuffle(gameID, resolve) {
+			var initialIndex = await getNumServers(gameID)
+			var serverArray = []
+			var serverList = []
+			var serverSet = {}
+			var idx = 0
+			var startIndex = initialIndex < 500 ? initialIndex : parseInt(initialIndex / 3)
+			startIndex = Math.max(startIndex - 10, 0)
+			function getServer(gameIndex) {
+				return new Promise(resolve => {
+					$.get("https://www.roblox.com/games/getgameinstancesjson?placeId=" + gameID + "&startIndex=" + gameIndex, function(data){
+						for (j = data.Collection.length - 1; j >= 0; j--) {
+							serverArray.push(data.Collection[j]);
+						}
+						resolve();
+					}).fail(function(){
+						resolve();
+					});
+				});
+			}
+			var randomIndexes = []
+			for (var i = 0; i < parseInt(startIndex / 10) + 1; i++) {
+				randomIndexes.push(i)
+			}
+			var totalPages = randomIndexes.length
+			shuffleArray(randomIndexes)
+			function checkIndexes() {
+				var promises = []
+				for (var i = idx; i < Math.min(totalPages, 40); i++) {
+					promises.push(getServer(randomIndexes[i] * 10))
+				}
+				Promise.all(promises).then((values) => {
+					shuffleArray(serverArray)
+					async function checkAge(serverArray) {
+						var serversDict = {}
+						for (var i = 0; i < serverArray.length; i++) {
+							serversDict[serverArray[i].Guid] = serverArray[i]
+						}
+						serverInfo = await fetchServerAge(gameID, Object.keys(serversDict))
+						for (var i = 0; i < serverInfo.length; i++) {
+							serversDict[serverInfo[i].server]['age'] = serverInfo[i].age
+							serverList.push(serversDict[serverInfo[i].server])
+						}
+						serverList = serverList.sort(function(a, b) {
+							return ((a['age'] < b['age']) ? -1 : ((a['age'] > b['age']) ? 1 : 0));
+						})
+						resolve(serverList)
+					}
+					checkAge(serverArray)
+				})
+			}
+			checkIndexes()
+		}
+		doRandomShuffle(gameID, resolve)
+	})
+}
+
+async function serverFilterOldestServers(gameID) {
+	return new Promise(resolve => {
+		async function doRandomShuffle(gameID, resolve) {
+			var initialIndex = await getNumServers(gameID)
+			var serverArray = []
+			var serverList = []
+			var serverSet = {}
+			var idx = 0
+			var startIndex = initialIndex < 500 ? initialIndex : parseInt(initialIndex / 3)
+			startIndex = Math.max(startIndex - 10, 0)
+			function getServer(gameIndex) {
+				return new Promise(resolve => {
+					$.get("https://www.roblox.com/games/getgameinstancesjson?placeId=" + gameID + "&startIndex=" + gameIndex, function(data){
+						for (j = data.Collection.length - 1; j >= 0; j--) {
+							serverArray.push(data.Collection[j]);
+						}
+						resolve();
+					}).fail(function(){
+						resolve();
+					});
+				});
+			}
+			var randomIndexes = []
+			for (var i = 0; i < parseInt(startIndex / 10) + 1; i++) {
+				randomIndexes.push(i)
+			}
+			var totalPages = randomIndexes.length
+			shuffleArray(randomIndexes)
+			function checkIndexes() {
+				var promises = []
+				for (var i = idx; i < Math.min(totalPages, 40); i++) {
+					promises.push(getServer(randomIndexes[i] * 10))
+				}
+				Promise.all(promises).then((values) => {
+					shuffleArray(serverArray)
+					async function checkAge(serverArray) {
+						var serversDict = {}
+						for (var i = 0; i < serverArray.length; i++) {
+							serversDict[serverArray[i].Guid] = serverArray[i]
+						}
+						serverInfo = await fetchServerAge(gameID, Object.keys(serversDict))
+						for (var i = 0; i < serverInfo.length; i++) {
+							serversDict[serverInfo[i].server]['age'] = serverInfo[i].age
+							serverList.push(serversDict[serverInfo[i].server])
+						}
+						serverList = serverList.sort(function(a, b) {
+							return ((a['age'] < b['age']) ? 1 : ((a['age'] > b['age']) ? -1 : 0));
+						})
+						resolve(serverList)
+					}
+					checkAge(serverArray)
+				})
+			}
+			checkIndexes()
+		}
+		doRandomShuffle(gameID, resolve)
+	})
+}
+
+async function serverFilterNotFull(gameID) {
+	return new Promise(resolve => {
+		async function doNotFull(gameID, resolve) {
+			$.get("https://www.roblox.com/games/getgameinstancesjson?placeId=" + gameID + "&startIndex=0", async function(data){
+				var capacity = 0
+				if (data.Collection.length > 0) {
+					capacity = data.Collection[0].Capacity
+				} else {
+					resolve([])
+				}
+				var serverArray = []
+				var startIndex = await maxPlayerCount(gameID, capacity - 1)
+				function getServer(gameIndex) {
+					return new Promise(resolve => {
+						$.get("https://www.roblox.com/games/getgameinstancesjson?placeId=" + gameID + "&startIndex=" + gameIndex, function(data){
+							for (j = 0; j < data.Collection.length; j++) {
+								if (data.Collection[j].CurrentPlayers.length < capacity) {
+									serverArray.push(data.Collection[j]);
+								}
+							}
+							resolve(data.Collection.length);
+						});
+					});
+				}
+				var promises = []
+				for (i = 0; i < 10; i++) {
+					promises.push(getServer(startIndex))
+					startIndex = startIndex + 10
+				}
+				Promise.all(promises).then((values) => {
+					resolve(serverArray)
+				})
+			})
+		}
+		doNotFull(gameID, resolve)
+	})
 }
 
 async function lowPingServers(gameID, startIndex, maxServers) {
@@ -1398,24 +1920,26 @@ setInterval(function() {
 
 const SubscriptionManager = () => {
 	let subscription = fetchSubscription()
-	let date = Date.now() - 70 * 2 * 1000
+	let date = Date.now()
 	function fetchSubscription() {
 		return new Promise(resolve => {
 			async function doGet(resolve) {
 				$.post("https://ropro.io/api/getSubscription.php?key=" + await getStorage("subscriptionKey"), function(data){
 					setStorage("rpSubscription", "ultra_tier")
 					resolve("ultra_tier");
+				}).fail(async function() {
+					resolve("ultra_tier")
 				})
 			}
 			doGet(resolve)
 		})
 	};
 	const resetDate = () => {
-		date = Date.now() - 70 * 3 * 1000
+		date = Date.now() - 70 * 1000
 	};
 	const getSubscription = () => {
 		currSubscription = subscription
-		if (Date.now() >= date + 65 * 3 * 1000) {
+		if (Date.now() >= date + 65 * 1000) {
 			subscription = fetchSubscription()
 			date = Date.now()
 		}
@@ -1483,7 +2007,7 @@ async function loadSettingValidity(setting) {
 	settings = await getStorage('rpSettings')
 	restrictSettings = await getStorage('restrictSettings')
 	restricted_settings = ["linkedDiscord", "gameTwitter", "groupTwitter", "groupDiscord"]
-	standard_settings = ["moreMutuals", "morePlaytimeSorts", "serverSizeSort", "fastestServersSort", "moreGameFilters", "gameLikeRatioFilter", "quickUserSearch", "liveLikeDislikeFavoriteCounters", "sandboxOutfits", "moreTradePanel", "tradeValueCalculator", "tradeDemandRatingCalculator", "tradeItemValue", "tradeItemDemand", "itemPageValueDemand", "tradePageProjectedWarning", "embeddedRolimonsItemLink", "embeddedRolimonsUserLink", "tradeOffersValueCalculator", "winLossDisplay", "underOverRAP"]
+	standard_settings = ["moreMutuals", "animatedProfileThemes", "morePlaytimeSorts", "serverSizeSort", "fastestServersSort", "moreGameFilters", "moreServerFilters", "additionalServerInfo", "gameLikeRatioFilter", "quickUserSearch", "liveLikeDislikeFavoriteCounters", "sandboxOutfits", "moreTradePanel", "tradeValueCalculator", "tradeDemandRatingCalculator", "tradeItemValue", "tradeItemDemand", "itemPageValueDemand", "tradePageProjectedWarning", "embeddedRolimonsItemLink", "embeddedRolimonsUserLink", "tradeOffersValueCalculator", "winLossDisplay", "underOverRAP"]
 	pro_settings = ["liveVisits", "livePlayers", "tradePreviews", "ownerHistory", "quickItemSearch", "tradeNotifier", "singleSessionMode",  "tradeProtection", "hideTradeBots", "autoDeclineTradeBots", "autoDecline", "declineThreshold", "cancelThreshold", "hideDeclinedNotifications", "hideOutboundNotifications"]
 	ultra_settings = ["dealNotifier", "buyButton", "dealCalculations", "notificationThreshold", "valueThreshold", "projectedFilter"]
 	subscriptionLevel = await subscriptionManager.getSubscription()
@@ -1524,7 +2048,7 @@ async function loadSettings(setting) {
 	}
 	restrictSettings = await getStorage('restrictSettings')
 	restricted_settings = ["linkedDiscord", "gameTwitter", "groupTwitter", "groupDiscord"]
-	standard_settings = ["moreMutuals", "morePlaytimeSorts", "serverSizeSort", "fastestServersSort", "moreGameFilters", "gameLikeRatioFilter", "quickUserSearch", "liveLikeDislikeFavoriteCounters", "sandboxOutfits", "moreTradePanel", "tradeValueCalculator", "tradeDemandRatingCalculator", "tradeItemValue", "tradeItemDemand", "itemPageValueDemand", "tradePageProjectedWarning", "embeddedRolimonsItemLink", "embeddedRolimonsUserLink", "tradeOffersValueCalculator", "winLossDisplay", "underOverRAP"]
+	standard_settings = ["moreMutuals", "animatedProfileThemes", "morePlaytimeSorts", "serverSizeSort", "fastestServersSort", "moreGameFilters", "moreServerFilters", "additionalServerInfo", "gameLikeRatioFilter", "quickUserSearch", "liveLikeDislikeFavoriteCounters", "sandboxOutfits", "moreTradePanel", "tradeValueCalculator", "tradeDemandRatingCalculator", "tradeItemValue", "tradeItemDemand", "itemPageValueDemand", "tradePageProjectedWarning", "embeddedRolimonsItemLink", "embeddedRolimonsUserLink", "tradeOffersValueCalculator", "winLossDisplay", "underOverRAP"]
 	pro_settings = ["liveVisits", "livePlayers", "tradePreviews", "ownerHistory", "quickItemSearch", "tradeNotifier", "singleSessionMode",  "tradeProtection", "autoDecline", "declineThreshold", "cancelThreshold", "hideDeclinedNotifications"]
 	ultra_settings = ["dealNotifier", "buyButton", "dealCalculations", "notificationThreshold", "valueThreshold", "projectedFilter"]
 	subscriptionLevel = await subscriptionManager.getSubscription()
@@ -2246,7 +2770,7 @@ function handleNotification(notification) {
 //     }
 // }
 
-//Create a websocket connection to listen for notifications.
+// //Create a websocket connection to listen for notifications.
 // function connect(host) {
 //     if (websocket === undefined) {
 //         websocket = new WebSocket(host);
@@ -2264,18 +2788,13 @@ function handleNotification(notification) {
 // 		console.log(event)
 // 		try {
 // 			var notification = JSON.parse(event.data);
-// 			var check = (JSON.stringify(notification))
-// 			if (check == '{"type":"connected","subject":"Connection Failed","message":"Please make sure your subscription key and associated user is correct. If this continues, contact RoPro Support."}') {
-// 				console.log("Websocket attempted to send Connection Failed, blocked notification!")
-// 			} else {
-// 				handleNotification(notification)
-// 			}
+// 			handleNotification(notification)
 // 		} catch(err) {
 // 			console.log("Notification Error.")
 // 		}
 //     };
 
-//     //If the websocket is closed wait 5 seconds then create new connection
+    //If the websocket is closed wait 5 seconds then create new connection
 //     websocket.onclose = function() {
 // 		console.log("CLOSED")
 //         websocket = undefined;

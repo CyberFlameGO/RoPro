@@ -1,6 +1,6 @@
 /**
 
-RoPro (https://ropro.io) v1.2
+RoPro (https://ropro.io) v1.3
 
 RoPro was wholly designed and coded by:
                                
@@ -378,7 +378,7 @@ function createItem(item, index, noValue) {
 	<thumbnail-2d id="${parseInt(id)}" rap="${parseInt(rap)}" value="${parseInt(value)}" class="offeritem item-card-thumb-container ng-isolate-scope" style="transform:scale(0.6);margin:-20px;display:inline-block;">
 	<a ${href}>
 		<span style="width:126px;height:126px;" class="thumbnail-2d-container">
-		<img class="ng-scope ng-isolate-scope" src="${src}"/>
+		<img class="ng-scope ng-isolate-scope ${(id > -9 && id < -1) ? "ropro-special-icon" : ""}" src="${src}"/>
 		</span>
 	</a>
 	</thumbnail-2d>

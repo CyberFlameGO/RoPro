@@ -1,6 +1,6 @@
 /**
 
-RoPro (https://ropro.io) v1.2
+RoPro (https://ropro.io) v1.3
 
 RoPro was wholly designed and coded by:
                                
@@ -137,6 +137,15 @@ function fetchMutualLimiteds(userID) {
 				resolve(data)
 			}
 		)
+	})
+}
+
+function unfriendUser(userId) {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "PostValidatedURL", url:"https://friends.roblox.com/v1/users/" + userId + "/unfriend"}, 
+			function(data) {
+					resolve(data)
+			})
 	})
 }
 
@@ -389,7 +398,7 @@ function addMutualsTab() {
     li.setAttribute("id", "mutuals")
     li.setAttribute("role", "tab")
     li.setAttribute("class", "subtract-item rbx-tab")
-    mutualsTabHTML = '<a class="rbx-tab-heading"><span class="text-lead"><img src="https://ropro.io/images/ropro_logo.png" style="width:40px;margin:-30px;margin-left:0px;margin-right:5px;margin-top:-35px;">Mutuals</span><span class="rbx-tab-subtitle"></span></a>'
+    mutualsTabHTML = '<a class="rbx-tab-heading"><span class="text-lead">Mutuals</span><span class="rbx-tab-subtitle"></span></a>'
     li.innerHTML += mutualsTabHTML
     tabs.insertBefore(li, tabs.childNodes[3])
     mutualsTab = document.getElementsByClassName('tab-content rbx-tab-content')[0].cloneNode(true)
@@ -429,6 +438,40 @@ function addMutualsTab() {
     loadMutuals("Mutual Friends")
 }
 
+function setUnfriended(elem) {
+    elem.parentNode.getElementsByClassName('avatar-card-container')[0].classList.add('disabled')
+    elem.parentNode.getElementsByClassName('avatar-card-container')[0].getElementsByClassName('avatar')[0].style.filter = "grayscale(1)"
+    div = document.createElement('div')
+    div.innerHTML = `<div class="avatar-card-label">Unfriended</div>`
+    elem.parentNode.getElementsByClassName('avatar-card-container')[0].getElementsByClassName('avatar-card-caption')[0].getElementsByTagName('span')[0].appendChild(div.childNodes[0])
+    elem.remove()
+}
+
+var unfriendedUsers = {}
+
+function addQuickUnfriend() {
+    quickUnfriendHTML = `<div class="quick-unfriend" style="position:absolute;top:3px;right:10px;z-index:1000;"><div class="ropro-tooltip" style="display:none;position:absolute;width:auto;background-color:#191B1D;color:white;top:-23px;left:calc(50% - 60px);font-size:10px;padding:5px;border-radius:5px;width:120px;text-align:center;z-index:100000;">Quick Unfriend User</div><span style="cursor:pointer;transform:scale(1.25);" class="icon-close-gray-16x16"></span></div>`
+    friends = $('.friends-content .avatar-cards .avatar-card:not(.added)')
+    for (i = 0; i < friends.length; i++) {
+        friend = friends.get(i)
+        friend.classList.add('added')
+        div = document.createElement('div')
+        div.innerHTML = quickUnfriendHTML
+        var friendButton = div.childNodes[0]
+        friend.style.position = "relative"
+        friend.appendChild(friendButton)
+        if (parseInt(friend.id) in unfriendedUsers) {
+            setUnfriended(friendButton)
+        }
+        friendButton.addEventListener('click', function(e) {
+            id = this.parentNode.id
+            setUnfriended(this)
+            unfriendUser(parseInt(id))
+            unfriendedUsers[parseInt(id)] = true
+        })
+    }
+}
+
 var mutualFriends = false;
 var moreMutuals = false;
 var userId = getIdFromURL(location.href)
@@ -437,7 +480,23 @@ async function friendsMain() {
     mutualFriends = await fetchSetting("mutualFriends")
     moreMutuals = await fetchSetting("moreMutuals")
     if (isNaN(userId) || await getStorage("rpUserID") == userId) { //My "friends" page
-
+        /**console.log("My friends")
+        const observer = new MutationObserver(function(a) {
+            addQuickUnfriend()
+        });
+        if (document.getElementById('friends').getElementsByClassName('active').length > 0) {
+            addQuickUnfriend()
+        }
+        var myInterval = setInterval(function() {
+            if (document.getElementById('friends').getElementsByClassName('active').length > 0) {
+                friendsContent = $('.friends-content .avatar-cards:not(.loaded)')
+                if (friendsContent.length > 0) {
+                    friendsContent.get(0).classList.add('loaded')
+                    addQuickUnfriend()
+                    observer.observe(friendsContent.get(0), {subtree: true, childList: true})
+                }
+            }
+        }, 250)**/
     } else { //Other user's "friends" page
         setTimeout(function(){
             if (mutualFriends) {

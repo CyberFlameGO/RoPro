@@ -1,6 +1,6 @@
 /**
 
-RoPro (https://ropro.io) v1.2
+RoPro (https://ropro.io) v1.3
 
 RoPro was wholly designed and coded by:
                                
@@ -42,14 +42,14 @@ if ($('.light-theme').length > 0) {
 var originalSorts = []
 var sortsDict = {}
 
-iframeHTML = '<iframe id="randomGameFrame" class="random-game-iframe" style="background-color:black;position:absolute;right:170px;top:35px;" src=""></iframe>'
-randomGameButtonHTML = `<a id="randomGameButton" class="btn-growth-md btn-secondary-md random-game-button" style="border-radius:0px;text-align:right;width:auto;min-width:179px;position:absolute;right:170px;"><img class="random-game-icon-${current_theme}" style="width:25px;margin-top:-10px;margin-bottom:-10px;margin-right:8px;${current_theme == "darkmode" ? "filter:invert(0.8);" : "filter:invert(0.2);"}" src="https://ropro.io/images/random_game.svg">`+ chrome.i18n.getMessage("RandomGame") +`</a>`
+iframeHTML = '<iframe id="randomGameFrame" class="random-game-iframe" style="background-color:black;position:absolute;right:10px;top:35px;" src=""></iframe>'
+randomGameButtonHTML = `<a id="randomGameButton" class="btn-growth-md btn-secondary-md random-game-button" style="border-radius:0px;text-align:right;width:auto;min-width:179px;position:absolute;right:10px;border:none;display:none;"><img class="random-game-icon-${current_theme}" style="width:25px;margin-top:-10px;margin-bottom:-10px;margin-right:8px;${current_theme == "darkmode" ? "filter:invert(0.8);" : "filter:invert(0.2);"}" src="https://ropro.io/images/random_game.svg">`+ chrome.i18n.getMessage("RandomGame") +`</a>`
 src = "https://ropro.io/dice/?chance=50"
-choicesSliderHTML = `<div id="choicesSliderDiv" style="display:none;position:absolute;width:230px;right:360px;margin-top:3px;">
-<output style="font-size:13px;float:left;margin-left:5px;margin-right:5px;margin-top:2px;">Top 50 Games</output>
-<input id="choicesRatio" oninput="this.previousElementSibling.value = 'Top ' + Math.floor(Math.pow(this.value, 2.1)/10)*10 + ' Games'" value="6.5" step="0.02" max="37.32" min="3" type="range" style="float:right;width:100px;">
+choicesSliderHTML = `<div id="choicesSliderDiv" style="display:none;position:absolute;width:230px;right:170px;margin-top:3px;">
+<output style="font-size:13px;float:left;margin-left:-30px;margin-right:5px;margin-top:2px;">Top 50 Experiences</output>
+<input id="choicesRatio" oninput="this.previousElementSibling.value = 'Top ' + Math.floor(Math.pow(this.value, 2.1)/10)*10 + ' Experiences'" value="6.5" step="0.02" max="37.32" min="3" type="range" style="float:right;width:100px;">
 </div>`
-reorderHTML = '<a id="reorderButton" class="btn-growth-md btn-secondary-md reorder-button" style="border-radius:0px;width:130px;position:absolute;right:30px;text-align:right;display:none;"><img style="width:25px;margin:-50px;margin-right:8px;" src="https://ropro.io/images/reorder_' + current_theme + '.png">Re-Order</a>'
+reorderHTML = '<a id="reorderButton" class="btn-growth-md btn-secondary-md reorder-button" style="border-radius:0px;width:130px;position:absolute;right:30px;text-align:right;display:none;"><img class="reorder-inactive" style="width:35px;position:absolute;top:-1.5px;left:4px;" src="https://ropro.io/images/reorder_inactive.png"><img class="reorder-active" style="width:35px;position:absolute;top:-1.5px;left:4px;" src="https://ropro.io/images/reorder_active.png">Re-Order</a>'
 orderedListHTML = '<div id="orderedListDiv" class="btn-growth-md btn-secondary-md reorder-div" style="border-radius:0px;width:319px;position:absolute;right:30px;top:36px;text-align:right;min-height:100px;display:none;"><div id="orderedListDivInner" style="position:absolute;z-index:9;"></div></div>'
 function fetchSetting(setting) {
 	return new Promise(resolve => {
@@ -208,7 +208,7 @@ function addReorderButton() {
 		} else {
             reorderButton.parentNode.style.zIndex = 1
             reorderButton.style.textAlign = "right"
-			reorderButton.innerHTML = '<img style="width:25px;margin:-50px;margin-right:8px;" src="https://ropro.io/images/reorder_' + stripTags(current_theme) + '.png">Re-Order'
+			reorderButton.innerHTML = '<img class="reorder-inactive" style="width:35px;position:absolute;top:-1.5px;left:4px;" src="https://ropro.io/images/reorder_inactive.png"><img class="reorder-active" style="width:35px;position:absolute;top:-1.5px;left:4px;" src="https://ropro.io/images/reorder_active.png">Re-Order'
 			orderedListDiv.style.display = "none"
 		}
     })
@@ -222,7 +222,7 @@ function createRandomGameButton() {
 	div.innerHTML += choicesSliderHTML
 	div.innerHTML += randomGameButtonHTML
     div.innerHTML += iframeHTML
-    div.innerHTML += reorderHTML
+    //div.innerHTML += reorderHTML
     div.innerHTML += orderedListHTML
 	contentWindow = document.getElementsByClassName('content')[0]
 	contentWindow.insertBefore(div, contentWindow.childNodes[0])
@@ -282,21 +282,21 @@ async function doRandomGameButton() {
 doRandomGameButton()
 
 var myInterval = setInterval(function(){
-    if (document.getElementsByClassName('container-header games-filter-changer').length > 0) {
+    /** if (document.getElementsByClassName('container-header games-filter-changer').length > 0) {
         if (document.getElementsByClassName('container-header games-filter-changer').length > 1) {
             if (document.getElementById('reorderButton').style.display == "none") {
-                //addReorderButton()
+                addReorderButton()
             }
         } else {
             if (document.getElementById('reorderButton').style.display != "none") {
                 document.getElementById('reorderButton').style.display = "none"
             }
         }
+    } **/
+    for (i = 0; i < document.getElementsByClassName('container-header games-filter-changer').length; i++) {
+        filter = document.getElementsByClassName('container-header games-filter-changer')[i]
+        filterTitle = stripTags(filter.getElementsByTagName('h3')[0].innerHTML.split(" (")[0])
+        originalSorts.push(filterTitle)
+        sortsDict[filterTitle] = filter
     }
-    //for (i = 0; i < document.getElementsByClassName('container-header games-filter-changer').length; i++) {
-    //    filter = document.getElementsByClassName('container-header games-filter-changer')[i]
-    //    filterTitle = stripTags(filter.getElementsByTagName('h3')[0].innerHTML.split(" (")[0])
-    //    originalSorts.push(filterTitle)
-    //    sortsDict[filterTitle] = filter
-    //}
 }, 500)

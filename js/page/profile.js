@@ -1,6 +1,6 @@
 /**
 
-RoPro (https://ropro.io) v1.2
+RoPro (https://ropro.io) v1.3
 
 RoPro was wholly designed and coded by:
                                
@@ -39,6 +39,16 @@ var reputationDivPosition = document.getElementsByClassName('header-userstatus-t
 function fetchValue(userID) {
 	return new Promise(resolve => {
 		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/profileBackend.php?userid=" + userID}, 
+			function(data) {
+				resolve(data)
+			}
+		)
+	})
+}
+
+function fetchStatus(userID) {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.roblox.com/users/" + userID + "/onlinestatus/"}, 
 			function(data) {
 				resolve(data)
 			}
@@ -206,11 +216,6 @@ async function addRoProInfo(tier, user_since, subscribed_for) {
 		tierName = "Ultra Tier"
 		icon = "https://ropro.io/images/ultra_icon_shadow.png"
 		link = "https://ropro.io#upgrade-ultra"
-		subscriber = true
-	} else if (tier == "dev_tier") {
-		tierName = "Developer Tier"
-		icon = "https://i.imgur.com/toEZvjx.gif"
-		link = "https://github.com/itsproyal/ropro/"
 		subscriber = true
 	}
 	header = document.getElementsByClassName('header-title')[0]
@@ -416,6 +421,53 @@ async function mainProfile() {
 					}
 				}
 			}, 1)
+			setTimeout(async function() {
+				userID = getIdFromURL(location.href)
+				if (await fetchSetting("lastOnline") && (typeof document.getElementsByName('user-data')[0] == 'undefined' || userID != parseInt(document.getElementsByName('user-data')[0].getAttribute('data-userid')))) {
+					onlineStatus = await fetchStatus(userID)
+					console.log(onlineStatus)
+					if (onlineStatus.LastLocation == 'Offline') {
+						date = new Date(onlineStatus.LastOnline)
+						timeSince = Math.round(new Date().getTime() - date.getTime()) / 1000
+						if (timeSince < 60) { //seconds
+							period = Math.floor(timeSince)
+							suffix = period == 1 ? "" : "s"
+							timeString = `${period} sec${suffix}`
+						} else if (timeSince / 60 < 60) { //minutes
+							period = Math.floor(timeSince / 60)
+							suffix = period == 1 ? "" : "s"
+							timeString = `${period} min${suffix}`
+						} else if (timeSince / 60 / 60 < 24) { //hours
+							period = Math.floor(timeSince / 60 / 60)
+							suffix = period == 1 ? "" : "s"
+							timeString = `${period} hour${suffix}`
+						} else if (timeSince / 60 / 60 / 24 < 30) { //days
+							period = Math.floor(timeSince / 60 / 60 / 24)
+							suffix = period == 1 ? "" : "s"
+							timeString = `${period} day${suffix}`
+						} else if (timeSince / 60 / 60 / 24 / 30 < 20) { //months
+							period = Math.floor(timeSince / 60 / 60 / 24 / 30)
+							suffix = period == 1 ? "" : "s"
+							timeString = `${period} month${suffix}`
+						} else { //years
+							period = Math.floor(timeSince / 60 / 60 / 24 / 30 / 12)
+							suffix = period == 1 ? "" : "s"
+							timeString = `${period} year${suffix}`
+						}
+						locations = {0: "Mobile", 1: "Mobile", 2: "Website", 3: "Studio", 4: "In-game", 5: "Xbox", 6: "Team Create"}
+						div = document.createElement('div')
+						div.innerHTML = `<div ng-non-bindable="">
+						<a style="z-index:1;" class="avatar-status ropro-offline">
+							<span style="background:none;background-color:#${document.getElementsByClassName('light-theme').length > 0 ? "8B949F" : "68717D"};border-radius:50px;transform:scale(0.85);" class="icon-online icon-offline-outer profile-avatar-status" title="Last Online: ${date.toLocaleString()} | Platform: ${onlineStatus.LocationType == null ? "Unknown" : locations[onlineStatus.LocationType]}"><span style="background:none;background-color:#${document.getElementsByClassName('light-theme').length > 0 ? "F2F4F5" : "2F3136"};border-radius:50px;position:absolute;top:7.5px;left:7.5px;width:12px;height:12px;" class="icon-online icon-offline-inner profile-avatar-status"></span>
+							<div style="position:absolute;font-size:12px;z-index:1000;margin-top:5px;margin-left:8px;white-space:hide;color:${document.getElementsByClassName('light-theme').length > 0 ? "#8B949F" : "white"};font-weight:bold;width:0px;overflow:hidden;white-space:nowrap;" class="ropro-offline-text">Offline for ${stripTags(timeString)}</div></span>
+						</a>
+						</div>`
+						if (document.getElementsByClassName('profile-avatar-status').length == 0) {
+							document.getElementsByClassName('profile-avatar-image')[0].appendChild(div.childNodes[0])
+						}
+					}
+				}
+			}, 1)
 		} catch (e) {
 			console.log(e)
 		}
@@ -512,7 +564,7 @@ async function mainProfile() {
 				test = await getUserId()
 				if(userID == "89313169") {
 					profileIconsSorted = true
-					addProfileIcon("RoPro Owner", "This profile icon is awarded to Proyal, the user who made this 'crack' of RoPro. You can contact him at Proyal#4549 on Discord.", "owner.svg", "https://github.com/itsproyal/ropro/")
+					addProfileIcon("Proyal", "Proyal#0001", "owner.svg", "https://github.com/itsproyal/ropro/")
 				}
 				if(test == userID || userID == "89313169" || userID =="201746560") {
 					profileIconsSorted = true

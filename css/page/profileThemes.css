@@ -1,0 +1,37 @@
+.profile-selector-box .rbx-upgrade-now {
+		display:block!important;
+}
+
+.profile-selector-box .animated-themes-outer {
+	display:block!important;
+	border-radius:15px;
+	filter:brightness(0.3);
+}
+
+.profile-selector-box .import-decal-outer {
+	display:block!important;
+	border-radius:15px;
+	filter:brightness(0.3);
+}
+
+.profile-selector-box #animatedThemeCardBox {
+	filter:blur(3px);
+	pointer-events:none;
+}
+
+.profile-selector-box #importDecalBox {
+	filter:blur(4px);
+	pointer-events:none;
+}
+
+.profile-selector-box #yourImportedDecals {
+	display:none;
+}
+
+.dark-theme .profile-selector-box .animated-themes-outer {
+	background-color:#232527;
+}
+
+.dark-theme .profile-selector-box .import-decal-outer {
+	background-color:#232527;
+}

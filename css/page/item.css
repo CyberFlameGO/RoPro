@@ -8,3 +8,4 @@
 .icon-rolimons-16x16{background-position:-20px -20px;}
 .item-card-caption .icon-rolimons-16x16{background-position:0 -20px;margin-bottom:3px;margin-right:-3px;}
 .item-card-container .icon-rolimons-16x16{background-position:0 -20px;margin-bottom:2px;margin-right:-2px;}
+.light-theme #roliLink { filter: invert(1)!important; }

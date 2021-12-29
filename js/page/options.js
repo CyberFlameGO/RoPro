@@ -1,6 +1,6 @@
 /**
 
-RoPro (https://ropro.io) v1.2
+RoPro (https://ropro.io) v1.3
 
 RoPro was wholly designed and coded by:
                                
@@ -185,6 +185,7 @@ function getSettings() {
 	newSettings = {
 		"sandbox": check("sandbox"),
 		"profileThemes": check("profileThemes"),
+		"lastOnline": check("lastOnline"),
 		"profileStatus": check("profileStatus"),
 		"genreFilters": check("genreFilters"),
 		"randomGame": check("randomGame"),
@@ -206,11 +207,10 @@ function getSettings() {
 		"groupRank": check("groupRank"),
 		"groupTwitter": check("groupTwitter"),
 		"groupDiscord": check("groupDiscord"),
-		"serverSizeSort": check("serverSizeSort"),
-		"fastestServersSort": check("fastestServersSort"),
 		"moreGameFilters": check("moreGameFilters"),
+		"moreServerFilters": check("moreServerFilters"),
+		"additionalServerInfo": check("additionalServerInfo"),
 		"gameLikeRatioFilter": check("gameLikeRatioFilter"),
-		"quickUserSearch": check("quickUserSearch"),
 		"liveLikeDislikeFavoriteCounters": check("liveLikeDislikeFavoriteCounters"),
 		"sandboxOutfits": check("sandboxOutfits"),
 		"moreTradePanel": check("moreTradePanel"),
@@ -258,7 +258,10 @@ function getSettings() {
 		"mutualFriends": check("mutualFriends"),
 		"moreMutuals": check("moreMutuals"),
 		"serverInviteLinks": check("serverInviteLinks"),
-		"randomServer": check("randomServer")
+		"serverFilters": check("serverFilters"),
+		"randomServer": check("randomServer"),
+		"experienceQuickSearch": check("experienceQuickSearch"),
+		"animatedProfileThemes": check("animatedProfileThemes")
 	}
 	changed = typeof settings == 'undefined' || !shallowEqual(settings, newSettings)
 	if (changed) {
