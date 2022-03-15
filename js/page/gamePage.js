@@ -183,7 +183,7 @@ commentsPaneHTML = `<div class="tab-pane comments" id="comments" style="margin-t
         </div>
     </div>
 </div></div></div>`
-randomServerHTML = `<button type="button" style="width:66px;min-width:66px;margin-left:3px;" class="btn-full-width btn-common-play-game-lg btn-primary-md btn-min-width random-server-button"><div class="random-server-tooltip" style="position:absolute;width:250px;background-color:#191B1D;color:white;top:-30px;right:-75px;font-size:13px;padding:5px;border-radius:5px;z-index:10000;display:none;">Join random server (avoid friends).</div><span style="filter:invert(1);background-image:url(https://ropro.io/images/random_server.svg);background-size: 36px 36px;" class="icon-common-play"></span></button>`
+randomServerHTML = `<button type="button" style="width:66px;min-width:66px;margin-left:3px;" class="btn-full-width btn-common-play-game-lg btn-primary-md btn-min-width random-server-button"><div class="random-server-tooltip" style="position:absolute;width:130px;background-color:#191B1D;color:white;top:-30px;right:-20px;font-size:13px;padding:5px;border-radius:5px;z-index:10000;display:none;">Random Server</div><span style="filter:invert(1);background-image:url(https://ropro.io/images/random_server.svg);background-size: 36px 36px;" class="icon-common-play"></span></button>`
 randomServerOverlayHTML = `<div id="simplemodal-overlay" class="simplemodal-overlay" style="background-color: rgb(0, 0, 0); opacity: 0.8; height: 100%; width: 100%; position: fixed; left: 0px; top: 0px; z-index: 1041;"></div>`
 randomServerModalHTML = `<div id="simplemodal-container" class="simplemodal-container" style="position: fixed; z-index: 1042; height: 231px; width: 400px;  left: calc(50% - 200px); top: calc(50% - 115.5px);"><a class="modalCloseImg simplemodal-close" title="Close"></a><div tabindex="-1" class="simplemodal-wrap" style="height: 100%; outline: 0px; width: 100%; overflow: visible;"><div id="modal-confirmation" class="modal-confirmation noImage protocolhandler-are-you-installed-modal simplemodal-data" data-modal-type="confirmation" style="display: block;"><div id="modal-dialog" class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal"> <span aria-hidden="true"><span class="icon-close"></span></span><span class="sr-only">Close</span> </button><h5 class="modal-title"></h5></div><div class="modal-body"><div class="modal-top-body"><div class="modal-message"><img style="filter: drop-shadow(rgb(57,59,61) 2px 2px 2px);" src="https://ropro.io/images/ropro_logo.svg" width="150" alt="R"><p>Searching for a random server...</p></div><div class="modal-image-container roblox-item-image" data-image-size="medium" data-no-overlays="" data-no-click=""><img class="modal-thumb" alt="generic image"></div><div class="modal-checkbox checkbox" style="display: none;"><input id="modal-checkbox-input" type="checkbox"> <label for="modal-checkbox-input"></label></div></div><div style="display:none;" class="modal-btns"><a href="" id="confirm-btn" class="btn-primary-md">Download Studio</a> <a href="" id="decline-btn" class="btn-control-md" style="display: none;">No</a></div><div style="display:block;" class="loading modal-processing"><img class="loading-default" src="https://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif" alt="Processing..."></div></div><div class="modal-footer text-footer" style="display: block;"></div></div></div></div></div></div>`
 var pageIndex = 0;
@@ -679,6 +679,7 @@ function addServerFilters(placeId, maxPlayerCount) {
 		}
 	}
 	checkSettings()
+	serverFiltersDropdown = document.getElementById('serverFiltersDropdown')
 	serverFiltersDropdown.addEventListener('click', function() {
 		if (document.getElementById('serverFiltersDropdownBox').style.display == "block") {
 			document.getElementById('serverFiltersDropdownBox').style.display = "none";
@@ -1258,7 +1259,8 @@ function addComments(placeId) {
 async function loadMostRecentServer(myUniverseId) { //Check if recent server is still active before displaying it to user, otherwise remove it from recent server cache.
 	mostRecentServers = await getLocalStorage("mostRecentServers")
 	if (myUniverseId in mostRecentServers) {
-		var serverStatus = new XMLHttpRequest();
+		addMostRecentServer(mostRecentServers[myUniverseId][0], mostRecentServers[myUniverseId][1], mostRecentServers[myUniverseId][2], mostRecentServers[myUniverseId][3], true)
+		/**var serverStatus = new XMLHttpRequest();
 		serverStatus.open("GET", `https://assetgame.roblox.com/Game/PlaceLauncher.ashx?request=RequestGameJob&placeId=${mostRecentServers[myUniverseId][0]}&gameId=${mostRecentServers[myUniverseId][1]}`, true);
 		serverStatus.withCredentials = true;
 		serverStatus.send();
@@ -1270,13 +1272,10 @@ async function loadMostRecentServer(myUniverseId) { //Check if recent server is 
 						addMostRecentServer(mostRecentServers[myUniverseId][0], mostRecentServers[myUniverseId][1], mostRecentServers[myUniverseId][2], mostRecentServers[myUniverseId][3], true)
 					} else { //Server is now inactive - remove it from recent.
 						addMostRecentServer(mostRecentServers[myUniverseId][0], mostRecentServers[myUniverseId][1], mostRecentServers[myUniverseId][2], mostRecentServers[myUniverseId][3], false)
-						/**delete mostRecentServers[myUniverseId]
-						setLocalStorage("mostRecentServers", mostRecentServers)
-						document.getElementById('rbx-recent-server-box').innerHTML = `<p class="no-servers-message">No Active Recent Server Found.</p>`**/
 					}
 				}
 			}
-		  }
+		}**/
 	}
 }
 
@@ -1322,6 +1321,37 @@ async function createInviteLink(elem, serverid, placeid) {
 	})
 }
 
+async function createSpeedTest(elem, serverid, placeid) {
+	if (document.getElementsByClassName('server-speed-test-box').length > 0) {
+		if (document.getElementsByClassName('server-speed-test-box')[0].parentNode == elem) {
+			document.getElementsByClassName('server-speed-test-box')[0].remove()
+			return
+		}
+		document.getElementsByClassName('server-speed-test-box')[0].remove()
+	}
+	if (elem.classList.contains('create-server-invite-button')) {
+		pos = "top: -315px; left: -102px;"
+	} else {
+		pos = "top: -315px; left: -123px;"
+	}
+	speedTestHTML = `<div uib-popover-template-popup="" uib-title="" class="dark-theme tradeinfocard popover ng-scope ng-isolate-scope bottom people-info-card-container card-with-game fade in server-speed-test-box" tooltip-animation-class="fade" uib-tooltip-classes="" ng-class="{ in: isOpen }" style="filter: drop-shadow(rgb(0, 0, 0) 0px 0px 1px);${pos} width: 300px; height: 300px;border-radius:10px;">
+	<h2 style="padding-bottom:5px;border-bottom: 2px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;top:25px;left:25px;width:250px;margin:auto;">
+			<img style="width:50px;left:0px;margin-bottom:-5px;margin-left:10px;" src="https://ropro.io/images/ropro_logo.svg">
+			<p style="color:white;display:inline-block;font-size:15px;font-weight:650;border-bottom: 1px solid #FFFFFF;">Server Ping Test<img src="https://ropro.io/images/speed_icon.svg" style="filter:invert(1);width:20px;margin-left:7px;"></p><p style="margin-top:5px;margin-left:10px;color:white;display:inline-block;font-size:9px;font-weight:100;">To avoid sending unnecessary traffic to Roblox servers, RoPro sends test data to one of our own servers in the same region as this Roblox server.</p>
+		</h2><div style="width:250px;margin:auto;margin-top:10px;border-radius:10px;" class="input-group server-invite-link-input"><span style="float: right; width: 100%; height: 62.5px; visibility: initial !important;margin-top:57px;" class="spinner spinner-default"></span></div><div style="left: 135px; transform: rotate(180deg) scale(2); top: initial; bottom: -10px;" class="ropro-arrow arrow"></div>
+	<div class="popover-inner" style="width:100px;height:100px;">		
+	</div></div>`
+	div = document.createElement('div')
+	div.innerHTML = speedTestHTML
+	speedTestBox = div.childNodes[0]
+	elem.appendChild(speedTestBox)
+	//invite = await createInvite(myUniverseId, serverid)
+	//elem.getElementsByClassName('server-invite-link-input')[0].innerHTML = `<form><div class="form-has-feedback"><p class="copied-to-clipboard" style="position:absolute;top:-30px;left:55px;background-color:#111212;border-radius:10px;padding:5px;font-size:12px;display:none;">Copied to clipboard.</p><input style="padding-left:10px;font-size:13px;border-radius:10px;margin-bottom:5px;opacity:1;cursor:pointer;" id="navbar-search-input" class="form-control input-field new-input-field copy-clipboard-button" placeholder="Search" maxlength="120" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="${stripTags(invite)}" readonly></div></form><div class="input-group-btn" style="margin:-40px;"><button style="right:10px;left:initial;pointer-events:none;" id="copy-btn" class="input-addon-btn" type="submit"><img src="https://ropro.io/images/copy.png" style="width:18px;height:18px;filter:invert(0.8);"></button></div><p style="font-size:12px;text-align:center;">Share this link on desktop, tablet, or mobile to invite others to this server.</p>`
+	speedTestBox.addEventListener('click', function(event) {
+		event.stopPropagation()
+	})
+}
+
 function addServerInviteButton(elem, serverid, placeid) {
 	serverInfoQueue.push([elem, serverid])
 	console.log(elem, serverid)
@@ -1347,6 +1377,19 @@ function addServerInviteButton(elem, serverid, placeid) {
 			createInviteLink(this, this.getAttribute('data-serverid'), this.getAttribute('data-placeid'))
 			event.stopPropagation()
 		})
+		/**if (serverSpeedButton) {
+			button.setAttribute('style', 'width:15%;position:relative!important;float:right;margin-right:0%;')
+			serverSpeedButtonHTML = `<a style="width:15%;position:relative!important;float:right;margin-right:3%;" class="btn-full-width btn-control-xs server-speed-button" data-placeid="${parseInt(placeid)}" data-serverid="${stripTags(serverid)}"><img src="https://ropro.io/images/speed_icon.svg" style="filter:invert(1);width:11.5px;transform:scale(1.2);"></a>`
+			div = document.createElement('div')
+			div.innerHTML = serverSpeedButtonHTML
+			button = div.childNodes[0]
+			elem.getElementsByClassName('rbx-game-server-join')[0].style.width = "64%"
+			elem.getElementsByClassName('rbx-game-server-details')[0].appendChild(button)
+			button.addEventListener('click', function(event) {
+				createSpeedTest(this, this.getAttribute('data-serverid'), this.getAttribute('data-placeid'))
+				event.stopPropagation()
+			})
+		}**/
 	}
 }
 
@@ -1380,7 +1423,7 @@ function addMostRecentServer(placeID, serverID, userID, time, serverActive) {
 	if (serverActive) {
 		document.getElementById('rbx-recent-server-box').innerHTML = `<li style="border-radius:0px;margin-top:-15px;" data-gameid="${stripTags(serverID)}" class="stack-row rbx-game-server-item"><div class="section-header"><div class="link-menu rbx-game-server-menu"></div></div><div style="width:90%;position:relative;" class="section-left rbx-game-server-details">
 		<div style="float:left;" class="text-info rbx-game-status rbx-game-server-status"><b>Last Played:</b><img style="background-image:none;margin:0px;margin-top:-2px;margin-bottom:1px;transform:scale(1);border:none;margin-left:5px;margin-right:5px;width:15px;height:15px;" src="https://ropro.io/images/timer${theme == "dark" ? "_dark" : "_light"}.svg" class="info-label icon-pastname">${stripTags(timeString)}</div><br><div style="float:left;" class="text-info rbx-game-status rbx-game-server-status"><b>Server ID:</b> ${stripTags(serverID)}</div>
-		<div class="rbx-game-server-alert hidden"><span class="icon-remove"></span>Slow Game</div><a style="width:89%;float:left;" class="ropro-game-server-join btn-full-width btn-control-xs" data-serverid="${stripTags(serverID)}" data-placeid="${parseInt(placeID)}" onclick="Roblox.GameLauncher.joinGameInstance(${parseInt(placeID)}, &quot;${stripTags(serverID)}&quot;)">Rejoin Server</a><a style="width:9.5%;float:right;margin-right:1%;position:relative!important;" class="btn-full-width btn-control-xs create-server-invite-button" data-serverid="${stripTags(serverID)}" data-placeid="${parseInt(placeID)}"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" width="1em" height="1em" style="${$('.light-theme').length == 0 ? "" : "filter:invert(1);"}vertical-align: -0.125em;-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg) scale(1.15);margin:auto;" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path class="linkpath" d="M10.586 13.414a1 1 0 0 1-1.414 1.414 5 5 0 0 1 0-7.07l3.535-3.536a5 5 0 0 1 7.071 7.071l-1.485 1.486a7.017 7.017 0 0 0-.405-2.424l.476-.476a3 3 0 1 0-4.243-4.243l-3.535 3.536a3 3 0 0 0 0 4.242zm2.828-4.242a1 1 0 0 1 1.414 0 5 5 0 0 1 0 7.07l-3.535 3.536a5 5 0 0 1-7.071-7.07l1.485-1.486c-.008.82.127 1.641.405 2.423l-.476.476a3 3 0 1 0 4.243 4.243l3.535-3.536a3 3 0 0 0 0-4.242 1 1 0 0 1 0-1.414z" fill="#fff" style="fill: rgb(255, 255, 255);"></path></svg></a></div><div style="width:9%;margin-top:13px;margin-left:1%;" class="section-right rbx-game-server-players"><span style="transform:scale(1.3);" class="avatar avatar-headshot-sm player-avatar"><a class="avatar-card-link"><img style="background-color:#0F8CE0" src="https://www.roblox.com/headshot-thumbnail/image?userId=${parseInt(userID)}&width=420&height=420&format=png" class="avatar-card-image"></a></span></div></li>`	
+		<div class="rbx-game-server-alert hidden"><span class="icon-remove"></span>Slow Game</div><a style="width:89%;float:left;" class="ropro-game-server-join btn-full-width btn-control-xs" data-serverid="${stripTags(serverID)}" data-placeid="${parseInt(placeID)}" onclick="Roblox.GameLauncher.joinGameInstance(${parseInt(placeID)}, &quot;${stripTags(serverID)}&quot;)">Rejoin Server</a><a style="width:9.5%;float:right;margin-right:1%;position:relative!important;" class="btn-full-width btn-control-xs create-server-invite-button" data-serverid="${stripTags(serverID)}" data-placeid="${parseInt(placeID)}"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" width="1em" height="1em" style="${$('.light-theme').length == 0 ? "" : "filter:invert(1);"}vertical-align: -0.125em;-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg) scale(1.15);margin:auto;" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path class="linkpath" d="M10.586 13.414a1 1 0 0 1-1.414 1.414 5 5 0 0 1 0-7.07l3.535-3.536a5 5 0 0 1 7.071 7.071l-1.485 1.486a7.017 7.017 0 0 0-.405-2.424l.476-.476a3 3 0 1 0-4.243-4.243l-3.535 3.536a3 3 0 0 0 0 4.242zm2.828-4.242a1 1 0 0 1 1.414 0 5 5 0 0 1 0 7.07l-3.535 3.536a5 5 0 0 1-7.071-7.07l1.485-1.486c-.008.82.127 1.641.405 2.423l-.476.476a3 3 0 1 0 4.243 4.243l3.535-3.536a3 3 0 0 0 0-4.242 1 1 0 0 1 0-1.414z" fill="#fff" style="fill: rgb(255, 255, 255);"></path></svg></a></div><div style="width:9%;margin-top:13px;margin-left:1%;" class="section-right rbx-game-server-players"><span style="transform:scale(1.3);" class="avatar avatar-headshot-sm player-avatar"><a class="avatar-card-link"><img src="https://www.roblox.com/headshot-thumbnail/image?userId=${parseInt(userID)}&width=420&height=420&format=png" class="avatar-card-image"></a></span></div></li>`	
 		document.getElementById('rbx-recent-server-box').getElementsByClassName('create-server-invite-button')[0].addEventListener('click', function(event) {
 			createInviteLink(this, this.getAttribute('data-serverid'), this.getAttribute('data-placeid'))
 			event.stopPropagation()
@@ -1388,7 +1431,7 @@ function addMostRecentServer(placeID, serverID, userID, time, serverActive) {
 	} else {
 		document.getElementById('rbx-recent-server-box').innerHTML = `<li style="border-radius:0px;margin-top:-15px;" data-gameid="${stripTags(serverID)}" class="stack-row rbx-game-server-item"><div class="section-header"><div class="link-menu rbx-game-server-menu"></div></div><div style="width:90%;position:relative;" class="section-left rbx-game-server-details">
 		<div style="float:left;" class="text-info rbx-game-status rbx-game-server-status"><b>Last Played:</b><img style="background-image:none;margin:0px;margin-top:-2px;margin-bottom:1px;transform:scale(1);border:none;margin-left:5px;margin-right:5px;width:15px;height:15px;" src="https://ropro.io/images/timer${theme == "dark" ? "_dark" : "_light"}.svg" class="info-label icon-pastname">${stripTags(timeString)}</div><br><div style="float:left;" class="text-info rbx-game-status rbx-game-server-status"><b>Server ID:</b> ${stripTags(serverID)}</div>
-		<div class="rbx-game-server-alert hidden"><span class="icon-remove"></span>Slow Game</div><a class="ropro-game-server-join btn-full-width btn-control-xs" data-placeid="${parseInt(placeID)}" onclick="Roblox.GameLauncher.joinGameInstance(${parseInt(placeID)}, &quot;${stripTags(serverID)}&quot;)">Server No Longer Active</a></div><div style="width:9%;margin-top:13px;margin-left:1%;" class="section-right rbx-game-server-players"><span style="transform:scale(1.3);" class="avatar avatar-headshot-sm player-avatar"><a class="avatar-card-link"><img style="background-color:#393B3D" src="https://www.roblox.com/headshot-thumbnail/image?userId=${parseInt(userID)}&width=420&height=420&format=png" class="avatar-card-image"></a></span></div></li>`	
+		<div class="rbx-game-server-alert hidden"><span class="icon-remove"></span>Slow Game</div><a class="ropro-game-server-join btn-full-width btn-control-xs" data-placeid="${parseInt(placeID)}" onclick="Roblox.GameLauncher.joinGameInstance(${parseInt(placeID)}, &quot;${stripTags(serverID)}&quot;)">Server No Longer Active</a></div><div style="width:9%;margin-top:13px;margin-left:1%;" class="section-right rbx-game-server-players"><span style="transform:scale(1.3);" class="avatar avatar-headshot-sm player-avatar"><a class="avatar-card-link"><img src="https://www.roblox.com/headshot-thumbnail/image?userId=${parseInt(userID)}&width=420&height=420&format=png" class="avatar-card-image"></a></span></div></li>`	
 	}
 	serverInfoQueue.push([document.getElementById('rbx-recent-server-box').getElementsByTagName('li')[0], stripTags(serverID)])
 }
@@ -1498,6 +1541,7 @@ function isNormalInteger(str) {
 }
 
 var comments = false
+var serverSpeedButton = false
 
 async function checkGamePage() {
 	if (window.location.href.includes("games/")) {
@@ -1549,7 +1593,8 @@ async function checkGamePage() {
 					loadMostRecentServer(myUniverseId)
 				}
 			}, 120000)
-			if (await fetchSetting("serverInviteLinks") || await fetchSetting("serverInfo")) {
+			serverSpeedButton = await fetchSetting("serverInviteLinks")
+			if (await fetchSetting("serverInviteLinks") || serverSpeedButton || await fetchSetting("serverInfo")) {
 				setInterval(function() {
 					servers = document.getElementsByClassName('rbx-game-server-item')
 					for (i = 0; i < servers.length; i++) {
@@ -1637,6 +1682,9 @@ $(window).click(function(event) {
 	if (document.getElementsByClassName('server-invite-link-box').length > 0) {
 		document.getElementsByClassName('server-invite-link-box')[0].remove()
 	}
+	//if (document.getElementsByClassName('server-speed-test-box').length > 0) {
+	//	document.getElementsByClassName('server-speed-test-box')[0].remove()
+	//}
 })
 
 window.addEventListener('message', async function(e) {

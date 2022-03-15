@@ -459,7 +459,7 @@ var defaultSettings = {
 	ownerHistory: true,
 	profileThemes: true,
 	lastOnline: true,
-	profileStatus: true,
+	roproEggCollection: true,
 	profileValue: true,
 	projectedWarningItemPage: true,
 	quickItemSearch: true,
@@ -2812,7 +2812,7 @@ function handleNotification(notification) {
 //     }
 // }
 
-createWebSocketConnection();
+// createWebSocketConnection();
 checkDealSettings();
 setInterval(async function() {
 	subscriptionLevel = await subscriptionManager.getSubscription()

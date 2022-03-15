@@ -33,3 +33,59 @@
 	opacity: 1;
 	transition: all 0.25s;
 }
+
+.ropro-egg-collection-li:hover .ropro-animated-icon1 {
+	animation:shake1 0.3s ease-out;
+}
+
+.ropro-egg-collection-li:hover .ropro-animated-icon2 {
+	animation:jump1 0.4s ease-out;
+}
+
+@keyframes shake1 {
+	0% {
+		transform:rotate(0deg);
+	}
+	33% {
+		transform:rotate(15deg);
+	}
+	66% {
+		transform:rotate(-15deg);
+	}
+	100% {
+		transform:rotate(0deg);
+	}
+}
+
+@keyframes shake2 {
+	0% {
+		transform:rotate(0deg);
+	}
+	33% {
+		transform:rotate(-15deg);
+	}
+	66% {
+		transform:rotate(15deg);
+	}
+	100% {
+		transform:rotate(0deg);
+	}
+}
+
+@keyframes jump1 {
+	0% {
+		transform:translateY(0px);
+	}
+	25% {
+		transform:translateY(-30px);
+	}
+	50% {
+		transform:translateY(0px);
+	}
+	75% {
+		transform:translateY(-20px);
+	}
+	100% {
+		transform:translateY(0px);
+	}
+}

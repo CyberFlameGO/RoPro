@@ -56,6 +56,17 @@ function fetchStatus(userID) {
 	})
 }
 
+function fetchBadgeInfo(badgeID) {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://badges.roblox.com/v1/badges/" + badgeID},
+			function(data) {
+				resolve(data)
+			}
+		)
+	})
+}
+
+
 function fetchInfo(userID, myId) {
 	return new Promise(resolve => {
 		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/getUserInfoTest.php?userid=" + userID + "&myid=" + myId}, 
@@ -69,6 +80,16 @@ function fetchInfo(userID, myId) {
 function fetchTheme(userID) {
 	return new Promise(resolve => {
 		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/getTheme.php?userid=" + userID}, 
+			function(data) {
+				resolve(data)
+			}
+		)
+	})
+}
+
+function fetchEggCollection(userID) {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/getEggCollection.php?userid=" + parseInt(userID)},
 			function(data) {
 				resolve(data)
 			}
@@ -190,7 +211,15 @@ function addThemeMain(theme) {
 	mainContainer.style.backgroundRepeat = repeat
 	mainContainer.style.borderRadius = "20px"
 	mainContainer.style.padding = "20px"
-	//document.getElementById('accoutrements-slider').setAttribute('style', 'width:470px;transform:scale(0.95);margin-left:-7px;')
+	//document.getElementById('accoutrements-slider').setAttribute('style', 'width:470px;transform:scale(0.95);margin-left:-7px;')\
+	favoritesContainer = document.getElementsByClassName('favorite-games-container')
+	if (favoritesContainer.length > 0) {
+		favoritesContainer[0].style.overflowX = 'hidden'
+	}
+	accoutrementsContainer = document.getElementsByClassName('accoutrement-items-container')
+	if (accoutrementsContainer.length > 0) {
+		accoutrementsContainer[0].setAttribute('style', 'width:105%;transform:scale(0.95);margin-left:-2.5%;')
+	}
 }
 
 async function addRoProInfo(tier, user_since, subscribed_for) {
@@ -394,6 +423,110 @@ async function addReputation(reputation, liked, isMe) {
 	}, 500)
 }
 
+async function addEggCollection(userID) {
+	if (!(await fetchSetting("roproEggCollection"))) {
+		return
+	}
+	myId = await getStorage("rpUserID")
+	eggsInfo = await fetchEggCollection(userID)
+	eggs = eggsInfo['data']
+	if (eggsInfo['metadata']['visible'] == false) {
+		return
+	}
+	numEggs = parseInt(eggsInfo['metadata']['numEggs'])
+	linkName = stripTags(eggsInfo['metadata']['linkName'])
+	linkUrl = stripTags(eggsInfo['metadata']['linkUrl'])
+	displaySubheader = eggsInfo['metadata']['displaySubheader']
+	var div = document.createElement('div')
+	div.classList.add('section')
+	div.id = 'roblox-badges-container' //${eggs.length}/${parseInt(numEggs)}
+	div.style.minHeight = '130px'
+	eggCollectionHTML = `<div class="container-header"><h3>RoPro Egg Collection<img src="https://ropro.io/images/egg_icon.png" style="margin-top:-2px;margin-left:5px;width:22px!important;height:22px!important;${$('.dark-theme').length > 0 ? "" : "filter:invert(0.8);"}"></h3><a class="btn-secondary-xs btn-more see-all-link-icon" href="${linkUrl}">${linkName}</a><br><a class="btn-fixed-width btn-secondary-xs btn-more see-all-link" id="eggsCollectionSeeMoreButton" style="margin-right:7px;margin-top:3px;display:none;">See More</a></div><div class="section-content remove-panel"><ul class="hlist badge-list" style="max-height:initial;overflow:visible!important;"><p style="position:absolute;top:calc(50% + 10px);left:calc(50% - 125px);font-size:13px;display:block;text-align:center;${eggs.length == 0 ? "display:block;" : "display:none;"}">${userID == myId ? "You haven't" : "This user hasn't"} collected any eggs yet.<br>Visit <a href="https://ropro.io/eggs"><b>ropro.io/eggs</b></a> for more info.</p></ul></div>`
+	div.innerHTML = eggCollectionHTML
+	document.getElementById('roblox-badges-container').parentNode.insertBefore(div, document.getElementById('roblox-badges-container'))
+	var eggRowSize = 6
+	if (document.getElementsByClassName('btr-profile-container').length > 0) {
+		eggRowSize = 10
+	}
+	for (var i = 0; i < eggs.length; i++) {
+		var li = document.createElement('li')
+		var eggName = eggs[i].name
+		var eggDescription = eggs[i].description
+		var eggId = eggs[i].id
+		var eggDate = eggs[i].date
+		var eggRarity = eggs[i].rarity
+		li.classList.add('list-item')
+		li.classList.add('asset-item')
+		li.classList.add('ropro-egg-collection-li')
+		li.style.position = "relative"
+		li.innerHTML += `<a title="${stripTags(eggs[i].name)}"><span class="border asset-thumb-container icon-badge-combat-initiation ${eggRowSize == 6 ? Math.round(Math.random()) == 0 ? 'ropro-animated-icon1' : 'ropro-animated-icon2' : ''}" title="${stripTags(eggs[i].name)}" style="background:none;background-size:100%;background-image:url(${stripTags(eggs[i].thumbnail)})!important;"></span><span class="font-header-2 text-overflow item-name">${stripTags(eggs[i].name)}</span></a>`
+		div.getElementsByClassName('badge-list')[0].appendChild(li)
+		if (i >= eggRowSize) {
+			li.style.display = "none"
+		}
+		function eggListener(eggName, eggDescription, eggId, eggDate, eggRarity) {
+			li.addEventListener('click', async function() {
+				var d = new Date(eggDate)
+				var dateString = d.getMonth() + 1 + "/" + d.getDay() + "/" + d.getFullYear()
+				if (document.getElementById(eggId.toString()) == null) {
+					$('.ropro-egg-info-card').remove()
+					var clientWidth = 0
+					if (typeof window.innerWidth == 'undefined') {
+						clientWidth = document.documentElement.clientWidth
+					} else {
+						clientWidth = window.innerWidth
+					}
+					eggInfoCardHTML = `<div class="ropro-egg-info-card dark-theme" id="${parseInt(eggId)}" style="filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);z-index:1000;position:absolute;top:-300px;left:${eggRowSize == 6 ? '-225px' : '0px'};width:600px;height:300px;background-color:#393B3D;border-radius:10px;"><span id="roproEggInfoCardClose" class="icon-close-white" style="position:absolute;top:5px;right:5px;background-color:#1C1C1C;border-radius:7px;cursor:pointer;"></span><iframe class="item-card-iframe" style="float: right; border: none; width: 270px; height: 270px; border-radius: 7px; background-color: #232527;margin-top:15px;margin-right:15px;" src="https://ropro.io/eggs/renderEgg.php?id=${parseInt(eggId)}" scrolling="no"></iframe><div style="width:290px;height:160px;float:left;margin-top:15px;margin-left:15px;background-color: #232527;border-radius:7px;padding:10px;"><h3 style="font-size:auto;text-align:center;">${stripTags(eggName)}</h3><p style="height:auto;max-height:100px;overflow:auto;font-size:16px;text-align:left;">${stripTags(eggDescription)}</p></div><div style="width:290px;height:101px;float:left;margin-top:9px;margin-left:15px;background-color: #232527;border-radius:7px;padding:10px;"><p style="font-size:auto;text-align:center;font-size:18px;margin:10px;"><b style="color:white;">Rarity:</b> ${stripTags(eggRarity)}
+					</p><p style="font-size:auto;text-align:center;font-size:18px;margin:10px;"><b style="color:white;">Collected:</b> ${dateString}
+					</p></div></div>`
+					var div = document.createElement('div')
+					div.innerHTML = eggInfoCardHTML
+					if (eggRowSize == 6) {
+						this.appendChild(div.childNodes[0])
+					} else {
+						this.parentNode.appendChild(div.childNodes[0])
+					}
+					document.getElementById('roproEggInfoCardClose').addEventListener('click', function(e) {
+						this.parentNode.remove()
+						e.stopPropagation()
+					})
+					/**var badgeInfo = await fetchBadgeInfo(eggId)
+					var rarityPercentage = (badgeInfo.statistics.winRatePercentage * 100).toFixed(1)
+					var rarityText = "Unknown"
+					if (rarityPercentage < 1) {
+						rarityText = "Impossible"
+					} else if (rarityPercentage < 5) {
+						rarityText = "Insane"
+					} else if (rarityPercentage < 10) {
+						rarityText = "Extreme"
+					} else if (rarityPercentage < 20) {
+						rarityText = "Hard"
+					} else if (rarityPercentage < 5) {
+						rarityText = "Challenging"
+					}
+					this.getElementsByClassName('ropro-egg-rarity')[0].innerText = rarityText + " (" + rarityPercentage + "%)" **/
+				}
+			})
+		}
+		eggListener(eggName, eggDescription, eggId, eggDate, eggRarity)
+	}
+	if (eggs.length > eggRowSize) {
+		document.getElementById('eggsCollectionSeeMoreButton').style.display = "inline-block"
+		document.getElementById('eggsCollectionSeeMoreButton').addEventListener('click', function() {
+			if (this.innerText == "See More") {
+				$('.ropro-egg-collection-li').css("display", "inline-block")
+				this.innerText = "See Less"
+			} else if (this.innerText == "See Less") {
+				$('.ropro-egg-collection-li').css("display", "none")
+				for (i = 0; i < eggRowSize; i++) {
+					$('.ropro-egg-collection-li').get(i).style.display = "inline-block"
+				}
+				this.innerText = "See More"
+			}
+		})
+	}
+}
+
 function getStorage(key) {
 	return new Promise(resolve => {
 		chrome.storage.sync.get(key, function (obj) {
@@ -404,6 +537,12 @@ function getStorage(key) {
 
 async function mainProfile() {
 	if (location.href.includes("/profile")) {
+		try {
+			userID = getIdFromURL(location.href)
+			addEggCollection(userID)
+		} catch(e) {
+			console.log(e)
+		}
 		try {
 			setTimeout(async function() {
 				userID = getIdFromURL(location.href)

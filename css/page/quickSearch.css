@@ -16,3 +16,14 @@
 	height: 58px!important;
 	transition: height 0.2s;
 }
+
+.quick-item-search {
+	height:0px!important;
+	overflow:hidden;
+	transition: height 0.2s;
+}
+
+.quick-item-search.loaded {
+	height: 58px!important;
+	transition: height 0.2s;
+}

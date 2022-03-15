@@ -92,4 +92,3 @@ async function doResellers() {
 		resellersMain()
 	}
 }
-doResellers()
