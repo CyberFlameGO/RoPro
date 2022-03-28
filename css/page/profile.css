@@ -1,3 +1,23 @@
+.ropro-featured-badge {
+	cursor: pointer;
+	width: auto!important;
+}
+
+.ropro-featured-badge img {
+	float:right;
+}
+
+.ropro-featured-badge .ropro-featured-badge-info {
+	width: 0px!important;
+	overflow: hidden;
+	transition: width 0.2s;
+}
+
+.ropro-featured-badge:hover .ropro-featured-badge-info {
+	width: 165px!important;
+	transition: width 0.2s;
+}
+
 .rolilike:hover{
 	content: url("https://ropro.io/images/like2.png");
 }
