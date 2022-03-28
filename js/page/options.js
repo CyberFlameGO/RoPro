@@ -186,7 +186,7 @@ function getSettings() {
 		"sandbox": check("sandbox"),
 		"profileThemes": check("profileThemes"),
 		"lastOnline": check("lastOnline"),
-		"profileStatus": check("profileStatus"),
+		"roproEggCollection": check("roproEggCollection"),
 		"genreFilters": check("genreFilters"),
 		"randomGame": check("randomGame"),
 		"popularToday": check("popularToday"),

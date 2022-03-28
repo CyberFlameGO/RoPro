@@ -33,13 +33,20 @@ https://ropro.io/privacy-policy
 © 2021 Dice Systems LLC
 **/
 
+var fetchAngular = document.createElement('script');
+fetchAngular.src = chrome.extension.getURL('/js/page/fetchServers.js');
+(document.head||document.documentElement).appendChild(fetchAngular);
+fetchAngular.onload = function() {
+    fetchAngular.remove();
+}
+
 var theme = "dark"
 if ($('.light-theme').length > 0) {
     var theme = "light"
 }
-serverFiltersHTML = `<div id="serverFiltersButton" style="float:right;width:150px;margin-top:3px;" class="input-group-btn"><div id="serverFiltersDropdown" style="overflow:visible;margin-top:-3.5px;margin-left:0px;float:left;width:150px;margin-left:-10px;" class="server-filters-dropdown input-group-btn group-dropdown">
+serverFiltersHTML = `<div id="roproServerFiltersButton" style="float:right;width:150px;margin-top:-6px;margin-right:10px;" class="input-group-btn"><div id="serverFiltersDropdown" style="overflow:visible;margin-top:-3.5px;margin-left:0px;float:left;width:150px;margin-left:-10px;" class="server-filters-dropdown input-group-btn group-dropdown">
 <button type="button" style="border-radius:0px;border:none;" class="input-dropdown-btn" data-toggle="dropdown" aria-expanded="false"> 
-<span id="serverFilters" class="rbx-selection-label ng-binding" style="width:160px;overflow:hidden;">Server Filters<img class="server-filters-icon" style="width:25px;filter:invert(0.8);margin-left:5px;" src="https://ropro.io/images/options_icon.svg"></span> 
+<span id="serverFilters" class="rbx-selection-label ng-binding" style="width:160px;overflow:hidden;">Server Filters<img class="server-filters-icon" style="width:20px;filter:invert(2);margin-left:5px;" src="https://ropro.io/images/optionsicon.svg"></span> 
 </button>
 </div>
 			<span id="maxPlayersLoadingBar" style="margin-right: 310px; float: right; display: none; transform: scale(0.8); width: 100px; height: 25px; visibility: initial !important;" class="spinner spinner-default"></span>
@@ -70,7 +77,7 @@ serverFiltersHTML = `<div id="serverFiltersButton" style="float:right;width:150p
 		<div style="display:none;position:absolute;top:-10px;left:200px;width:auto;inline-size:200px;;height:auto;background-color:#191B1D;color:white;padding:5px;border-radius:5px;white-space: pre-wrap;font-size:14px;" class="filter-tooltip"><div style="font-weight:800;text-decoration:underline;"><img src="https://ropro.io/images/standard_icon.png" style="width:15px;margin-right:5px;margin-top:-2.7px;">Subscribers Only</div>Filter servers by the region where they are located.</div>
 		<div id="serverRegionSelector" style="display:none;position:absolute;left: -518px;top:-270px;width:520px;height:auto;z-index:1000;background-color:#1E2022;border-radius:5px;padding:10px;">
 			<div style="text-align:center;margin-bottom:10px;">
-				<h3 style="padding-bottom:0px!important;">RoPro Server Region Selector</h3>
+				<p style="font-weight:bold;font-size:20px;padding-bottom:0px!important;">RoPro Server Region Selector</p>
 				<p style="font-size:13px;">You should have a faster connection in datacenters close to you!</p>
 			</div>
 			<iframe id="globeFrame" style="border:0;width:500px;height:500px;" frameborder="0" scrolling="no"></iframe>
@@ -102,7 +109,7 @@ searchBarHTML = `<div id="searchServerMain" style="margin-top:5px;margin-bottom:
 					<span id="searchServerButton" style="padding:10px;margin-bottom:10px;float-left;" class="btn-secondary-md btn-more rbx-private-server-create-button">Search</span>
 					</div>`
 gameRankHTML = `<div id="gameRankDiv" style="z-index:1000;position:absolute;margin-bottom:6px;visibility:initial;bottom:-10px;left:5px;"><div style="margin-left:2px;width:155px;height:24px;background-color:#0084DD;border-radius:150px;"><img style="left:0px;top:0px;position:absolute;margin-right:5px;" src="https://ropro.io/images/value_icon_medium.png" height="24px"><h5 id="valueAmount" style="font-size:15px;position:absolute;right:5px;top:-2px;width:100%;text-align:right;">Rank Today: #4</h5></div></div>`
-mostRecentServerHTML = `<div class="stack" data-showshutdown="false"><div class="container-header"><h3>My Recent Server</h3></div><ul style="padding:0px;margin-top:20px;" id="rbx-recent-server-box" class="section rbx-friends-game-server-item-container stack-list section-content-off"><p class="no-servers-message">No Recent Server Found.</p></ul><div class="rbx-friends-running-games-footer"></div><div class="rbx-friends-game-server-template"><li class="stack-row rbx-friends-game-server-item"><div class="section-header"><div class="link-menu rbx-friends-game-server-menu"></div></div><div class="section-left rbx-friends-game-server-details"><div class="text-info rbx-game-status rbx-friends-game-server-status"></div><div class="rbx-friends-game-server-alert"><span class="icon-remove"></span>Slow Game</div><a class="btn-full-width btn-control-xs rbx-friends-game-server-join" href="#" data-placeid="">Join</a></div><div class="section-right rbx-friends-game-server-players"></div></li></div></div>`
+mostRecentServerHTML = `<div id="roproMostRecentServerContainer" class="stack" data-showshutdown="false"><div class="container-header"><h3>My Recent Server</h3></div><ul style="padding:0px;margin-top:20px;" id="rbx-recent-server-box" class="section rbx-friends-game-server-item-container stack-list section-content-off"><p class="no-servers-message">No Recent Server Found.</p></ul><div class="rbx-friends-running-games-footer"></div><div class="rbx-friends-game-server-template"><li class="stack-row rbx-friends-game-server-item"><div class="section-header"><div class="link-menu rbx-friends-game-server-menu"></div></div><div class="section-left rbx-friends-game-server-details"><div class="text-info rbx-game-status rbx-friends-game-server-status"></div><div class="rbx-friends-game-server-alert"><span class="icon-remove"></span>Slow Game</div><a class="btn-full-width btn-control-xs rbx-friends-game-server-join" href="#" data-placeid="">Join</a></div><div class="section-right rbx-friends-game-server-players"></div></li></div></div>`
 commentsPaneHTML = `<div class="tab-pane comments" id="comments" style="margin-top:20px;overflow:visible;"><div id="rbx-game-passes" style="overflow:visible;" class="container-list game-dev-store game-passes"><div>
 <div id="AjaxCommentsContainer" class="comments-container">
 <div class="container-header">
@@ -183,7 +190,7 @@ commentsPaneHTML = `<div class="tab-pane comments" id="comments" style="margin-t
         </div>
     </div>
 </div></div></div>`
-randomServerHTML = `<button type="button" style="width:66px;min-width:66px;margin-left:3px;" class="btn-full-width btn-common-play-game-lg btn-primary-md btn-min-width random-server-button"><div class="random-server-tooltip" style="position:absolute;width:130px;background-color:#191B1D;color:white;top:-30px;right:-20px;font-size:13px;padding:5px;border-radius:5px;z-index:10000;display:none;">Random Server</div><span style="filter:invert(1);background-image:url(https://ropro.io/images/random_server.svg);background-size: 36px 36px;" class="icon-common-play"></span></button>`
+randomServerHTML = `<button type="button" style="width:66px;min-width:66px;margin-left:3px;" class="btn-full-width btn-common-play-game-lg btn-primary-md btn-min-width random-server-button"><div class="random-server-tooltip" style="position:absolute;width:225px;background-color:#191B1D;color:white;top:-30px;right:-62px;font-size:13px;padding:5px;border-radius:5px;z-index:10000;display:none;">Random Server | Avoid Friends</div><span style="filter:invert(1);background-image:url(https://ropro.io/images/random_server.svg);background-size: 36px 36px;" class="icon-common-play"></span></button>`
 randomServerOverlayHTML = `<div id="simplemodal-overlay" class="simplemodal-overlay" style="background-color: rgb(0, 0, 0); opacity: 0.8; height: 100%; width: 100%; position: fixed; left: 0px; top: 0px; z-index: 1041;"></div>`
 randomServerModalHTML = `<div id="simplemodal-container" class="simplemodal-container" style="position: fixed; z-index: 1042; height: 231px; width: 400px;  left: calc(50% - 200px); top: calc(50% - 115.5px);"><a class="modalCloseImg simplemodal-close" title="Close"></a><div tabindex="-1" class="simplemodal-wrap" style="height: 100%; outline: 0px; width: 100%; overflow: visible;"><div id="modal-confirmation" class="modal-confirmation noImage protocolhandler-are-you-installed-modal simplemodal-data" data-modal-type="confirmation" style="display: block;"><div id="modal-dialog" class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal"> <span aria-hidden="true"><span class="icon-close"></span></span><span class="sr-only">Close</span> </button><h5 class="modal-title"></h5></div><div class="modal-body"><div class="modal-top-body"><div class="modal-message"><img style="filter: drop-shadow(rgb(57,59,61) 2px 2px 2px);" src="https://ropro.io/images/ropro_logo.svg" width="150" alt="R"><p>Searching for a random server...</p></div><div class="modal-image-container roblox-item-image" data-image-size="medium" data-no-overlays="" data-no-click=""><img class="modal-thumb" alt="generic image"></div><div class="modal-checkbox checkbox" style="display: none;"><input id="modal-checkbox-input" type="checkbox"> <label for="modal-checkbox-input"></label></div></div><div style="display:none;" class="modal-btns"><a href="" id="confirm-btn" class="btn-primary-md">Download Studio</a> <a href="" id="decline-btn" class="btn-control-md" style="display: none;">No</a></div><div style="display:block;" class="loading modal-processing"><img class="loading-default" src="https://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif" alt="Processing..."></div></div><div class="modal-footer text-footer" style="display: block;"></div></div></div></div></div></div>`
 var pageIndex = 0;
@@ -475,7 +482,7 @@ async function loadServerPage(gameID, index, reverse){
 			playerHTML = `<span class="special-span avatar avatar-headshot-sm player-avatar"><a class="avatar-card-link"><img class="avatar-card-image" src="${thumbnail}"></a></span>`
 			playersHTML += playerHTML
 		}
-		serversHTML += `<li class="stack-row rbx-game-server-item" data-gameid="${gameId}" data-placeid="${placeId}"><div class="section-header">
+		serversHTML += `<li class="stack-row rbx-game-server-item ropro-checked" data-gameid="${gameId}" data-placeid="${placeId}"><div class="section-header">
 						<div class="link-menu rbx-game-server-menu"></div></div>
 						<div class="section-left rbx-game-server-details">
 							<div class="text-info rbx-game-status rbx-game-server-status">${playerCount}</div>
@@ -538,7 +545,7 @@ function createServerElement(server) {
 	playerCount = server.CurrentPlayers.length + " out of " + server.Capacity + " max"
 	li = document.createElement("li")
 	li.setAttribute("id", "serverSearchResult")
-	li.setAttribute("class", "stack-row rbx-game-server-item")
+	li.setAttribute("class", "stack-row rbx-game-server-item ropro-checked")
 	li.setAttribute("style", "margin-bottom:30px;")
 	li.setAttribute("data-gameid",stripTags(gameId.toString()))
 	playersHTML = ""
@@ -669,13 +676,16 @@ function addMaxPlayers(maxPlayers) {
 }
 
 function addServerFilters(placeId, maxPlayerCount) {
+	if (document.getElementById('serverFiltersDropdown') != null) { 
+		return
+	}
 	serverContainer = document.getElementById('rbx-running-games')
 	serverFiltersDiv = document.createElement('div')
 	serverFiltersDiv.innerHTML = serverFiltersHTML
-	serverContainer.insertBefore(serverFiltersDiv, serverContainer.childNodes[1])
+	serverContainer.getElementsByClassName('container-header')[0].appendChild(serverFiltersDiv)
 	async function checkSettings() {
 		if (await fetchSetting("serverFilters") == false) {
-			document.getElementById('serverFiltersButton').style.display = "none"
+			document.getElementById('roproServerFiltersButton').style.display = "none"
 		}
 	}
 	checkSettings()
@@ -850,7 +860,7 @@ function addServerFilters(placeId, maxPlayerCount) {
 			upgradeModalServerFilters()
 		}
 	})
-	for (i = 1; i < parseInt(maxPlayerCount); i++) {
+	for (i = parseInt(maxPlayerCount) - 1; i >= 1; i--) {
 		div = document.createElement('div')
 		div.innerHTML = `<div class="max-players-selection" style="background-color:#232527;height:40px;width:177.5px;margin:5px;border-radius:5px;padding:10px;font-size:15px;font-weight:800;">${parseInt(i)} player${i == 1 ? '' : 's'} or less</div>`
 		button = div.childNodes[0]
@@ -1046,9 +1056,13 @@ async function addEmbeds(sectionContent, myUniverseId) {
 
 async function addActiveServerCount(gameId) {
 	servers = await fetchServerPage(gameId, 0)
-	serverTab = document.getElementById('tab-game-instances').getElementsByTagName('span')
+	var serverTab = document.getElementById('tab-game-instances').getElementsByTagName('span')
 	if (serverTab.length > 0) {
-		serverTab[0].innerText += ` (${addCommas(parseInt(servers.TotalCollectionSize))})`
+		serverTab[0].innerText = `${addCommas(parseInt(servers.TotalCollectionSize))} Active Server${parseInt(servers.TotalCollectionSize) == 1 ? '' : 's'}`
+	}
+	var serverButton = document.getElementById('tab-game-instances').getElementsByTagName('a')
+	if (serverButton.length > 0) {
+		serverButton[0].style.cursor = "pointer"
 	}
 }
 
@@ -1353,15 +1367,22 @@ async function createSpeedTest(elem, serverid, placeid) {
 }
 
 function addServerInviteButton(elem, serverid, placeid) {
+	if (elem.classList.contains("ropro-server-invite-added")) {
+		return
+	}
 	serverInfoQueue.push([elem, serverid])
-	console.log(elem, serverid)
+	elem.classList.add('ropro-server-invite-added')
 	if (elem.classList.contains('rbx-friends-game-server-item')) {
 		serverInviteButtonHTML = `<a style="width:15%;margin-left:1%;position:relative!important;" class="btn-full-width btn-control-xs create-server-link" data-placeid="${parseInt(placeid)}" data-serverid="${stripTags(serverid)}"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" width="1em" height="1em" style="${$('.light-theme').length == 0 ? "" : "filter:invert(1);"}vertical-align: -0.125em;-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg) scale(1.15);margin:auto;" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path class="linkpath" d="M10.586 13.414a1 1 0 0 1-1.414 1.414 5 5 0 0 1 0-7.07l3.535-3.536a5 5 0 0 1 7.071 7.071l-1.485 1.486a7.017 7.017 0 0 0-.405-2.424l.476-.476a3 3 0 1 0-4.243-4.243l-3.535 3.536a3 3 0 0 0 0 4.242zm2.828-4.242a1 1 0 0 1 1.414 0 5 5 0 0 1 0 7.07l-3.535 3.536a5 5 0 0 1-7.071-7.07l1.485-1.486c-.008.82.127 1.641.405 2.423l-.476.476a3 3 0 1 0 4.243 4.243l3.535-3.536a3 3 0 0 0 0-4.242 1 1 0 0 1 0-1.414z" fill="#fff" style="fill: rgb(255, 255, 255);"></path></svg></a>`
 		div = document.createElement('div')
 		div.innerHTML = serverInviteButtonHTML
 		button = div.childNodes[0]
 		elem.getElementsByClassName('rbx-friends-game-server-join')[0].style.width = "79%"
-		elem.getElementsByClassName('rbx-friends-game-server-details')[0].appendChild(button)
+		if (elem.getElementsByClassName('rbx-friends-game-server-details').length > 0) {
+			elem.getElementsByClassName('rbx-friends-game-server-details')[0].appendChild(button)
+		} else if (elem.getElementsByClassName("rbx-friends-game-server-details'").length > 0) {
+			elem.getElementsByClassName("rbx-friends-game-server-details'")[0].appendChild(button)
+		}
 		button.addEventListener('click', function(event) {
 			createInviteLink(this, this.getAttribute('data-serverid'), this.getAttribute('data-placeid'))
 			event.stopPropagation()
@@ -1372,7 +1393,11 @@ function addServerInviteButton(elem, serverid, placeid) {
 		div.innerHTML = serverInviteButtonHTML
 		button = div.childNodes[0]
 		elem.getElementsByClassName('rbx-game-server-join')[0].style.width = "79%"
-		elem.getElementsByClassName('rbx-game-server-details')[0].appendChild(button)
+		if (elem.getElementsByClassName('rbx-game-server-details').length > 0) {
+			elem.getElementsByClassName('rbx-game-server-details')[0].appendChild(button)
+		} else if (elem.getElementsByClassName("rbx-game-server-details'").length > 0) {
+			elem.getElementsByClassName("rbx-game-server-details'")[0].appendChild(button)
+		}
 		button.addEventListener('click', function(event) {
 			createInviteLink(this, this.getAttribute('data-serverid'), this.getAttribute('data-placeid'))
 			event.stopPropagation()
@@ -1421,7 +1446,7 @@ function addMostRecentServer(placeID, serverID, userID, time, serverActive) {
 		timeString = `${period} month${suffix} ago`
 	}
 	if (serverActive) {
-		document.getElementById('rbx-recent-server-box').innerHTML = `<li style="border-radius:0px;margin-top:-15px;" data-gameid="${stripTags(serverID)}" class="stack-row rbx-game-server-item"><div class="section-header"><div class="link-menu rbx-game-server-menu"></div></div><div style="width:90%;position:relative;" class="section-left rbx-game-server-details">
+		document.getElementById('rbx-recent-server-box').innerHTML = `<li style="border-radius:0px;margin-top:-15px;" data-gameid="${stripTags(serverID)}" class="stack-row rbx-game-server-item ropro-checked"><div class="section-header"><div class="link-menu rbx-game-server-menu"></div></div><div style="width:90%;position:relative;" class="section-left rbx-game-server-details">
 		<div style="float:left;" class="text-info rbx-game-status rbx-game-server-status"><b>Last Played:</b><img style="background-image:none;margin:0px;margin-top:-2px;margin-bottom:1px;transform:scale(1);border:none;margin-left:5px;margin-right:5px;width:15px;height:15px;" src="https://ropro.io/images/timer${theme == "dark" ? "_dark" : "_light"}.svg" class="info-label icon-pastname">${stripTags(timeString)}</div><br><div style="float:left;" class="text-info rbx-game-status rbx-game-server-status"><b>Server ID:</b> ${stripTags(serverID)}</div>
 		<div class="rbx-game-server-alert hidden"><span class="icon-remove"></span>Slow Game</div><a style="width:89%;float:left;" class="ropro-game-server-join btn-full-width btn-control-xs" data-serverid="${stripTags(serverID)}" data-placeid="${parseInt(placeID)}" onclick="Roblox.GameLauncher.joinGameInstance(${parseInt(placeID)}, &quot;${stripTags(serverID)}&quot;)">Rejoin Server</a><a style="width:9.5%;float:right;margin-right:1%;position:relative!important;" class="btn-full-width btn-control-xs create-server-invite-button" data-serverid="${stripTags(serverID)}" data-placeid="${parseInt(placeID)}"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" width="1em" height="1em" style="${$('.light-theme').length == 0 ? "" : "filter:invert(1);"}vertical-align: -0.125em;-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg) scale(1.15);margin:auto;" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path class="linkpath" d="M10.586 13.414a1 1 0 0 1-1.414 1.414 5 5 0 0 1 0-7.07l3.535-3.536a5 5 0 0 1 7.071 7.071l-1.485 1.486a7.017 7.017 0 0 0-.405-2.424l.476-.476a3 3 0 1 0-4.243-4.243l-3.535 3.536a3 3 0 0 0 0 4.242zm2.828-4.242a1 1 0 0 1 1.414 0 5 5 0 0 1 0 7.07l-3.535 3.536a5 5 0 0 1-7.071-7.07l1.485-1.486c-.008.82.127 1.641.405 2.423l-.476.476a3 3 0 1 0 4.243 4.243l3.535-3.536a3 3 0 0 0 0-4.242 1 1 0 0 1 0-1.414z" fill="#fff" style="fill: rgb(255, 255, 255);"></path></svg></a></div><div style="width:9%;margin-top:13px;margin-left:1%;" class="section-right rbx-game-server-players"><span style="transform:scale(1.3);" class="avatar avatar-headshot-sm player-avatar"><a class="avatar-card-link"><img src="https://www.roblox.com/headshot-thumbnail/image?userId=${parseInt(userID)}&width=420&height=420&format=png" class="avatar-card-image"></a></span></div></li>`	
 		document.getElementById('rbx-recent-server-box').getElementsByClassName('create-server-invite-button')[0].addEventListener('click', function(event) {
@@ -1429,7 +1454,7 @@ function addMostRecentServer(placeID, serverID, userID, time, serverActive) {
 			event.stopPropagation()
 		})
 	} else {
-		document.getElementById('rbx-recent-server-box').innerHTML = `<li style="border-radius:0px;margin-top:-15px;" data-gameid="${stripTags(serverID)}" class="stack-row rbx-game-server-item"><div class="section-header"><div class="link-menu rbx-game-server-menu"></div></div><div style="width:90%;position:relative;" class="section-left rbx-game-server-details">
+		document.getElementById('rbx-recent-server-box').innerHTML = `<li style="border-radius:0px;margin-top:-15px;" data-gameid="${stripTags(serverID)}" class="stack-row rbx-game-server-item ropro-checked"><div class="section-header"><div class="link-menu rbx-game-server-menu"></div></div><div style="width:90%;position:relative;" class="section-left rbx-game-server-details">
 		<div style="float:left;" class="text-info rbx-game-status rbx-game-server-status"><b>Last Played:</b><img style="background-image:none;margin:0px;margin-top:-2px;margin-bottom:1px;transform:scale(1);border:none;margin-left:5px;margin-right:5px;width:15px;height:15px;" src="https://ropro.io/images/timer${theme == "dark" ? "_dark" : "_light"}.svg" class="info-label icon-pastname">${stripTags(timeString)}</div><br><div style="float:left;" class="text-info rbx-game-status rbx-game-server-status"><b>Server ID:</b> ${stripTags(serverID)}</div>
 		<div class="rbx-game-server-alert hidden"><span class="icon-remove"></span>Slow Game</div><a class="ropro-game-server-join btn-full-width btn-control-xs" data-placeid="${parseInt(placeID)}" onclick="Roblox.GameLauncher.joinGameInstance(${parseInt(placeID)}, &quot;${stripTags(serverID)}&quot;)">Server No Longer Active</a></div><div style="width:9%;margin-top:13px;margin-left:1%;" class="section-right rbx-game-server-players"><span style="transform:scale(1.3);" class="avatar avatar-headshot-sm player-avatar"><a class="avatar-card-link"><img src="https://www.roblox.com/headshot-thumbnail/image?userId=${parseInt(userID)}&width=420&height=420&format=png" class="avatar-card-image"></a></span></div></li>`	
 	}
@@ -1567,12 +1592,33 @@ async function checkGamePage() {
 			try{
 				addEmbeds(document.getElementById('game-detail-page'), myUniverseId)
 			} catch (e) {
-				console.log(e)
+				//console.log(e)
 			}
 			gameInfo = await fetchGameInfo(myUniverseId)
-			if (await fetchSetting("serverFilters")) {
-				addServerFilters(globalGameId, gameInfo.data[0].maxPlayers)
-			}	
+			var mostRecentServerSetting = await fetchSetting("mostRecentServer")
+			var serverFiltersSetting = await fetchSetting("serverFilters")
+			try {
+				var serverInterval = setInterval(async function(){ 
+					if (document.getElementById('rbx-running-games') != null) {
+						//clearInterval(serverInterval)
+						if (serverFiltersSetting && document.getElementById('roproServerFiltersButton') == null) {
+							addServerFilters(globalGameId, gameInfo.data[0].maxPlayers)
+						}
+						if (mostRecentServerSetting && document.getElementById('roproMostRecentServerContainer') == null) {
+							//clearInterval(serverInterval)
+							addRecentServer(parseInt(myUniverseId))
+							loadMostRecentServer(myUniverseId)
+							setInterval(function(){
+								if (mostRecentServerSetting) {
+									loadMostRecentServer(myUniverseId)
+								}
+							}, 120000)
+						}
+					}
+				}, 500)
+			} catch (e) {
+				//console.log(e)
+			}
 			if (await fetchSetting("liveLikeDislikeFavoriteCounters")) {
 				liveCounters()
 			}
@@ -1583,16 +1629,6 @@ async function checkGamePage() {
 			if (await fetchSetting("playtimeTracking")) {
 				addPlayTime(parseInt(myUniverseId))
 			}
-			mostRecentServer = true
-			if (await fetchSetting("mostRecentServer")) {
-				addRecentServer(parseInt(myUniverseId))
-				loadMostRecentServer(myUniverseId)
-			}
-			setInterval(function(){
-				if (mostRecentServer) {
-					loadMostRecentServer(myUniverseId)
-				}
-			}, 120000)
 			serverSpeedButton = await fetchSetting("serverInviteLinks")
 			if (await fetchSetting("serverInviteLinks") || serverSpeedButton || await fetchSetting("serverInfo")) {
 				setInterval(function() {
@@ -1624,19 +1660,27 @@ async function checkGamePage() {
 				const observer = new MutationObserver(function(a) {
 					servers = document.getElementsByClassName('rbx-game-server-item')
 					for (i = 0; i < servers.length; i++) {
+						//console.log(servers[i])
 						joinbutton = servers[i].getElementsByClassName('rbx-game-server-join')[0]
 						if (typeof joinbutton != 'undefined' && servers[i].getElementsByClassName('create-server-link').length == 0) {
 							joinbutton.setAttribute('create-server-link-added', 'true')
 							serverid = servers[i].getAttribute('data-gameid')
 							placeid = globalGameId
 							if (serverid != null) {
+								//console.log("ADDING INVITE")
 								addServerInviteButton(servers[i], serverid, placeid)
 							}
 						}
 					}
 				});
-				serverContainer = document.getElementById('rbx-game-server-item-container')
-				observer.observe(serverContainer, {subtree: true, childList: true})
+				var serverContainerInterval = setInterval(function(){ 
+					serverContainer = document.getElementById('rbx-game-server-item-container')
+					//console.log(serverContainer)
+					if (serverContainer != null) {
+						clearInterval(serverContainerInterval)
+						observer.observe(serverContainer, {subtree: true, childList: true})
+					}
+				}, 1000)
 			}
 			if (await fetchSetting("additionalServerInfo")) {
 				setInterval(function(){

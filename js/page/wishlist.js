@@ -138,7 +138,7 @@ function deleteOffer(wishid) {
 	})
 }
 
-function fetchItemSearch(search) {
+function fetchItemMiniSearch(search) {
 	return new Promise(resolve => {
 		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/itemSearch.php?q="+search},
 			function(data) {
@@ -836,7 +836,7 @@ async function createCatalogSearch(container, secondary) {
 		if (event.keyCode === 13) {
 			if (document.getElementById('itemSearchList').children.length > 0) {
 				document.getElementById('itemSearchList').children[0].click()
-			} else if (document.getElementById('secondaryContinue').getAttribute('active') == 'true') {
+			} else if (document.getElementById('secondaryContinue') != null && document.getElementById('secondaryContinue').getAttribute('active') == 'true') {
 				document.getElementById('secondaryContinue').click()
 			} else if (document.getElementById('secondaryReload') != null) {
 				document.getElementById('secondaryReload').click()
@@ -846,7 +846,7 @@ async function createCatalogSearch(container, secondary) {
 	$("#filterSearch").on('input', async function(){
 		currentValue = this.value
 		if (currentValue != '') {
-			items = JSON.parse(await fetchItemSearch(this.value))
+			items = JSON.parse(await fetchItemMiniSearch(this.value))
 			if (this.value == currentValue) {
 				list = document.getElementById('itemSearchList')
 				list.innerHTML = ''

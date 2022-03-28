@@ -2541,7 +2541,7 @@ async function addTradePanel() {
 			$("#filterSearch").on('input', async function(){
 				currentValue = this.value
 				if (currentValue != '') {
-					items = JSON.parse(await fetchItemSearch(this.value))
+					items = JSON.parse(await fetchItemMiniSearch(this.value))
 					if (this.value == currentValue) {
 						list = document.getElementById('itemSearchList')
 						list.innerHTML = ''

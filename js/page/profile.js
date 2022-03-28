@@ -467,7 +467,7 @@ async function addEggCollection(userID) {
 		function eggListener(eggName, eggDescription, eggId, eggDate, eggRarity) {
 			li.addEventListener('click', async function() {
 				var d = new Date(eggDate)
-				var dateString = d.getMonth() + 1 + "/" + d.getDay() + "/" + d.getFullYear()
+				var dateString = d.getMonth() + 1 + "/" + d.getDate() + "/" + d.getFullYear()
 				if (document.getElementById(eggId.toString()) == null) {
 					$('.ropro-egg-info-card').remove()
 					var clientWidth = 0
@@ -681,20 +681,12 @@ async function mainProfile() {
 				})
 			}
 			if ("tier" in info && info.tier != "none" && await fetchSetting("roproBadge")) {
-				console.log("PERSON1: " + userID)
 				test = await getUserId()
-				console.log("PERSON2: " + test)
-				if (userID == "89313169") {
-					addRoProInfo("dev_tier", info.user_since, info.user_since)
+				if (test == userID) {
+					addRoProInfo("ultra_tier", info.user_since, info.user_since)
 				} else {
-					if (test == userID || userID =="201746560") {
-						addRoProInfo("ultra_tier", info.user_since, info.user_since)
-					} else {
-						addRoProInfo(info.tier, info.user_since, info.subscribed_for)
-					}
+					addRoProInfo(info.tier, info.user_since, info.subscribed_for)
 				}
-
-				
 			}
 			if (await fetchSetting("roproBadge")) {
 				console.log(info.icons)
@@ -711,10 +703,8 @@ async function mainProfile() {
 
 				}
 
-				if (profileIconsSorted == false) {
-					for (i = 0; i < info.icons.length; i++) {
-						addProfileIcon(info.icons[i].name, info.icons[i].description, info.icons[i].image, info.icons[i].link)
-					}
+				for (i = 0; i < info.icons.length; i++) {
+					addProfileIcon(info.icons[i].name, info.icons[i].description, info.icons[i].image, info.icons[i].link)
 				}
 			}
 		}
