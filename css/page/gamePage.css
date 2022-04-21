@@ -111,6 +111,14 @@ display:block;
   border-bottom-color: #393B3D;
 }
 
+.light-theme #roproServerFiltersMiniButton {
+  background-color: #F2F4F5!important;
+}
+
+.light-theme #roproServerFiltersMiniButton img {
+  filter:invert(0.1)!important;
+}
+
 .dark-theme #serverFilters {
   color:white!important;
 }
@@ -282,6 +290,39 @@ display:block;
   display: block!important;
 }
 
+#maxPlayersButtonMini:hover #playerCountSelector {
+  display: block!important;
+}
+
+#serverRegionButtonMini:hover #serverRegionSelector {
+  display: block!important;
+}
+
+#serverRegionButtonMini:hover #serverRegionSelector {
+  display: block!important;
+}
+
+#serverRegionButtonMini.active {
+  border: solid #0084DD 1px;
+  padding-top: 2px!important;
+  padding-bottom: 2px!important;
+}
+
+#serverRegionButtonMini.active #serverRegionSelector {
+  display: block!important;
+}
+
+#maxPlayersButtonMini.active {
+  border: solid #0084DD 1px;
+  padding-top: 2px!important;
+  padding-bottom: 2px!important;
+}
+
+#maxPlayersButtonMini.active #playerCountSelector {
+  display: block!important;
+}
+
+
 #maxPlayersList::-webkit-scrollbar {
   width: 12px;
 }
@@ -294,6 +335,20 @@ display:block;
 #maxPlayersList::-webkit-scrollbar-thumb {
   border-radius: 10px;
   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,1); 
+}
+
+#maxPlayersListMini::-webkit-scrollbar {
+width: 12px;
+}
+
+#maxPlayersListMini::-webkit-scrollbar-track {
+-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+border-radius: 10px;
+}
+
+#maxPlayersListMini::-webkit-scrollbar-thumb {
+border-radius: 10px;
+-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,1); 
 }
 
 .dark-theme .max-players-selection {
@@ -309,6 +364,14 @@ background-color: #393B3D!important;
 }
 
 .light-theme #maxPlayersList {
+background-color: #dfdfdf!important;
+}
+
+.dark-theme #maxPlayersListMini {
+background-color: #393B3D!important;
+}
+
+.light-theme #maxPlayersListMini {
 background-color: #dfdfdf!important;
 }
 
@@ -344,4 +407,14 @@ display: none!important;
 
 .ropro-server-info:hover .ropro-server-info-tooltip {
   display: block!important;
+}
+
+.dark-theme #roproServerFiltersMiniButton:hover {
+border: solid white 1px;
+padding: 2px!important;
+}
+
+.light-theme #roproServerFiltersMiniButton:hover {
+border: solid black 1px;
+padding: 2px!important;
 }

@@ -10,19 +10,18 @@ RoPro was wholly designed and coded by:
 |  '--'  /|  |'  '--'\|  `---. 
 `-------' `--' `-----'`------' 
                             
-Contact me with inquiries (job offers welcome) at:
+Contact me:
 
 Discord - Dice#1000
 Email - dice@ropro.io
-Phone - ‪(650) 318-1631‬
+Phone - 650-318-1631
 
 Write RoPro:
 
 Dice Systems LLC
-1629 K. Street N.W.
-Suite 300
-Washington, DC
-20006-1631
+16192 Coastal Hwy
+Lewes, Deleware 19958
+United States
 
 RoPro Terms of Service:
 https://ropro.io/terms
@@ -30,7 +29,7 @@ https://ropro.io/terms
 RoPro Privacy Policy:
 https://ropro.io/privacy-policy
 
-© 2021 Dice Systems LLC
+© 2022 Dice Systems LLC
 **/
 var theme = "dark"
 if ($('.light-theme').length > 0) {
@@ -42,18 +41,18 @@ mostPlayedHTML = `<div id="scrollLeft" style="margin-top:33px;height:95px;margin
 <h3 style="font-size:17px;margin-top:2px;margin-bottom:-10px;position:absolute;">My Most Played<!--<img src="https://ropro.io/images/ropro_logo_small.png" style="filter: drop-shadow(1px 1px 1px #363636);width:35px;margin-left:5px;margin-bottom:2px;">--></h3>
 <div id="timeDropdown" style="overflow:visible;margin-top:-2px;margin-left:10px;float:right;width:150px;transform:scale(0.8);margin-right:-12px;z-index:10;margin-bottom:-10px;" class="input-group-btn group-dropdown">
 <button style="border:none;" type="button" class="input-dropdown-btn" data-toggle="dropdown" aria-expanded="false"> 
-<span style="float:right;" class="icon-down-16x16"></span><span id="timeLabel" class="rbx-selection-label ng-binding" ng-bind="layout.selectedTab.label" style="font-size:14px;float:right;margin-right:5px;">Past Week</span> 
+<span style="float:right;" class="icon-down-16x16"></span><span id="timeLabel" class="rbx-selection-label ng-binding" ng-bind="layout.selectedTab.label" style="font-size:14px;float:right;margin-right:5px;">Past 7 Days</span> 
 </button>
-<ul style="max-height:1000px;width:100px;margin-left:35px;" id="timeOptions" data-toggle="dropdown-menu" class="dropdown-menu" role="menu"> 
+<ul style="max-height:1000px;width:130px;margin-left:35px;" id="timeOptions" data-toggle="dropdown-menu" class="dropdown-menu" role="menu"> 
 <li>
 <a time="pastWeek" class="timeChoice">
-    <span ng-bind="tab.label" class="ng-binding" style="font-size:14px;">Past Week</span>
+    <span ng-bind="tab.label" class="ng-binding" style="font-size:14px;">Past 7 Days</span>
 </a></li><li>
 <a time="pastMonth" class="timeChoice">
-    <span style="font-size:14px;" ng-bind="tab.label" class="ng-binding">Past Month</span>
+    <span style="font-size:14px;" ng-bind="tab.label" class="ng-binding">Past 30 Days</span>
 </a></li><li>
 <a time="pastYear" class="timeChoice">
-    <span style="font-size:14px;" ng-bind="tab.label" class="ng-binding">Past Year</span>
+    <span style="font-size:14px;" ng-bind="tab.label" class="ng-binding">Past 365 Days</span>
 </a></li><li>
 <a time="allTime" class="timeChoice">
     <span style="font-size:14px;" ng-bind="tab.label" class="ng-binding">All Time</span>
@@ -71,7 +70,7 @@ roproHomePanelHTML = `<div class="ropro-home-panel" style="position:absolute;rig
 
 function fetchMostPlayed(time) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/getMostPlayedUniverse.php?time=" + time}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getMostPlayedUniverse.php?time=" + time}, 
 			function(data) {
 					resolve(data)
 			})
@@ -378,12 +377,12 @@ async function mainHome() {
         $('.timeChoice').click(function(){
             time = this.getAttribute("time")
             if (time == "pastWeek") {
-                document.getElementById('timeLabel').innerText = "Past Week"
+                document.getElementById('timeLabel').innerText = "Past 7 Days"
                 document.getElementById('mostPlayedContainer').innerHTML = '<span id="mostPlayedLoadingBar" style="float: right; display: inline-block; transform: scale(0.8); width: 200px; height: 25px; visibility: initial !important;margin-right:100px;margin-top:35px;" class="spinner spinner-default"></span>'
                 renderMostPlayed(7)
             } else if (time == "pastMonth") {
                 if (morePlaytimeSorts) {
-                    document.getElementById('timeLabel').innerText = "Past Month"
+                    document.getElementById('timeLabel').innerText = "Past 30 Days"
                     document.getElementById('mostPlayedContainer').innerHTML = '<span id="mostPlayedLoadingBar" style="float: right; display: inline-block; transform: scale(0.8); width: 200px; height: 25px; visibility: initial !important;margin-right:100px;margin-top:35px;" class="spinner spinner-default"></span>'
                     renderMostPlayed(30)
                 } else {
@@ -391,7 +390,7 @@ async function mainHome() {
                 }
             } else if (time == "pastYear") {
                 if (morePlaytimeSorts) {
-                    document.getElementById('timeLabel').innerText = "Past Year"
+                    document.getElementById('timeLabel').innerText = "Past 365 Days"
                     document.getElementById('mostPlayedContainer').innerHTML = '<span id="mostPlayedLoadingBar" style="float: right; display: inline-block; transform: scale(0.8); width: 200px; height: 25px; visibility: initial !important;margin-right:100px;margin-top:35px;" class="spinner spinner-default"></span>'
                     renderMostPlayed(365)
                 } else {

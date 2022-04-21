@@ -10,19 +10,18 @@ RoPro was wholly designed and coded by:
 |  '--'  /|  |'  '--'\|  `---. 
 `-------' `--' `-----'`------' 
                             
-Contact me with inquiries (job offers welcome) at:
+Contact me:
 
 Discord - Dice#1000
 Email - dice@ropro.io
-Phone - ‪(650) 318-1631‬
+Phone - 650-318-1631
 
 Write RoPro:
 
 Dice Systems LLC
-1629 K. Street N.W.
-Suite 300
-Washington, DC
-20006-1631
+16192 Coastal Hwy
+Lewes, Deleware 19958
+United States
 
 RoPro Terms of Service:
 https://ropro.io/terms
@@ -30,7 +29,7 @@ https://ropro.io/terms
 RoPro Privacy Policy:
 https://ropro.io/privacy-policy
 
-© 2021 Dice Systems LLC
+© 2022 Dice Systems LLC
 **/
 
 
@@ -186,7 +185,7 @@ function getUserId() {
 
 function getComments(itemID, page) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/getComments.php?id=" + itemID + "&page=" + page}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getComments.php?id=" + itemID + "&page=" + page}, 
 			function(data) {
 				resolve(data)
 			}
@@ -222,7 +221,7 @@ async function postComment() {
 			json = {itemid: itemID, userid: userID, comment: message.value}
 			return new Promise(resolve => {
 				return new Promise(resolve => {
-					chrome.runtime.sendMessage({greeting: "PostURL", url:"https://ropro.io/api/postComment.php", jsonData: json}, 
+					chrome.runtime.sendMessage({greeting: "PostURL", url:"https://api.ropro.io/postComment.php", jsonData: json}, 
 						function(data) {
 							response = JSON.parse(data)
 							if ('error' in response) { // Comment post errored

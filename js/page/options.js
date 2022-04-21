@@ -10,19 +10,18 @@ RoPro was wholly designed and coded by:
 |  '--'  /|  |'  '--'\|  `---. 
 `-------' `--' `-----'`------' 
                             
-Contact me with inquiries (job offers welcome) at:
+Contact me:
 
 Discord - Dice#1000
 Email - dice@ropro.io
-Phone - ‪(650) 318-1631‬
+Phone - 650-318-1631
 
 Write RoPro:
 
 Dice Systems LLC
-1629 K. Street N.W.
-Suite 300
-Washington, DC
-20006-1631
+16192 Coastal Hwy
+Lewes, Deleware 19958
+United States
 
 RoPro Terms of Service:
 https://ropro.io/terms
@@ -30,7 +29,7 @@ https://ropro.io/terms
 RoPro Privacy Policy:
 https://ropro.io/privacy-policy
 
-© 2021 Dice Systems LLC
+© 2022 Dice Systems LLC
 **/
 
 function stripTags(s) {
@@ -100,7 +99,7 @@ function fetchSettingValidity(setting) {
 function fetchFreeTrialTime() {
 	return new Promise(resolve => {
 		async function doGet(resolve) {
-			$.post("https://ropro.io/api/freeTrialTime.php", function(data){
+			$.post("https://api.ropro.io/freeTrialTime.php", function(data){
 				resolve(data);
 			})
 		}
@@ -129,8 +128,8 @@ function setStorage(key, value) {
 function getSubscription(userID) {
 	return new Promise(resolve => {
 		async function doGet(resolve) {
-			$.post("https://ropro.io/api/getSubscription.php?key=" + await getStorage("subscriptionKey") + "&options_page", function(data){
-				resolve("ultra_tier");
+			$.post("https://api.ropro.io/getSubscription.php?key=" + await getStorage("subscriptionKey") + "&options_page", function(data){
+				resolve('ultra_tier');
 			})
 		}
 		doGet(resolve)
@@ -151,13 +150,13 @@ $('.ui.fitted.toggle.checked.checkbox').click(function(){
 
 document.getElementById('saveDiscord').addEventListener('click', async function(){
 	userID = await getStorage('rpUserID')
-	$.post('https://ropro.io/api/saveDiscord.php', {userid: userID, discord: document.getElementById('discordValue').value})
+	$.post('https://api.ropro.io/saveDiscord.php', {userid: userID, discord: document.getElementById('discordValue').value})
 })
 
 document.getElementById('activateSubscription').addEventListener('click', async function(){
 	var subscriptionKey = prompt("Please enter the subscription key we emailed you with your purchase:")
 	if (subscriptionKey != null && subscriptionKey.length > 0) {
-		$.post("https://ropro.io/api/activateKey.php?key=" + subscriptionKey, function(data){
+		$.post("https://api.ropro.io/activateKey.php?key=" + subscriptionKey, function(data){
 			if (data == "success") {
 				alert("Successfully activated subscription.")
 				setTimeout(function(){
@@ -178,7 +177,11 @@ document.getElementById('activateSubscription').addEventListener('click', async 
 })
 
 function check(setting) {
-	return document.getElementById(setting).classList.contains('checked')
+	if (document.getElementById(setting) != null) {
+		return document.getElementById(setting).classList.contains('checked')
+	} else {
+		return false
+	}
 }
 
 function getSettings() {

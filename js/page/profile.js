@@ -10,19 +10,18 @@ RoPro was wholly designed and coded by:
 |  '--'  /|  |'  '--'\|  `---. 
 `-------' `--' `-----'`------' 
                             
-Contact me with inquiries (job offers welcome) at:
+Contact me:
 
 Discord - Dice#1000
 Email - dice@ropro.io
-Phone - ‪(650) 318-1631‬
+Phone - 650-318-1631
 
 Write RoPro:
 
 Dice Systems LLC
-1629 K. Street N.W.
-Suite 300
-Washington, DC
-20006-1631
+16192 Coastal Hwy
+Lewes, Deleware 19958
+United States
 
 RoPro Terms of Service:
 https://ropro.io/terms
@@ -30,7 +29,7 @@ https://ropro.io/terms
 RoPro Privacy Policy:
 https://ropro.io/privacy-policy
 
-© 2021 Dice Systems LLC
+© 2022 Dice Systems LLC
 **/
 
 var followsYouHTML = `<span style="margin-left:7px;border-radius:10px;padding:5px;background-color:#232527;color:#E8E8E8;font-size:11px;padding-top:1px;padding-bottom:1px;">Follows You</span>`
@@ -38,7 +37,7 @@ var reputationDivPosition = document.getElementsByClassName('header-userstatus-t
 
 function fetchValue(userID) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/profileBackend.php?userid=" + userID}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/profileBackend.php?userid=" + userID}, 
 			function(data) {
 				resolve(data)
 			}
@@ -69,7 +68,7 @@ function fetchBadgeInfo(badgeID) {
 
 function fetchInfo(userID, myId) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/getUserInfoTest.php?userid=" + userID + "&myid=" + myId}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getUserInfoTest.php?userid=" + userID + "&myid=" + myId}, 
 			function(data) {
 				resolve(data)
 			}
@@ -79,7 +78,7 @@ function fetchInfo(userID, myId) {
 
 function fetchTheme(userID) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/getTheme.php?userid=" + userID}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getTheme.php?userid=" + userID}, 
 			function(data) {
 				resolve(data)
 			}
@@ -89,7 +88,7 @@ function fetchTheme(userID) {
 
 function fetchEggCollection(userID) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/getEggCollection.php?userid=" + parseInt(userID)},
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getEggCollection.php?userid=" + parseInt(userID)},
 			function(data) {
 				resolve(data)
 			}
@@ -131,7 +130,7 @@ async function postReputation(type) {
 	userID = await getUserId()
 	return new Promise(resolve => {
 		json = {reqType: type, myUser: userID, theirUser: getIdFromURL(location.href)}
-		chrome.runtime.sendMessage({greeting: "PostURL", url:"https://ropro.io/api/postReputation.php", jsonData: json}, 
+		chrome.runtime.sendMessage({greeting: "PostURL", url:"https://api.ropro.io/postReputation.php", jsonData: json}, 
 			function(data) {
 				resolve(data)
 			}
@@ -697,7 +696,7 @@ async function mainProfile() {
 					profileIconsSorted = true
 					addProfileIcon("Proyal", "Proyal#0001", "owner.svg", "https://github.com/itsproyal/ropro/")
 				}
-				if(test == userID || userID == "89313169" || userID =="201746560") {
+				if(test == userID) {
 					profileIconsSorted = true
 					addProfileIcon("RoPro Donor", "This profile icon is awarded to users who supported RoPro development by buying four or more RoPro merch items from the official RoPro group.", "donor2.svg", "https://www.roblox.com/catalog?Category=3&Subcategory=3&CreatorName=RoPro%20IO&CreatorType=Group")
 

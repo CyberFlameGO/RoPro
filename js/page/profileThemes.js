@@ -10,19 +10,18 @@ RoPro was wholly designed and coded by:
 |  '--'  /|  |'  '--'\|  `---. 
 `-------' `--' `-----'`------' 
                             
-Contact me with inquiries (job offers welcome) at:
+Contact me:
 
 Discord - Dice#1000
 Email - dice@ropro.io
-Phone - ‪(650) 318-1631‬
+Phone - 650-318-1631
 
 Write RoPro:
 
 Dice Systems LLC
-1629 K. Street N.W.
-Suite 300
-Washington, DC
-20006-1631
+16192 Coastal Hwy
+Lewes, Deleware 19958
+United States
 
 RoPro Terms of Service:
 https://ropro.io/terms
@@ -30,7 +29,7 @@ https://ropro.io/terms
 RoPro Privacy Policy:
 https://ropro.io/privacy-policy
 
-© 2021 Dice Systems LLC
+© 2022 Dice Systems LLC
 **/
 
 
@@ -63,7 +62,7 @@ var decalDivs = []
 
 function fetchThemes() {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/themesJSON.php"}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/themesJSON.php"}, 
 			function(data) {
 				resolve(data)
 			}
@@ -93,7 +92,7 @@ function fetchDecals(keyword) {
 
 function fetchDecalImageId(decalId) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/getDecalImage.php?id=" + decalId}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getDecalImage.php?id=" + decalId}, 
 			function(data) {
 				resolve(data)
 			}
@@ -103,7 +102,7 @@ function fetchDecalImageId(decalId) {
 
 function saveTheme(userID, themeName, remove) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/saveTheme.php?userid=" + userID + "&themename=" + themeName}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/saveTheme.php?userid=" + userID + "&themename=" + themeName}, 
 			function(data) {
 				resolve(data)
 			}

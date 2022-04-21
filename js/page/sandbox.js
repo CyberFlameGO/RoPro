@@ -10,19 +10,18 @@ RoPro was wholly designed and coded by:
 |  '--'  /|  |'  '--'\|  `---. 
 `-------' `--' `-----'`------' 
                             
-Contact me with inquiries (job offers welcome) at:
+Contact me:
 
 Discord - Dice#1000
 Email - dice@ropro.io
-Phone - ‪(650) 318-1631‬
+Phone - 650-318-1631
 
 Write RoPro:
 
 Dice Systems LLC
-1629 K. Street N.W.
-Suite 300
-Washington, DC
-20006-1631
+16192 Coastal Hwy
+Lewes, Deleware 19958
+United States
 
 RoPro Terms of Service:
 https://ropro.io/terms
@@ -30,7 +29,7 @@ https://ropro.io/terms
 RoPro Privacy Policy:
 https://ropro.io/privacy-policy
 
-© 2021 Dice Systems LLC
+© 2022 Dice Systems LLC
 **/
 
 var sandboxHTML = `
@@ -251,7 +250,7 @@ function fetchAssetsView2D(assetIds) {
 
 function fetchMerch() {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/getMerch.php"},
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getMerch.php"},
 			function(data) {
 					resolve(data.split(','))
 			})
@@ -314,7 +313,7 @@ function fetchPage(sort, keyword, cursor) {
 
 function createNewOutfit(outfitAssets, outfitName, outfitThumbnail, userId) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/createOutfit.php?userid=" + userId + "&outfitAssets=" + outfitAssets.join(",") + "&outfitName=" + outfitName + "&outfitThumbnail=" + outfitThumbnail}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/createOutfit.php?userid=" + userId + "&outfitAssets=" + outfitAssets.join(",") + "&outfitName=" + outfitName + "&outfitThumbnail=" + outfitThumbnail}, 
 			function(data) {
 					resolve(data)
 			})
@@ -323,7 +322,7 @@ function createNewOutfit(outfitAssets, outfitName, outfitThumbnail, userId) {
 
 function updateThumbnail(userID, outfitAssets, newThumbnail) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/updateOutfitThumbnail.php?userid=" + userID + "&outfitAssets=" + outfitAssets.join(",") + "&outfitThumbnail=" + newThumbnail}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/updateOutfitThumbnail.php?userid=" + userID + "&outfitAssets=" + outfitAssets.join(",") + "&outfitThumbnail=" + newThumbnail}, 
 			function(data) {
 					resolve(data)
 			})
@@ -332,7 +331,7 @@ function updateThumbnail(userID, outfitAssets, newThumbnail) {
 
 function deleteOutfit(userID, outfitAssets) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/deleteOutfit.php?userid=" + userID + "&outfitAssets=" + outfitAssets.join(",")}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/deleteOutfit.php?userid=" + userID + "&outfitAssets=" + outfitAssets.join(",")}, 
 			function(data) {
 					resolve(data)
 			})
@@ -386,7 +385,7 @@ function fetchSetting(setting) {
 
 function fetchOutfits(userID) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/loadOutfits.php?userid=" + userID}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/loadOutfits.php?userid=" + userID}, 
 			function(data) {
 					resolve(data)
 			})

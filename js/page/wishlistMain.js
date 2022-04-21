@@ -10,19 +10,18 @@ RoPro was wholly designed and coded by:
 |  '--'  /|  |'  '--'\|  `---. 
 `-------' `--' `-----'`------' 
                             
-Contact me with inquiries (job offers welcome) at:
+Contact me:
 
 Discord - Dice#1000
 Email - dice@ropro.io
-Phone - ‪(650) 318-1631‬
+Phone - 650-318-1631
 
 Write RoPro:
 
 Dice Systems LLC
-1629 K. Street N.W.
-Suite 300
-Washington, DC
-20006-1631
+16192 Coastal Hwy
+Lewes, Deleware 19958
+United States
 
 RoPro Terms of Service:
 https://ropro.io/terms
@@ -30,7 +29,7 @@ https://ropro.io/terms
 RoPro Privacy Policy:
 https://ropro.io/privacy-policy
 
-© 2021 Dice Systems LLC
+© 2022 Dice Systems LLC
 **/
 
 
@@ -60,7 +59,7 @@ var loadingOffers = false
 
 function fetchWishlist(page) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/getWishlistAll.php?page=" + page}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getWishlistAll.php?page=" + page}, 
 			function(data) {
 				resolve(data)
 			}
@@ -110,7 +109,7 @@ function fetchPremium(userID) {
 
 function fetchItemInfo(items) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/itemInfo.php?ids=" + items.join(",")}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/itemInfo.php?ids=" + items.join(",")}, 
 			function(data) {
 				resolve(data)
 			}
@@ -129,7 +128,7 @@ function fetchDetails(items) {
 
 function deleteOffer(wishid) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/deleteWish.php?wishid=" + wishid}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/deleteWish.php?wishid=" + wishid}, 
 			function(data) {
 				resolve(data)
 			}
@@ -139,7 +138,7 @@ function deleteOffer(wishid) {
 
 function fetchItemMiniSearch(search) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/itemSearch.php?q="+search},
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/itemSearch.php?q="+search},
 			function(data) {
 				resolve(data)
 			}
@@ -201,7 +200,7 @@ async function postOffer() {
 		alert("You must have Roblox Premium to trade or post RoPro trade offers.")
 	} else {
 		return new Promise(resolve => {
-			chrome.runtime.sendMessage({greeting: "PostURL", url:"https://ropro.io/api/postWishlist.php", jsonData: json}, 
+			chrome.runtime.sendMessage({greeting: "PostURL", url:"https://api.ropro.io/postWishlist.php", jsonData: json}, 
 			function(data) {
 				response = JSON.parse(data)
 				if ('error' in response) { // Wishlist post errored

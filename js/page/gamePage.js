@@ -10,19 +10,18 @@ RoPro was wholly designed and coded by:
 |  '--'  /|  |'  '--'\|  `---. 
 `-------' `--' `-----'`------' 
                             
-Contact me with inquiries (job offers welcome) at:
+Contact me:
 
 Discord - Dice#1000
 Email - dice@ropro.io
-Phone - ‪(650) 318-1631‬
+Phone - 650-318-1631
 
 Write RoPro:
 
 Dice Systems LLC
-1629 K. Street N.W.
-Suite 300
-Washington, DC
-20006-1631
+16192 Coastal Hwy
+Lewes, Deleware 19958
+United States
 
 RoPro Terms of Service:
 https://ropro.io/terms
@@ -30,7 +29,7 @@ https://ropro.io/terms
 RoPro Privacy Policy:
 https://ropro.io/privacy-policy
 
-© 2021 Dice Systems LLC
+© 2022 Dice Systems LLC
 **/
 
 var fetchAngular = document.createElement('script');
@@ -44,19 +43,19 @@ var theme = "dark"
 if ($('.light-theme').length > 0) {
     var theme = "light"
 }
-serverFiltersHTML = `<div id="roproServerFiltersButton" style="float:right;width:150px;margin-top:-6px;margin-right:10px;" class="input-group-btn"><div id="serverFiltersDropdown" style="overflow:visible;margin-top:-3.5px;margin-left:0px;float:left;width:150px;margin-left:-10px;" class="server-filters-dropdown input-group-btn group-dropdown">
+serverFiltersHTML = `<div id="roproServerFiltersButton" style="float:right;width:150px;margin-top:-6px;margin-right:10px;text-align:center;" class="input-group-btn"><div id="serverFiltersDropdown" style="overflow:visible;margin-top:-3.5px;margin-left:0px;float:left;width:150px;margin-left:-10px;" class="server-filters-dropdown input-group-btn group-dropdown">
 <button type="button" style="border-radius:0px;border:none;" class="input-dropdown-btn" data-toggle="dropdown" aria-expanded="false"> 
-<span id="serverFilters" class="rbx-selection-label ng-binding" style="width:160px;overflow:hidden;">Server Filters<img class="server-filters-icon" style="width:20px;filter:invert(2);margin-left:5px;" src="https://ropro.io/images/optionsicon.svg"></span> 
+<span id="serverFilters" class="rbx-selection-label ng-binding" style="width:160px;overflow:hidden;">Server Filters<img class="server-filters-icon" style="width:20px;filter:invert(2);margin-left:5px;" src="https://ropro.io/images/serverfilters.png"></span> 
 </button>
 </div>
 			<span id="maxPlayersLoadingBar" style="margin-right: 310px; float: right; display: none; transform: scale(0.8); width: 100px; height: 25px; visibility: initial !important;" class="spinner spinner-default"></span>
 			<div style="position: absolute; width: 200px; height: 295px; right: 0px; top: 30px; z-index: 1000; border-radius: 5px; background-color: rgb(30, 32, 34); display: none;" class="server-filters-dropdown-box" id="serverFiltersDropdownBox">
 	<div id="reverseOrderButton" class="server-filter-option" style="width:190px;height:30px;background-color:#393B3D;margin:5px;border-radius:5px;padding:3px;">
 		<div style="display:none;position:absolute;top:-10px;left:200px;width:auto;inline-size:200px;;height:auto;background-color:#191B1D;color:white;padding:5px;border-radius:5px;white-space: pre-wrap;font-size:14px;" class="filter-tooltip">Reverses the order of the server list. The emptiest servers will be displayed first.</div>
-		<p style="display:inline-block;">Smallest First</p><img class="server-filter-img" src="https://ropro.io/images/Smallest_First.svg" style="float:right;width:30px;margin-top:-2.5px;margin-right:2px;filter:invert(0.8);"></div>
+		<p style="display:inline-block;">Smallest Servers</p><img class="server-filter-img" src="https://ropro.io/images/Smallest_First.svg" style="float:right;width:30px;margin-top:-2.5px;margin-right:2px;filter:invert(0.8);"></div>
 	<div id="notFullButton" class="server-filter-option" style="width:190px;height:30px;background-color:#393B3D;margin:5px;border-radius:5px;padding:3px;">
 		<div style="display:none;position:absolute;top:-10px;left:200px;width:auto;inline-size:200px;;height:auto;background-color:#191B1D;color:white;padding:5px;border-radius:5px;white-space: pre-wrap;font-size:14px;" class="filter-tooltip">Filters out servers which are full.</div>
-		<p style="display:inline-block;">Not Full</p><img class="server-filter-img" src="https://ropro.io/images/Not_Full.svg" style="float:right;width:30px;margin-top:-2.5px;margin-right:2px;filter:invert(0.8);"></div>
+		<p style="display:inline-block;">Available Space</p><img class="server-filter-img" src="https://ropro.io/images/Not_Full.svg" style="float:right;width:30px;margin-top:-2.5px;margin-right:2px;filter:invert(0.8);"></div>
 	<div class="server-filter-option" id="maxPlayersButton" style="width:190px;height:30px;background-color:#393B3D;margin:5px;border-radius:5px;padding:3px;">
 		<div style="display:none;position:absolute;top:-10px;left:200px;width:auto;inline-size:200px;;height:auto;background-color:#191B1D;color:white;padding:5px;border-radius:5px;white-space: pre-wrap;font-size:14px;" class="filter-tooltip">Select a maximum player count to display.</div>
 		<p style="display:inline-block;">Player Count</p><img class="server-filter-img" src="https://ropro.io/images/Player_Count.svg" style="float:right;width:30px;margin-top:-2.5px;margin-right:2px;filter:invert(0.8);">
@@ -93,6 +92,57 @@ serverFiltersHTML = `<div id="roproServerFiltersButton" style="float:right;width
 		<div style="display:none;position:absolute;top:-10px;left:200px;width:auto;inline-size:200px;;height:auto;background-color:#191B1D;color:white;padding:5px;border-radius:5px;white-space: pre-wrap;font-size:14px;" class="filter-tooltip"><div style="font-weight:800;text-decoration:underline;"><img src="https://ropro.io/images/standard_icon.png" style="width:15px;margin-right:5px;margin-top:-2.7px;">Subscribers Only</div>Show servers with the longest uptime first.</div>
 		<p style="display:inline-block;">Oldest Servers</p><img class="server-filter-img" src="https://ropro.io/images/Oldest_Server_2.svg" style="float:right;width:26px;margin-top:0px;margin-right:6px;filter:invert(0.8);"></div>
 	<!--<div class="server-filter-option" style="width:190px;height:30px;background-color:#393B3D;margin:5px;border-radius:5px;padding:3px;">
+		<div style="display:none;position:absolute;top:-10px;left:200px;width:auto;inline-size:200px;;height:auto;background-color:#191B1D;color:white;padding:5px;border-radius:5px;white-space: pre-wrap;font-size:14px;" class="filter-tooltip"><div style="font-weight:800;text-decoration:underline;"><img src="https://ropro.io/images/standard_icon.png" style="width:15px;margin-right:5px;margin-top:-2.7px;">Subscribers Only</div>Filter servers by the update version of this experience when they were launched.</div>
+		<p style="display:inline-block;">Server Version</p><img class="server-filter-img" src="https://ropro.io/images/Server_Version2.svg" style="float:right;width:30px;margin-top:-2.5px;margin-right:2px;filter:invert(0.8);"></div>-->
+</div>
+         </div>`
+serverFiltersMiniHTML = `<div id="roproServerFiltersMiniButton" style="border-radius:5px;background-color:#2B2E30;padding:3px;position:absolute;top:5px;right:3px;z-index:100;cursor:pointer;width:auto;" class="input-group-btn"><div id="serverFiltersDropdownMini">
+<img src="https://ropro.io/images/serverfilters.png" style="width:25px;filter:invert(1);">
+</div>
+			<span id="maxPlayersLoadingBar" style="margin-right: 310px; float: right; display: none; transform: scale(0.8); width: 100px; height: 25px; visibility: initial !important;" class="spinner spinner-default"></span>
+			<div style="position: absolute; width: 200px; height: 295px; right: -1px; top: 25px; z-index: 1000; border-radius: 5px; background-color: rgb(30, 32, 34); display: none;" class="server-filters-dropdown-box" id="serverFiltersDropdownBoxMini">
+	<div id="reverseOrderButtonMini" class="server-filter-option" style="width:190px;height:30px;background-color:#393B3D;margin:5px;border-radius:5px;padding:3px;">
+		<div style="display:none;position:absolute;top:-10px;left:200px;width:auto;inline-size:200px;;height:auto;background-color:#191B1D;color:white;padding:5px;border-radius:5px;white-space: pre-wrap;font-size:14px;" class="filter-tooltip">Reverses the order of the server list. The emptiest servers will be displayed first.</div>
+		<p style="display:inline-block;">Smallest Servers</p><img class="server-filter-img" src="https://ropro.io/images/Smallest_First.svg" style="float:right;width:30px;margin-top:-2.5px;margin-right:2px;filter:invert(0.8);"></div>
+	<div id="notFullButtonMini" class="server-filter-option" style="width:190px;height:30px;background-color:#393B3D;margin:5px;border-radius:5px;padding:3px;">
+		<div style="display:none;position:absolute;top:-10px;left:200px;width:auto;inline-size:200px;;height:auto;background-color:#191B1D;color:white;padding:5px;border-radius:5px;white-space: pre-wrap;font-size:14px;" class="filter-tooltip">Filters out servers which are full.</div>
+		<p style="display:inline-block;">Available Space</p><img class="server-filter-img" src="https://ropro.io/images/Not_Full.svg" style="float:right;width:30px;margin-top:-2.5px;margin-right:2px;filter:invert(0.8);"></div>
+	<div class="server-filter-option" id="maxPlayersButtonMini" style="width:190px;height:30px;background-color:#393B3D;margin:5px;border-radius:5px;padding:3px;">
+		<div style="display:none;position:absolute;top:-10px;left:200px;width:auto;inline-size:200px;;height:auto;background-color:#191B1D;color:white;padding:5px;border-radius:5px;white-space: pre-wrap;font-size:14px;" class="filter-tooltip">Select a maximum player count to display.</div>
+		<p style="display:inline-block;">Player Count</p><img class="server-filter-img" src="https://ropro.io/images/Player_Count.svg" style="float:right;width:30px;margin-top:-2.5px;margin-right:2px;filter:invert(0.8);">
+		<div id="playerCountSelector" style="display:none;position:absolute;left: -218px;top:-75px;width:220px;height:auto;z-index:1000;background-color:#1E2022;border-radius:5px;padding:10px;">
+			<div style="text-align:center;margin-bottom:0px;">
+				<h3 style="padding-bottom:0px!important;font-size:15px;">Select Max Player Count</h3>
+				<p style="display:none;width:200px;height:auto;font-size:12px;word-break: break-word;overflow-wrap: break-word;white-space: pre-wrap;">RoPro will filter out servers above this player count</p>
+				<div style="background-color:#393B3D;height:276px;width:200px;margin-top:8px;border-radius:5px;padding-top:0.5px;overflow-y:scroll;overflow-x:hidden;" id="maxPlayersListMini" class="max-players-list">
+				</div>		
+			</div>
+		</div>
+		</div>
+	<div class="server-filter-option" id="randomShuffleButtonMini" style="width:190px;height:30px;background-color:#393B3D;margin:5px;border-radius:5px;padding:3px;">
+		<div style="display:none;position:absolute;top:-10px;left:200px;width:auto;inline-size:200px;;height:auto;background-color:#191B1D;color:white;padding:5px;border-radius:5px;white-space: pre-wrap;font-size:14px;" class="filter-tooltip">Display servers in a completely random order.</div>
+		<p style="display:inline-block;">Random Shuffle</p><img class="server-filter-img" src="https://ropro.io/images/Random_Shuffle.svg" style="float:right;width:30px;margin-top:-2.5px;margin-right:2px;filter:invert(0.8);"></div>
+	<div class="" style="width:190px;height:3px;background-color:#FFFFFF;margin:5px;margin-top:7px;border-radius:5px;"> </div>
+	<div class="server-filter-option" id="serverRegionButtonMini" style="width:190px;height:30px;background-color:#393B3D;margin:5px;border-radius:5px;padding:3px;">
+		<div style="display:none;position:absolute;top:-10px;left:200px;width:auto;inline-size:200px;;height:auto;background-color:#191B1D;color:white;padding:5px;border-radius:5px;white-space: pre-wrap;font-size:14px;" class="filter-tooltip"><div style="font-weight:800;text-decoration:underline;"><img src="https://ropro.io/images/standard_icon.png" style="width:15px;margin-right:5px;margin-top:-2.7px;">Subscribers Only</div>Filter servers by the region where they are located.</div>
+		<div id="serverRegionSelector" style="display:none;position:absolute;left: -518px;top:-270px;width:520px;height:auto;z-index:1000;background-color:#1E2022;border-radius:5px;padding:10px;">
+			<div style="text-align:center;margin-bottom:10px;">
+				<p style="font-weight:bold;font-size:20px;padding-bottom:0px!important;">RoPro Server Region Selector</p>
+				<p style="font-size:13px;">You should have a faster connection in datacenters close to you!</p>
+			</div>
+			<iframe id="globeFrameMini" style="border:0;width:500px;height:500px;" frameborder="0" scrolling="no" class="active" src="https://ropro.io/globe/?placeid=286090429"></iframe>
+		</div>
+		<p style="display:inline-block;">Server Region</p><img class="server-filter-img" src="https://ropro.io/images/Server_Region2.svg" style="float:right;width:23px;margin-top:0px;margin-right:5px;filter:invert(0.8);"></div>
+	<div class="server-filter-option" id="bestConnectionButtonMini" style="width:190px;height:30px;background-color:#393B3D;margin:5px;border-radius:5px;padding:3px;">
+		<div style="display:none;position:absolute;top:-10px;left:200px;width:auto;inline-size:200px;;height:auto;background-color:#191B1D;color:white;padding:5px;border-radius:5px;white-space: pre-wrap;font-size:14px;" class="filter-tooltip"><div style="font-weight:800;text-decoration:underline;"><img src="https://ropro.io/images/standard_icon.png" style="width:15px;margin-right:5px;margin-top:-2.7px;">Subscribers Only</div>RoPro will choose servers which are likely to have the fastest connection for you.</div>
+		<p style="display:inline-block;">Best Connection</p><img class="server-filter-img" src="https://ropro.io/images/Best_Connection3.svg" style="float:right;width:30px;margin-top:-2.5px;margin-right:2px;filter:invert(0.8);"></div>
+	<div class="server-filter-option" id="newestServersButtonMini" style="width:190px;height:30px;background-color:#393B3D;margin:5px;border-radius:5px;padding:3px;">
+		<div style="display:none;position:absolute;top:-10px;left:200px;width:auto;inline-size:200px;;height:auto;background-color:#191B1D;color:white;padding:5px;border-radius:5px;white-space: pre-wrap;font-size:14px;" class="filter-tooltip"><div style="font-weight:800;text-decoration:underline;"><img src="https://ropro.io/images/standard_icon.png" style="width:15px;margin-right:5px;margin-top:-2.7px;">Subscribers Only</div>Show the most recently launched servers first.</div>
+		<p style="display:inline-block;">Newest Servers</p><img class="server-filter-img" src="https://ropro.io/images/Newest_Server.svg" style="float:right;width:30px;margin-top:-2.5px;margin-right:2px;filter:invert(0.8);"></div>
+	<div class="server-filter-option" id="oldestServersButtonMini" style="width:190px;height:30px;background-color:#393B3D;margin:5px;border-radius:5px;padding:3px;">
+		<div style="display:none;position:absolute;top:-10px;left:200px;width:auto;inline-size:200px;;height:auto;background-color:#191B1D;color:white;padding:5px;border-radius:5px;white-space: pre-wrap;font-size:14px;" class="filter-tooltip"><div style="font-weight:800;text-decoration:underline;"><img src="https://ropro.io/images/standard_icon.png" style="width:15px;margin-right:5px;margin-top:-2.7px;">Subscribers Only</div>Show servers with the longest uptime first.</div>
+		<p style="display:inline-block;">Oldest Servers</p><img class="server-filter-img" src="https://ropro.io/images/Oldest_Server_2.svg" style="float:right;width:26px;margin-top:0px;margin-right:6px;filter:invert(0.8);"></div>
+	<!--<div class="server-filter-option" id="serverVersionButtonMini" style="width:190px;height:30px;background-color:#393B3D;margin:5px;border-radius:5px;padding:3px;">
 		<div style="display:none;position:absolute;top:-10px;left:200px;width:auto;inline-size:200px;;height:auto;background-color:#191B1D;color:white;padding:5px;border-radius:5px;white-space: pre-wrap;font-size:14px;" class="filter-tooltip"><div style="font-weight:800;text-decoration:underline;"><img src="https://ropro.io/images/standard_icon.png" style="width:15px;margin-right:5px;margin-top:-2.7px;">Subscribers Only</div>Filter servers by the update version of this experience when they were launched.</div>
 		<p style="display:inline-block;">Server Version</p><img class="server-filter-img" src="https://ropro.io/images/Server_Version2.svg" style="float:right;width:30px;margin-top:-2.5px;margin-right:2px;filter:invert(0.8);"></div>-->
 </div>
@@ -190,7 +240,7 @@ commentsPaneHTML = `<div class="tab-pane comments" id="comments" style="margin-t
         </div>
     </div>
 </div></div></div>`
-randomServerHTML = `<button type="button" style="width:66px;min-width:66px;margin-left:3px;" class="btn-full-width btn-common-play-game-lg btn-primary-md btn-min-width random-server-button"><div class="random-server-tooltip" style="position:absolute;width:225px;background-color:#191B1D;color:white;top:-30px;right:-62px;font-size:13px;padding:5px;border-radius:5px;z-index:10000;display:none;">Random Server | Avoid Friends</div><span style="filter:invert(1);background-image:url(https://ropro.io/images/random_server.svg);background-size: 36px 36px;" class="icon-common-play"></span></button>`
+randomServerHTML = `<button type="button" style="width:66px;min-width:66px;margin-left:3px;" class="btn-full-width btn-common-play-game-lg btn-primary-md btn-min-width random-server-button"><div class="random-server-tooltip" style="position:absolute;width:100px;background-color:#191B1D;color:white;top:-30px;right:-5px;font-size:13px;padding:5px;border-radius:5px;z-index:10000;display:none;">Server Hop</div><span style="filter:invert(1);background-image:url(https://ropro.io/images/random_server.svg);background-size: 36px 36px;" class="icon-common-play"></span></button>`
 randomServerOverlayHTML = `<div id="simplemodal-overlay" class="simplemodal-overlay" style="background-color: rgb(0, 0, 0); opacity: 0.8; height: 100%; width: 100%; position: fixed; left: 0px; top: 0px; z-index: 1041;"></div>`
 randomServerModalHTML = `<div id="simplemodal-container" class="simplemodal-container" style="position: fixed; z-index: 1042; height: 231px; width: 400px;  left: calc(50% - 200px); top: calc(50% - 115.5px);"><a class="modalCloseImg simplemodal-close" title="Close"></a><div tabindex="-1" class="simplemodal-wrap" style="height: 100%; outline: 0px; width: 100%; overflow: visible;"><div id="modal-confirmation" class="modal-confirmation noImage protocolhandler-are-you-installed-modal simplemodal-data" data-modal-type="confirmation" style="display: block;"><div id="modal-dialog" class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal"> <span aria-hidden="true"><span class="icon-close"></span></span><span class="sr-only">Close</span> </button><h5 class="modal-title"></h5></div><div class="modal-body"><div class="modal-top-body"><div class="modal-message"><img style="filter: drop-shadow(rgb(57,59,61) 2px 2px 2px);" src="https://ropro.io/images/ropro_logo.svg" width="150" alt="R"><p>Searching for a random server...</p></div><div class="modal-image-container roblox-item-image" data-image-size="medium" data-no-overlays="" data-no-click=""><img class="modal-thumb" alt="generic image"></div><div class="modal-checkbox checkbox" style="display: none;"><input id="modal-checkbox-input" type="checkbox"> <label for="modal-checkbox-input"></label></div></div><div style="display:none;" class="modal-btns"><a href="" id="confirm-btn" class="btn-primary-md">Download Studio</a> <a href="" id="decline-btn" class="btn-control-md" style="display: none;">No</a></div><div style="display:block;" class="loading modal-processing"><img class="loading-default" src="https://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif" alt="Processing..."></div></div><div class="modal-footer text-footer" style="display: block;"></div></div></div></div></div></div>`
 var pageIndex = 0;
@@ -202,16 +252,16 @@ var serverInfoQueue = [];
 
 function fetchPlayTime(gameID, time) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/getPlayTime.php?universeid=" + gameID + "&time=" + time},
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getPlayTime.php?universeid=" + gameID + "&time=" + time},
 			function(data) {
 					resolve(data)
 			})
 	})
 }
 
-function fetchMaxPlayerIndex(gameID, maxPlayers) {
+function fetchServerFilterMaxPlayers(gameID, maxPlayers) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetMaxPlayerIndex", gameID: gameID, count: maxPlayers}, 
+		chrome.runtime.sendMessage({greeting: "ServerFilterMaxPlayers", gameID: gameID, count: maxPlayers}, 
 			function(data) {
 				resolve(data)
 		})
@@ -229,7 +279,7 @@ function fetchLowPingServers(gameID, startIndex, maxServers) {
 
 async function fetchServerInfo(placeID, servers) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "PostURL", url:"https://ropro.io/api/getServerInfo.php", jsonData: {'placeID':placeID, 'servers': servers}}, 
+		chrome.runtime.sendMessage({greeting: "PostURL", url:"https://api.ropro.io/getServerInfo.php", jsonData: {'placeID':placeID, 'servers': servers}}, 
 			function(data) {
 				resolve(data)
 			}
@@ -329,7 +379,7 @@ function fetchSocialLinks(myUniverseId) {
 
 function fetchDiscordID(discordUrl) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/getDiscordID.php?link=" + discordUrl}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getDiscordID.php?link=" + discordUrl}, 
 			function(data) {
 				resolve(data)
 		})
@@ -338,7 +388,7 @@ function fetchDiscordID(discordUrl) {
 
 function fetchInvite(key) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/getInvite.php?key=" + key}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getInvite.php?key=" + key}, 
 			function(data) {
 				resolve(data)
 		})
@@ -347,7 +397,7 @@ function fetchInvite(key) {
 
 function createInvite(universeid, serverid) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/createInvite.php?universeid=" + universeid + "&serverid=" + serverid}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/createInvite.php?universeid=" + universeid + "&serverid=" + serverid}, 
 			function(data) {
 				resolve(data)
 		})
@@ -408,6 +458,15 @@ function fetchRandomServer(placeId) {
 	})
 }
 
+function fetchThumbnailBatch(batch) {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "PostValidatedURL", url:"https://thumbnails.roblox.com/v1/batch", jsonData: JSON.stringify(batch)}, 
+			function(data) {
+				resolve(data)
+			})
+	})
+}
+
 function fetchSetting(setting) {
 	return new Promise(resolve => {
 		chrome.runtime.sendMessage({greeting: "GetSetting", setting: setting}, 
@@ -446,51 +505,56 @@ function addCommas(nStr){
 	return x1 + x2;
 }
 
+async function getPlayerThumbnails(playerTokens) {
+	for (var i = 0; i < playerTokens.length; i += 100) {
+		var batch = []
+		var chunk = playerTokens.slice(i, i + 100)
+		for (var j = 0; j < chunk.length; j++) {
+			batch.push({format: "png",
+			requestId: "0:" + chunk[j] + ":AvatarHeadshot:150x150:png:regular",
+			size: "150x150",
+			targetId: 0,
+			token: chunk[j],
+			type: "AvatarHeadShot"})
+		}
+		thumbnails = await fetchThumbnailBatch(batch)
+		for (var k = 0; k < thumbnails.data.length; k++) {
+			playerToken = thumbnails.data[k].requestId.split(":")[1]
+			$('.ropro-player-thumbnail-' + playerToken).attr("src", thumbnails.data[k].imageUrl)
+		}
+	}
+}
+
 var loadMoreInitialized = false
 
 async function loadServerPage(gameID, index, reverse){
-	if (customServerList == null) {
-		if (reverse == false) {
-			serverPage = await fetchServerPage(gameID, index)
-		} else {
-			serverPage = await fetchServerPage(gameID, Math.max(index - 10, 0))
-		}
-	} else {
-		if (index < customServerList.length) {
-			serverPage = {"Collection": customServerList.slice(index, Math.min(index + 10, customServerList.length))}
-		} else {
-			serverPage = {"Collection": []}
-		}
-	}
 	serversHTML = ""
-	if (reverse) {
-		serverPage.Collection = serverPage.Collection.reverse()
+	serverPage = customServerList
+	if (document.getElementsByClassName('btr-server-pager').length > 0) {
+		document.getElementsByClassName('btr-server-pager')[0].style.display = "none"
 	}
-	for (i = 0; i < serverPage.Collection.length; i++) {
-		server = serverPage.Collection[i]
-		gameId = server.Guid
-		placeId = server.PlaceId
-		playerCount = server.CurrentPlayers.length + " out of " + server.Capacity + " max"
+	var playerTokens = []
+	for (i = index; i < Math.min(serverPage.length, index + 10); i++) {
+		server = serverPage[i]
+		gameId = server.id
+		placeId = globalGameId
+		playerCount = server.playerTokens.length + " out of " + server.maxPlayers + " max"
 		playersHTML = ""
-		additionalInfoDiv = ""
-		if (customServerList != null) {
-			//additionalInfoDiv = `<div class="text-info rbx-game-status rbx-game-server-status" style="margin-top:5px;font-size:13px;">Server Ping: ${server.Ping} ms</div>`
-		}
-		for (j = 0; j < server.CurrentPlayers.length; j++) {
-			player = server.CurrentPlayers[j]
-			thumbnail = player.Thumbnail.Url
-			playerHTML = `<span class="special-span avatar avatar-headshot-sm player-avatar"><a class="avatar-card-link"><img class="avatar-card-image" src="${thumbnail}"></a></span>`
+		for (j = 0; j < server.playerTokens.length; j++) {
+			playerToken = stripTags(server.playerTokens[j])
+			playerHTML = `<span class="special-span avatar avatar-headshot-sm player-avatar"><a class="avatar-card-link"><img class="ropro-player-thumbnail-${stripTags(playerToken)} avatar-card-image"></a></span>`
 			playersHTML += playerHTML
+			playerTokens.push(playerToken)
 		}
 		serversHTML += `<li class="stack-row rbx-game-server-item ropro-checked" data-gameid="${gameId}" data-placeid="${placeId}"><div class="section-header">
 						<div class="link-menu rbx-game-server-menu"></div></div>
 						<div class="section-left rbx-game-server-details">
 							<div class="text-info rbx-game-status rbx-game-server-status">${playerCount}</div>
-							${additionalInfoDiv}
 							<div class="rbx-game-server-alert hidden"><span class="icon-remove"></span></div>
 							<a class="btn-full-width btn-control-xs rbx-game-server-join" href="#" data-gameid="${gameId}" data-placeid="${placeId}" onclick='Roblox.GameLauncher.joinGameInstance(${placeId}, "${gameId}")'>Join</a></div>
 						<div class="section-right rbx-game-server-players">${playersHTML}</div></li>`
 	}
+	getPlayerThumbnails(playerTokens)
 	pageIndex = index
 	document.getElementById('maxPlayersLoadingBar').style.display = "none"
 	$('#rbx-game-server-item-container').html(serversHTML)
@@ -516,16 +580,9 @@ async function loadServerPage(gameID, index, reverse){
 			document.getElementsByClassName('ropro-running-games-footer')[0].style.display = "none"
 		}
 	}
-	if (reverse == false && customServerList == null && serverPage.Collection.length < 10 && document.getElementsByClassName('ropro-running-games-footer').length > 0) {
-		document.getElementsByClassName('ropro-running-games-footer')[0].style.display = "none"
-	}
 	if (loadMoreInitialized == false) {
 		$('#loadMoreButton').click(function(){
-			if (reverse == true) {
-				loadServerPage(gameID, pageIndex-10, true)
-			} else {
-				loadServerPage(gameID, pageIndex+10, false)
-			}
+			loadServerPage(gameID, pageIndex + 10, false)
 		})
 		loadMoreInitialized = true
 	}
@@ -607,9 +664,11 @@ function addRandomServerButton() {
 					})
 					server = await fetchRandomServer(globalGameId)
 					document.getElementById('randomGameModalContainer').remove()
-					div = document.createElement('div')
-					div.setAttribute(`onclick`, `Roblox.GameLauncher.joinGameInstance(${parseInt(server[0])}, "${stripTags(server[1])}")`)
-					div.click()
+					if (server != null && server.hasOwnProperty('id')) {
+						div = document.createElement('div')
+						div.setAttribute(`onclick`, `Roblox.GameLauncher.joinGameInstance(${parseInt(globalGameId)}, "${stripTags(server.id)}")`)
+						div.click()
+					}
 				})
 				if (window.location.hash == "#ropro-random-server") {
 					async function doClick() {
@@ -633,61 +692,36 @@ function addRandomServerButton() {
 	}, 50)
 }
 
-function addMaxPlayers(maxPlayers) {
-	serverContainer = document.getElementById('rbx-running-games')
-	maxPlayersDiv = createMaxPlayers(maxPlayers)
-	serverContainer.insertBefore(maxPlayersDiv, serverContainer.childNodes[1])
-	async function checkSettings() {
-		if (await fetchSetting("serverSizeSort") == false) {
-			document.getElementById('maxPlayerButton').style.display = "none"
-		}
-		if (await fetchSetting("fastestServersSort") == false) {
-			document.getElementById('fastServersButton').style.display = "none"
-		}
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function addServerFiltersMini(placeId, maxPlayerCount) {
+	if (document.getElementById('serverFiltersDropdownMini') != null) { 
+		return
 	}
-	checkSettings()
-	$("#maxPlayerButton").click(function(){
-		$(this.parentNode).find("#maxPlayerDropdown").toggleClass("active")
-	})
-	$("#fastServersButton").click(async function(){
-		document.getElementById('maxPlayersLoadingBar').style.display = "inline-block"
-		document.getElementById('maxPlayersLoadingBar').style.marginRight = "310px"
-		customServerList = await fetchLowPingServers(globalGameId, pageIndex, 1000)
-		loadServerPage(globalGameId, 0, false)
-	})
-	$(".dropdown-custom-item").click(async function(){
-		maxPlayerSelection = parseInt(this.id)
-		$("#maxPlayerButton").find('.dropdown-button-text').html(this.innerHTML)
-		$("#maxPlayerDropdown").toggleClass("active")
-		if (window.location.href.includes("games/")) {
-			gameID = window.location.href.split("games/")[1].split("/")[0]
-		} else {
-			gameID = window.location.href.split("experiences/")[1].split("/")[0]
-		}
-		document.getElementById('maxPlayersLoadingBar').style.display = "inline-block"
-		index = await fetchMaxPlayerIndex(gameID, maxPlayerSelection)
-		if (index != "NONE") {
-			customServerList = null
-			loadServerPage(gameID, index, false)
-		} else {
-			$("#maxPlayerButton").find('.dropdown-button-text').html("Error: None Found")
-		}
-	})
 }
 
 function addServerFilters(placeId, maxPlayerCount) {
 	if (document.getElementById('serverFiltersDropdown') != null) { 
 		return
 	}
+
 	serverContainer = document.getElementById('rbx-running-games')
 	serverFiltersDiv = document.createElement('div')
 	serverFiltersDiv.innerHTML = serverFiltersHTML
 	serverContainer.getElementsByClassName('container-header')[0].appendChild(serverFiltersDiv)
+
 	async function checkSettings() {
 		if (await fetchSetting("serverFilters") == false) {
 			document.getElementById('roproServerFiltersButton').style.display = "none"
+			document.getElementById('roproServerFiltersMiniButton').style.display = "none"
 		}
 	}
+
 	checkSettings()
 	serverFiltersDropdown = document.getElementById('serverFiltersDropdown')
 	serverFiltersDropdown.addEventListener('click', function() {
@@ -698,18 +732,37 @@ function addServerFilters(placeId, maxPlayerCount) {
 			document.getElementById('serverFiltersDropdownBox').style.display = "block";
 		}
 	})
+
 	document.getElementById('serverRegionButton').addEventListener('mouseenter', function() {
 		if (!document.getElementById('globeFrame').classList.contains('active')) {
 			document.getElementById('globeFrame').classList.add('active')
 			document.getElementById('globeFrame').src = ("https://ropro.io/globe/?placeid=" + parseInt(placeId) + "" + (theme == "light" ? "&light" : ""))
 		}
 	})
+
 	document.getElementById('serverRegionButton').addEventListener('click', function() {
 		this.classList.toggle('active')
 	})
+
+	document.getElementById('serverRegionButtonMini').addEventListener('mouseenter', function() {
+		if (!document.getElementById('globeFrameMini').classList.contains('active')) {
+			document.getElementById('globeFrameMini').classList.add('active')
+			document.getElementById('globeFrameMini').src = ("https://ropro.io/globe/?placeid=" + parseInt(placeId) + "" + (theme == "light" ? "&light" : ""))
+		}
+	})
+
+	document.getElementById('serverRegionButtonMini').addEventListener('click', function() {
+		this.classList.toggle('active')
+	})
+
 	document.getElementById('maxPlayersButton').addEventListener('click', function() {
 		this.classList.toggle('active')
 	})
+
+	document.getElementById('maxPlayersButtonMini').addEventListener('click', function() {
+		this.classList.toggle('active')
+	})
+
 	document.getElementById('reverseOrderButton').addEventListener('click', async function() {
 		if (document.getElementById('loadingBar') == null) {
 			div = document.createElement('div')
@@ -725,16 +778,20 @@ function addServerFilters(placeId, maxPlayerCount) {
 			document.getElementsByClassName('ropro-running-games-footer')[0].remove()
 		}
 		document.getElementById('serverFiltersDropdownBox').style.display = "none";
+		document.getElementById('serverFiltersDropdownBoxMini').style.display = "none";
 		$('.server-filter-option.active').removeClass('active')
-		//customServerList = await fetchServerFilterReverseOrder(placeId)
-		//loadServerPage(placeId, 0)
-		maxPlayerIndex = await fetchMaxPlayerIndex(parseInt(placeId), 0)
-		customServerList = null
-		loadServerPage(placeId, maxPlayerIndex, true)
+		customServerList = await fetchServerFilterReverseOrder(globalGameId)
+		loadServerPage(globalGameId, 0, true)
 		if (document.getElementById('loadingBar') != null) {
 			document.getElementById('loadingBar').remove()
 		}
 	})
+
+	document.getElementById('reverseOrderButtonMini').addEventListener('click', async function() {
+		document.getElementById('reverseOrderButton').click()
+		document.getElementById('rbx-running-games').getElementsByClassName('container-header')[0].scrollIntoView()
+	})
+
 	document.getElementById('randomShuffleButton').addEventListener('click', async function() {
 		if (document.getElementById('loadingBar') == null) {
 			div = document.createElement('div')
@@ -750,13 +807,21 @@ function addServerFilters(placeId, maxPlayerCount) {
 			document.getElementsByClassName('ropro-running-games-footer')[0].remove()
 		}
 		document.getElementById('serverFiltersDropdownBox').style.display = "none";
+		document.getElementById('serverFiltersDropdownBoxMini').style.display = "none";
 		$('.server-filter-option.active').removeClass('active')
 		customServerList = await fetchServerFilterRandomShuffle(placeId)
+		shuffleArray(customServerList)
 		loadServerPage(placeId, 0, false)
 		if (document.getElementById('loadingBar') != null) {
 			document.getElementById('loadingBar').remove()
 		}
 	})
+
+	document.getElementById('randomShuffleButtonMini').addEventListener('click', async function() {
+		document.getElementById('randomShuffleButton').click()
+		document.getElementById('rbx-running-games').getElementsByClassName('container-header')[0].scrollIntoView()
+	})
+
 	document.getElementById('notFullButton').addEventListener('click', async function() {
 		if (document.getElementById('loadingBar') == null) {
 			div = document.createElement('div')
@@ -772,16 +837,20 @@ function addServerFilters(placeId, maxPlayerCount) {
 			document.getElementsByClassName('ropro-running-games-footer')[0].remove()
 		}
 		document.getElementById('serverFiltersDropdownBox').style.display = "none";
+		document.getElementById('serverFiltersDropdownBoxMini').style.display = "none";
 		$('.server-filter-option.active').removeClass('active')
-		//customServerList = await fetchServerFilterNotFull(placeId)
-		//loadServerPage(placeId, 0, false)
-		customServerList = null
-		maxPlayerIndex = await fetchMaxPlayerIndex(parseInt(placeId), maxPlayerCount - 1)
-		loadServerPage(placeId, maxPlayerIndex, false)
+		customServerList = await fetchServerFilterMaxPlayers(parseInt(placeId), maxPlayerCount - 1)
+		loadServerPage(placeId, 0, false)
 		if (document.getElementById('loadingBar') != null) {
 			document.getElementById('loadingBar').remove()
 		}
 	})
+
+	document.getElementById('notFullButtonMini').addEventListener('click', async function() {
+		document.getElementById('notFullButton').click()
+		document.getElementById('rbx-running-games').getElementsByClassName('container-header')[0].scrollIntoView()
+	})
+
 	document.getElementById('bestConnectionButton').addEventListener('click', async function() {
 		if (await fetchSetting("moreServerFilters")) {
 			if (document.getElementById('loadingBar') == null) {
@@ -798,6 +867,7 @@ function addServerFilters(placeId, maxPlayerCount) {
 				document.getElementsByClassName('ropro-running-games-footer')[0].remove()
 			}
 			document.getElementById('serverFiltersDropdownBox').style.display = "none";
+			document.getElementById('serverFiltersDropdownBoxMini').style.display = "none";
 			$('.server-filter-option.active').removeClass('active')
 			customServerList = await fetchServerFilterBestConnection(globalGameId)
 			loadServerPage(globalGameId, 0, false)
@@ -808,6 +878,12 @@ function addServerFilters(placeId, maxPlayerCount) {
 			upgradeModalServerFilters()
 		}
 	})
+
+	document.getElementById('bestConnectionButtonMini').addEventListener('click', async function() {
+		document.getElementById('bestConnectionButton').click()
+		document.getElementById('rbx-running-games').getElementsByClassName('container-header')[0].scrollIntoView()
+	})
+
 	document.getElementById('newestServersButton').addEventListener('click', async function() {
 		if (await fetchSetting("moreServerFilters")) {
 			if (document.getElementById('loadingBar') == null) {
@@ -824,6 +900,7 @@ function addServerFilters(placeId, maxPlayerCount) {
 				document.getElementsByClassName('ropro-running-games-footer')[0].remove()
 			}
 			document.getElementById('serverFiltersDropdownBox').style.display = "none";
+			document.getElementById('serverFiltersDropdownBoxMini').style.display = "none";
 			$('.server-filter-option.active').removeClass('active')
 			customServerList = await fetchServerFilterNewestServers(globalGameId)
 			loadServerPage(globalGameId, 0, false)
@@ -834,6 +911,12 @@ function addServerFilters(placeId, maxPlayerCount) {
 			upgradeModalServerFilters()
 		}
 	})
+
+	document.getElementById('newestServersButtonMini').addEventListener('click', async function() {
+		document.getElementById('newestServersButton').click()
+		document.getElementById('rbx-running-games').getElementsByClassName('container-header')[0].scrollIntoView()
+	})
+
 	document.getElementById('oldestServersButton').addEventListener('click', async function() {
 		if (await fetchSetting("moreServerFilters")) {
 			if (document.getElementById('loadingBar') == null) {
@@ -850,6 +933,7 @@ function addServerFilters(placeId, maxPlayerCount) {
 				document.getElementsByClassName('ropro-running-games-footer')[0].remove()
 			}
 			document.getElementById('serverFiltersDropdownBox').style.display = "none";
+			document.getElementById('serverFiltersDropdownBoxMini').style.display = "none";
 			$('.server-filter-option.active').removeClass('active')
 			customServerList = await fetchServerFilterOldestServers(globalGameId)
 			loadServerPage(globalGameId, 0, false)
@@ -860,12 +944,23 @@ function addServerFilters(placeId, maxPlayerCount) {
 			upgradeModalServerFilters()
 		}
 	})
+
+	document.getElementById('oldestServersButtonMini').addEventListener('click', async function() {
+		document.getElementById('oldestServersButton').click()
+		document.getElementById('rbx-running-games').getElementsByClassName('container-header')[0].scrollIntoView()
+	})
+
 	for (i = parseInt(maxPlayerCount) - 1; i >= 1; i--) {
 		div = document.createElement('div')
 		div.innerHTML = `<div class="max-players-selection" style="background-color:#232527;height:40px;width:177.5px;margin:5px;border-radius:5px;padding:10px;font-size:15px;font-weight:800;">${parseInt(i)} player${i == 1 ? '' : 's'} or less</div>`
-		button = div.childNodes[0]
+		var button = div.childNodes[0]
 		button.id = parseInt(i)
 		document.getElementById('maxPlayersList').appendChild(button)
+		div = document.createElement('div')
+		div.innerHTML = `<div class="max-players-selection" style="background-color:#232527;height:40px;width:177.5px;margin:5px;border-radius:5px;padding:10px;font-size:15px;font-weight:800;">${parseInt(i)} player${i == 1 ? '' : 's'} or less</div>`
+		var button2 = div.childNodes[0]
+		button2.id = parseInt(i)
+		document.getElementById('maxPlayersListMini').appendChild(button2)
 		button.addEventListener('click', async function() {
 			if (document.getElementById('loadingBar') == null) {
 				div = document.createElement('div')
@@ -881,12 +976,41 @@ function addServerFilters(placeId, maxPlayerCount) {
 				document.getElementsByClassName('ropro-running-games-footer')[0].remove()
 			}
 			document.getElementById('serverFiltersDropdownBox').style.display = "none";
+			document.getElementById('serverFiltersDropdownBoxMini').style.display = "none";
 			setTimeout(function() {
 				$('.server-filter-option.active').removeClass('active')
 			}, 100)
-			maxPlayerIndex = await fetchMaxPlayerIndex(parseInt(placeId), parseInt(this.id))
-			customServerList = null
-			loadServerPage(placeId, maxPlayerIndex, false)
+			document.getElementById('rbx-running-games').getElementsByClassName('container-header')[0].scrollIntoView()
+			customServerList = await fetchServerFilterMaxPlayers(globalGameId, parseInt(this.id))
+			console.log(customServerList)
+			loadServerPage(placeId, 0, false)
+			if (document.getElementById('loadingBar') != null) {
+				document.getElementById('loadingBar').remove()
+			}
+		})
+		button2.addEventListener('click', async function() {
+			if (document.getElementById('loadingBar') == null) {
+				div = document.createElement('div')
+				div.innerHTML = `<span id="loadingBar" style="transform: scale(0.8);visibility:initial!important;margin:0px;margin-bottom:-5px;width:100px;height:30px;" class="spinner spinner-default"></span>`
+				document.getElementById('rbx-running-games').getElementsByClassName('container-header')[0].appendChild(div.childNodes[0])
+			}
+			document.getElementById('rbx-game-server-item-container').innerHTML = ``
+			if (document.getElementsByClassName('rbx-running-games-footer').length > 0) {
+				document.getElementsByClassName('rbx-running-games-footer')[0].style.display = "none"
+			}
+			if (document.getElementsByClassName('ropro-running-games-footer').length > 0) {
+				loadMoreInitialized = false
+				document.getElementsByClassName('ropro-running-games-footer')[0].remove()
+			}
+			document.getElementById('serverFiltersDropdownBox').style.display = "none";
+			document.getElementById('serverFiltersDropdownBoxMini').style.display = "none";
+			setTimeout(function() {
+				$('.server-filter-option.active').removeClass('active')
+			}, 100)
+			document.getElementById('rbx-running-games').getElementsByClassName('container-header')[0].scrollIntoView()
+			customServerList = await fetchServerFilterMaxPlayers(globalGameId, parseInt(this.id))
+			console.log(customServerList)
+			loadServerPage(placeId, 0, false)
 			if (document.getElementById('loadingBar') != null) {
 				document.getElementById('loadingBar').remove()
 			}
@@ -1054,18 +1178,6 @@ async function addEmbeds(sectionContent, myUniverseId) {
 	}
 }
 
-async function addActiveServerCount(gameId) {
-	servers = await fetchServerPage(gameId, 0)
-	var serverTab = document.getElementById('tab-game-instances').getElementsByTagName('span')
-	if (serverTab.length > 0) {
-		serverTab[0].innerText = `${addCommas(parseInt(servers.TotalCollectionSize))} Active Server${parseInt(servers.TotalCollectionSize) == 1 ? '' : 's'}`
-	}
-	var serverButton = document.getElementById('tab-game-instances').getElementsByTagName('a')
-	if (serverButton.length > 0) {
-		serverButton[0].style.cursor = "pointer"
-	}
-}
-
 function formatTime(time) {
     suffix = " hr"
     if (time < 60) {
@@ -1179,18 +1291,18 @@ async function addPlayTime(gameId) {
 	playTimeHTML = `<div style="margin-top:5px;font-size:12px;position:relative;" class="text-label">Played <img style="background-image:none;margin:0px;margin-top:-2px;margin-bottom:0px;transform:scale(1);border:none;margin-left:0px;margin-right:1px;width:12px;height:12px;" src="https://ropro.io/images/timer${theme == "dark" ? "_dark" : "_light"}.svg" class="info-label icon-pastname">
 	<a href="#!/game-instances" style="font-size:13px;display:inline-block;" id="playTimeText" class="text-name" title=""><span id="mostPlayedLoadingBar" style="position:absolute; top:-5px;left:40px; display: inline-block; transform: scale(0.5); width: 100px; height: 25px; visibility: initial !important;margin-right:50px;margin-top:0px;" class="spinner spinner-default"></span></a><div id="timeDropdown" style="overflow:visible;margin-top:-10px;margin-left:0px;float:right;width:150px;transform:scale(0.8);margin-right:-37px;z-index:10;margin-bottom:0px;z-index:0;" class="input-group-btn group-dropdown">
 	<button style="border:none;" type="button" class="input-dropdown-btn" data-toggle="dropdown" aria-expanded="false"> 
-	<span style="float:right;" class="icon-down-16x16"></span><span id="timeLabel" class="rbx-selection-label ng-binding" ng-bind="layout.selectedTab.label" style="font-size:14px;float:right;margin-right:5px;">Past Week</span> 
+	<span style="float:right;" class="icon-down-16x16"></span><span id="timeLabel" class="rbx-selection-label ng-binding" ng-bind="layout.selectedTab.label" style="font-size:14px;float:right;margin-right:5px;">Past 7 Days</span> 
 	</button>
-	<ul style="max-height:1000px;width:100px;margin-left:30px;top:-110px;" id="timeOptions" data-toggle="dropdown-menu" class="dropdown-menu" role="menu"> 
+	<ul style="max-height:1000px;width:130px;margin-left:30px;top:-110px;" id="timeOptions" data-toggle="dropdown-menu" class="dropdown-menu" role="menu"> 
 	<li>
 	<a time="pastWeek" class="timeChoice">
-		<span ng-bind="tab.label" class="ng-binding" style="font-size:14px;">Past Week</span>
+		<span ng-bind="tab.label" class="ng-binding" style="font-size:14px;">Past 7 Days</span>
 	</a></li><li>
 	<a time="pastMonth" class="timeChoice">
-		<span style="font-size:14px;" ng-bind="tab.label" class="ng-binding">Past Month</span>
+		<span style="font-size:14px;" ng-bind="tab.label" class="ng-binding">Past 30 Days</span>
 	</a></li><li>
 	<a time="pastYear" class="timeChoice">
-		<span style="font-size:14px;" ng-bind="tab.label" class="ng-binding">Past Year</span>
+		<span style="font-size:14px;" ng-bind="tab.label" class="ng-binding">Past 365 Days</span>
 	</a></li><li>
 	<a time="allTime" class="timeChoice">
 		<span style="font-size:14px;" ng-bind="tab.label" class="ng-binding">All Time</span>
@@ -1206,18 +1318,18 @@ async function addPlayTime(gameId) {
 	$('.timeChoice').click(function(){
 		time = this.getAttribute("time")
 		if (time == "pastWeek") {
-			document.getElementById('timeLabel').innerText = "Past Week"
+			document.getElementById('timeLabel').innerText = "Past 7 Days"
 			updatePlayTime(gameId, 7)
 		} else if (time == "pastMonth") {
 			if (morePlaytimeSorts) {
-				document.getElementById('timeLabel').innerText = "Past Month"
+				document.getElementById('timeLabel').innerText = "Past 30 Days"
 				updatePlayTime(gameId, 30)
 			} else {
 				upgradeModal()
 			}
 		} else if (time == "pastYear") {
 			if (morePlaytimeSorts) {
-				document.getElementById('timeLabel').innerText = "Past Year"
+				document.getElementById('timeLabel').innerText = "Past 365 Days"
 				updatePlayTime(gameId, 365)
 			} else {
 				upgradeModal()
@@ -1598,7 +1710,7 @@ async function checkGamePage() {
 			var mostRecentServerSetting = await fetchSetting("mostRecentServer")
 			var serverFiltersSetting = await fetchSetting("serverFilters")
 			try {
-				var serverInterval = setInterval(async function(){ 
+				var serverInterval = setInterval(async function(){
 					if (document.getElementById('rbx-running-games') != null) {
 						//clearInterval(serverInterval)
 						if (serverFiltersSetting && document.getElementById('roproServerFiltersButton') == null) {
@@ -1616,16 +1728,28 @@ async function checkGamePage() {
 						}
 					}
 				}, 500)
+				if (serverFiltersSetting && document.getElementById('roproServerFiltersMiniButton') == null) {
+					serverTab = document.getElementById('tab-game-instances')
+					serverFiltersMiniDiv = document.createElement('div')
+					serverFiltersMiniDiv.innerHTML = serverFiltersMiniHTML
+					serverTab.appendChild(serverFiltersMiniDiv)
+					serverFiltersDropdownMini = document.getElementById('serverFiltersDropdownMini')
+					serverFiltersDropdownMini.addEventListener('click', function() {
+						if (document.getElementById('serverFiltersDropdownBoxMini').style.display == "block") {
+							document.getElementById('serverFiltersDropdownBoxMini').style.display = "none";
+							$('.server-filter-option.active').removeClass('active')
+						} else {
+							document.getElementById('serverFiltersDropdownBoxMini').style.display = "block";
+						}
+					})
+				}
 			} catch (e) {
-				//console.log(e)
+				console.log(e)
 			}
 			if (await fetchSetting("liveLikeDislikeFavoriteCounters")) {
 				liveCounters()
 			}
 			livePlaying()
-			if (await fetchSetting("activeServerCount")) {
-				addActiveServerCount(globalGameId)
-			}
 			if (await fetchSetting("playtimeTracking")) {
 				addPlayTime(parseInt(myUniverseId))
 			}
@@ -1749,9 +1873,10 @@ window.addEventListener('message', async function(e) {
 				document.getElementsByClassName('ropro-running-games-footer')[0].remove()
 			}
 			document.getElementById('serverFiltersDropdownBox').style.display = "none";
+			document.getElementById('serverFiltersDropdownBoxMini').style.display = "none";
 			$('.server-filter-option.active').removeClass('active')
+			document.getElementById('rbx-running-games').getElementsByClassName('container-header')[0].scrollIntoView()
 			customServerList = await fetchServerFilterRegion(globalGameId, serverLocation)
-			customServerList = customServerList.slice(0, 10)
 			loadServerPage(globalGameId, 0, false)
 			if (document.getElementById('loadingBar') != null) {
 				document.getElementById('loadingBar').remove()

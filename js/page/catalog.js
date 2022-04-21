@@ -1,7 +1,7 @@
 
 function fetchUpcomingPage(page) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/getUpcomingPage.php?page=" + page}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getUpcomingPage.php?page=" + page}, 
 			function(data) {
 				resolve(data)
 			}

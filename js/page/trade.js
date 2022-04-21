@@ -10,19 +10,18 @@ RoPro was wholly designed and coded by:
 |  '--'  /|  |'  '--'\|  `---. 
 `-------' `--' `-----'`------' 
                             
-Contact me with inquiries (job offers welcome) at:
+Contact me:
 
 Discord - Dice#1000
 Email - dice@ropro.io
-Phone - ‪(650) 318-1631‬
+Phone - 650-318-1631
 
 Write RoPro:
 
 Dice Systems LLC
-1629 K. Street N.W.
-Suite 300
-Washington, DC
-20006-1631
+16192 Coastal Hwy
+Lewes, Deleware 19958
+United States
 
 RoPro Terms of Service:
 https://ropro.io/terms
@@ -30,12 +29,12 @@ https://ropro.io/terms
 RoPro Privacy Policy:
 https://ropro.io/privacy-policy
 
-© 2021 Dice Systems LLC
+© 2022 Dice Systems LLC
 **/
 
 function fetchItems(idList) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/tradeBackend.php?ids=" + idList.join(",")}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/tradeBackend.php?ids=" + idList.join(",")}, 
 			function(data) {
 				resolve(data)
 			}
@@ -43,9 +42,9 @@ function fetchItems(idList) {
 	})
 }
 
-function fetchItemSearch(search) {
+function fetchItemMiniSearch(search) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/itemSearch.php?q="+search},
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/itemSearch.php?q="+search},
 			function(data) {
 				resolve(data)
 			}
@@ -55,7 +54,7 @@ function fetchItemSearch(search) {
 
 function fetchFlag(userId) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/fetchFlag.php?id=" + userId},
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/fetchFlag.php?id=" + userId},
 			function(data) {
 				resolve(data)
 			}
@@ -65,7 +64,7 @@ function fetchFlag(userId) {
 
 function fetchFlagsBatch(userIds) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/fetchFlags.php?ids=" + userIds.join(",")},
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/fetchFlags.php?ids=" + userIds.join(",")},
 			function(data) {
 				resolve(data)
 			}
@@ -75,7 +74,7 @@ function fetchFlagsBatch(userIds) {
 
 function fetchTradeBotters(userIds, reqType) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "PostURL", url:"https://ropro.io/api/batchFlags.php", jsonData:{reqType: reqType, ids: userIds.join(",")}},
+		chrome.runtime.sendMessage({greeting: "PostURL", url:"https://api.ropro.io/batchFlags.php", jsonData:{reqType: reqType, ids: userIds.join(",")}},
 			function(data) {
 				resolve(data)
 			}
@@ -104,7 +103,7 @@ function fetchSalesData(itemId) {
 
 function fetchValues(trades) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "PostURL", url:"https://ropro.io/api/tradePreviewBackend.php", jsonData: trades}, 
+		chrome.runtime.sendMessage({greeting: "PostURL", url:"https://api.ropro.io/tradePreviewBackend.php", jsonData: trades}, 
 			function(data) {
 				resolve(data)
 			}
@@ -114,7 +113,7 @@ function fetchValues(trades) {
 
 function fetchRecentSales(itemId) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/recentSales.php?id=" + itemId},
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/recentSales.php?id=" + itemId},
 			function(data) {
 				resolve(data)
 			}
@@ -144,7 +143,7 @@ function cacheTrade(tradeId) {
 
 function fetchAdditionalInfo(itemId) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/additionalItemInfo.php?id=" + itemId},
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/additionalItemInfo.php?id=" + itemId},
 			function(data) {
 				resolve(data)
 			}
@@ -154,7 +153,7 @@ function fetchAdditionalInfo(itemId) {
 
 function fetchProjecteds(type) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/fetchProjecteds.php?type=" + type},
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/fetchProjecteds.php?type=" + type},
 			function(data) {
 				resolve(data)
 			}
@@ -245,7 +244,7 @@ function fetchUserID() {
 
 function flagTrader(userId, reqType) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://ropro.io/api/flagTrader.php?id=" + userId + "&reqType=" + reqType}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/flagTrader.php?id=" + userId + "&reqType=" + reqType}, 
 			function(data) {
 				resolve(data)
 			}
@@ -491,7 +490,7 @@ async function addInfoCard(item, id) {
 					<a href="https://www.roblox.com/catalog/${parseInt(id)}/" target="_blank"><h3 class="item-card-name">---</h3></a>
 					<div><span class="text-label">By <a href="" class="text-name item-card-creator">---</a></span></div>
 				</div></h3><iframe class="item-card-iframe" style="float:left;border:none;width:290px;margin-left:8.5px;height:245px;border-radius:7px;background-color:#232527;" src="https://ropro.io/3ditemviewer/?id=${parseInt(id)}&background=preview" scrolling="no"></iframe></div>
-				<form class="item-graph-form" style="display:none;" action="https://ropro.io/api/itemGraph.php" method="post" target="item_card_graph">
+				<form class="item-graph-form" style="display:none;" action="https://api.ropro.io/itemGraph.php" method="post" target="item_card_graph">
 					<input class="item-sales-data" name="salesData" value=''>
 					<input class="input-submit" type="submit">
 				</form>
