@@ -2,7 +2,7 @@
 
 RoPro (https://ropro.io) v1.3
 
-RoPro was wholly designed and coded by:
+The RoPro extension is developed by:
                                
 ,------.  ,--. ,-----.,------. 
 |  .-.  \ |  |'  .--./|  .---' 
@@ -69,11 +69,16 @@ if ($('.light-theme').length > 0) {
     var clocktheme = "light"
 }
 
+var gamesCache = []
+var gamesDictCache = {}
+var genreCache = []
+var genreDictCache = {}
 var allGames = {}
 var gameBatch = []
 var universeBatch = []
 var currentGames = []
-var genres = ["All", "Building", "Horror", "Town and City", "Military", "Comedy", "Medieval", "Adventure", "Sci-Fi", "Naval", "FPS", "RPG", "Sports", "Fighting", "Western", "Skatepark"]
+var topPopularLeftScroll = 0;
+var genres = ["All Genres", "Simulator", "Tycoon", "Obby", "Anime", "FPS", "Pet", "Roleplay", "Escape", "Prison", "Horror", "SCP", "Planes", "Mining", "Tower Defense", "Space", "Build", "War", "Comedy", "Sports", "School", "Fighting", "Farm", "Cafe", "Vibe", "Dance", "Donate", "Avatar"]
 var genreFilter = null
 var customFilter = null
 var filters = [chrome.i18n.getMessage("moreFilters"), "Single-player", "Gear Allowed", "Paid Access", "New Games", "Classic Games", "Recent Update", "Updated Today", "Under 1m Visits", "R15 Enabled", "Open Source"]
@@ -81,6 +86,15 @@ var filters = [chrome.i18n.getMessage("moreFilters"), "Single-player", "Gear All
 function fetchGenres(universes) {
 	return new Promise(resolve => {
 		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://games.roblox.com/v1/games?universeIds=" + universes.join(",")}, 
+			function(data) {
+				resolve(data)
+		})
+	})
+}
+
+function fetchSearchResults(keyword) {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://games.roblox.com/v1/games/list?keyword=" + keyword + "&startRows=0&maxRows=100&isKeywordSuggestionEnabled=true"}, 
 			function(data) {
 				resolve(data)
 		})
@@ -96,9 +110,18 @@ function fetchPopularToday() {
 	})
 }
 
+function fetchGames(page, size = 200) {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "GetURL", url:`https://games.roblox.com/v1/games/list?model.startRows=${page * size}&model.maxRows=${size}`},
+			function(data) {
+				resolve(data)
+		})
+	})
+}
+
 function fetchUniverseDetails(universeIds) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://games.roblox.com/v1/games?universeIds=" + universeIds.join(",")}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://games.roblox.com/v1/games?universeIds=" + universeIds.join(",")},
 			function(data) {
 					resolve(data)
 			})
@@ -110,6 +133,24 @@ function fetchGameIcons(universeIds) {
 		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://thumbnails.roblox.com/v1/games/icons?universeIds=" + universeIds.join(",") + "&size=150x150&format=Png&isCircular=false"}, 
 			function(data) {
 					resolve(data)
+			})
+	})
+}
+
+function fetchGameThumbnails(universeIds) {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds=" + universeIds.join(",") + "&countPerUniverse=1&defaults=true&size=480x270&format=Png&isCircular=false"}, 
+			function(data) {
+					resolve(data)
+			})
+	})
+}
+
+function fetchTotalPlaytimePastDay(universeIds) {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getTotalPlaytimePastDay.php?universeIds=" + universeIds.join(",")}, 
+			function(data) {
+					resolve(JSON.parse(data))
 			})
 	})
 }
@@ -248,8 +289,8 @@ function filterCustom() {
 	}
 }
 
-function createGenres() {
-	genreOptionsList = document.getElementById('genreOptions')
+function createGenres(elem) {
+	genreOptionsList = elem
 	for (i = 0; i < genres.length; i++) {
 		genre = genres[i]
 		li = document.createElement('li')
@@ -262,7 +303,7 @@ function createGenres() {
 			genreChoice = li.getElementsByClassName('genreChoice')[0]
 			genreChoice.addEventListener("click", function() {
 				genre = this.getAttribute("genre")
-				document.getElementById('genreLabel').innerHTML = stripTags(genre)
+				document.getElementById('topPopularGenre').innerText = stripTags(genre)
 				if (genre == "All") {
 					genre = null
 				}
@@ -298,37 +339,85 @@ function createCustom() {
 	}
 }
 
-function filterGenres() {
-	if (genreFilter != null) {
-		currentGames = []
-		for (universe in allGames) {
-			game = allGames[universe]
-			for (i = 0; i < game[0].length; i++) {
-				gameCard = game[0][i]
-				gameDetail = game[1]
-				if (gameCard.getElementsByClassName('game-card-native-ad').length > 0 || typeof gameDetail.genre == "undefined" || gameDetail.genre != genreFilter) {
-					gameCard.style.display = "none"
-				} else {
-					gameCard.style.display = "inline-block"
-					currentGames.push(gameCard)
+async function filterGenres() {
+	topPopularLeftScroll = 0
+	document.getElementById('topPopular').setAttribute("data-page", "0")
+	document.getElementById('topPopularList').parentNode.style.left = "0px"
+	document.getElementById('topPopularList').innerHTML = ""
+	document.getElementById('topPopularLoading').style.display = "block"
+	var genre = document.getElementById('topPopularGenre').innerText
+	if (genre == "All Genres") {
+		loadTopPopular()
+		return
+	}
+	if (Object.keys(genreCache).length < 1000) {
+		var gamesList = []
+		for (var i = 0; i < 10; i++) {
+			gamesList.push(fetchGames(i))
+		}
+		await Promise.all(gamesList).then((values) => {
+			console.log(values)
+			for (var i = 0; i < values.length; i++) {
+				if (values[i].hasOwnProperty('games')) {
+					games = values[i].games
+					var universeIds = []
+					for (var j = 0; j < games.length; j++) {
+						if (!genreDictCache.hasOwnProperty(games[j].universeId)) {
+							genreCache.push(games[j])
+							genreDictCache[games[j].universeId] = games[j]
+						}
+					}
 				}
 			}
+		})
+	}
+	var validGames = {}
+	results = await fetchSearchResults(genre)
+	for (var i = 0; i < results.games.length; i++) {
+		if (results.games[i].isSponsored == false) {
+			validGames[results.games[i].universeId] = true
 		}
-		if (document.getElementById('popularToday') != null) {
-			document.getElementById('popularToday').parentNode.style.display = "none"
-		}
-	} else {
-		currentGames = null
-		for (universe in allGames) {
-			game = allGames[universe]
-			for (i = 0; i < game[0].length; i++) {
-				gameCard = game[0][i]
-				gameCard.style.display = "inline-block"
+	}
+	var added = {}
+	var universeIds = []
+	for (var i = 0; i < genreCache.length; i++) {
+			if (!added.hasOwnProperty(genreCache[i].universeId)) {
+				universeIds.push(genreCache[i].universeId)
+				added[genreCache[i].universeId] = true
 			}
+	}
+	universeIds.sort(function(a, b) {
+		return genreDictCache[b].playerCount - genreDictCache[a].playerCount
+	})
+	var universes = []
+	for (var i = 0; i < universeIds.length; i++) {
+		if (validGames.hasOwnProperty(universeIds[i])) {
+			universes.push(universeIds[i])
 		}
-		if (document.getElementById('popularToday') != null) {
-			document.getElementById('popularToday').parentNode.style.display = "block"
+	}
+	universeIds = universes.slice(0, 50)
+	for (var i = 0; i < Math.min(50, universeIds.length); i++) {
+		addGame(document.getElementById('topPopular'), universeIds[i], genreDictCache[universeIds[i]].name, "https://www.roblox.com/games/" + parseInt(genreDictCache[universeIds[i]].placeId), "", genreDictCache[universeIds[i]].playerCount, parseInt(genreDictCache[universeIds[i]].totalUpVotes / (genreDictCache[universeIds[i]].totalUpVotes + genreDictCache[universeIds[i]].totalDownVotes) * 100))
+		topPopularGames[universeIds[i]] = true
+	}
+	document.getElementById('topPopularLoading').style.display = "none"
+	document.getElementById('topPopular').setAttribute('data-page', parseInt(document.getElementById('topPopular').getAttribute('data-page')) + 1)
+	document.getElementById('topPopular').parentNode.getElementsByClassName('next')[0].classList.remove('disabled')
+	setTimeout(async function() {
+		totalPlaytime = await fetchTotalPlaytimePastDay(universeIds)
+		for (var i = 0; i < totalPlaytime.length; i++) {
+			document.getElementsByClassName('large-tile-universe-' + parseInt(totalPlaytime[i].universeid))[0].getElementsByClassName('ropro-hours-played')[0].innerText = kFormatter(totalPlaytime[i].hours) + " hours"
+			document.getElementsByClassName('large-tile-universe-' + parseInt(totalPlaytime[i].universeid))[0].getElementsByClassName('ropro-hours-played')[0].title = addCommas(totalPlaytime[i].hours) + " hours played by RoPro users in the past day"
 		}
+	})
+	universeIcons = await fetchGameThumbnails(universeIds)
+	for (var i = 0; i < universeIcons.data.length; i++) {
+		thumbnail = ""
+		if (universeIcons.data[i].thumbnails.length > 0 && universeIcons.data[i].thumbnails[0].hasOwnProperty('imageUrl')) {
+			thumbnail = universeIcons.data[i].thumbnails[0].imageUrl
+		}
+		genreDictCache[universeIcons.data[i].universeId]["icon"] = thumbnail
+		document.getElementsByClassName('large-tile-universe-' + parseInt(universeIcons.data[i].universeId))[0].getElementsByClassName('large-game-tile-thumb')[0].src = thumbnail
 	}
 }
 
@@ -425,113 +514,6 @@ function getPageTop(el) {
 var mainGamesPage = false
 var inserted = false
 
-document.getElementsByTagName('body')[0].style.minHeight="1000px"
-
-const initialInterval = setInterval(function(){
-	//if (window.location.href.includes("sortName")) {
-		if (document.getElementById("genreDropdown") == null && inserted == false && (typeof $('.container-header.games-filter-changer h3').get(0) != 'undefined' || typeof $('.search-result-header').get(0) != 'undefined' || typeof $('.game-sort-detail-container').get(0) != 'undefined')) { //First page load
-			clearInterval(initialInterval)
-			containers = document.getElementsByClassName('games-list-container is-windows')
-			if (containers.length > 0) {
-				link = containers[0].childNodes[0]
-				if (link.tagName == "A") {
-					mainGamesPage = true
-				}
-			}
-			async function addDropdowns() {
-				firstHeader = $('.container-header.games-filter-changer h3').get(0)
-				if (typeof firstHeader == "undefined") {
-					firstHeader = $('.search-result-header h3').get(0)
-				}
-				if (typeof firstHeader == "undefined") {
-					firstHeader = $('.game-sort-detail-container h3').get(0)
-				}
-				contentDiv = document.createElement("div")
-				contentDiv.style.position = "static"
-				contentDiv.style.float = "left"
-				contentDiv.style.left = (getPageLeft(firstHeader) + firstHeader.offsetWidth + 20) + "px"
-				contentDiv.style.zIndex = "10000"
-				contentDiv.id = "filterDiv"
-				contentWindow = document.getElementsByClassName('content')[0]
-				if (document.getElementById('games-carousel-page') != null && typeof document.getElementById('games-carousel-page') != 'undefined') {
-					document.getElementById('games-carousel-page').insertBefore(contentDiv, document.getElementById('games-carousel-page').childNodes[0])
-				} else {
-					contentWindow.insertBefore(contentDiv, contentWindow.childNodes[0])
-				}
-				h3 = $('.container-header.games-filter-changer h3')
-				if (mainGamesPage && h3.length > 0) {
-					h3.get(0).parentNode.insertBefore(document.createElement("br"), h3.get(0))
-					h3.get(0).parentNode.insertBefore(document.createElement("br"), h3.get(0))
-				} else if ($('.search-result-header').length > 0) {
-					$('.search-result-header').get(0).parentNode.insertBefore(document.createElement("br"), $('.search-result-header').get(0))
-					$('.search-result-header').get(0).parentNode.insertBefore(document.createElement("br"), $('.search-result-header').get(0))
-				}
-				var genreFiltersSetting = await fetchSetting("genreFilters")
-				var moreGameFiltersSetting = await fetchSetting("moreGameFilters")
-				var gameLikeRatioFilterSetting = await fetchSetting("gameLikeRatioFilter")
-				if (document.getElementById('randomGameButton') != null) {
-					document.getElementById('randomGameButton').style.display = "block"
-				}
-				if (genreFiltersSetting) {
-					if (document.getElementById('genreDropdown') == null) {
-						if (mainGamesPage || document.getElementsByClassName('game-sort-detail-container').length > 0) {
-							contentDiv.innerHTML += genreDropdownHTML
-						} else {
-							if (document.getElementsByClassName('search-result-header').length > 0) {
-								contentDiv.innerHTML += genreDropdownHTML
-							}
-						}
-					}
-				} else {
-					div = document.createElement("div")
-					div.setAttribute("id", "genreDropdown")
-					contentDiv.appendChild(div)
-				}
-				if (moreGameFiltersSetting && document.getElementById('customDropdown') == null) {
-					if (mainGamesPage || document.getElementsByClassName('game-sort-detail-container').length > 0) {
-						contentDiv.innerHTML += customDropdownHTML
-					} else {
-						if (document.getElementsByClassName('search-result-header').length > 0) {
-							contentDiv.innerHTML += customDropdownHTML
-						}
-					}
-				}
-				if (gameLikeRatioFilterSetting && document.getElementById('likeRatio') == null) {
-					if (mainGamesPage || document.getElementsByClassName('game-sort-detail-container').length > 0) {
-						contentDiv.innerHTML += likeRatioSliderHTML
-					} else {
-						if (document.getElementsByClassName('search-result-header').length > 0) {
-							contentDiv.innerHTML += likeRatioSliderHTML
-						}
-					}
-					$('input[type="range"]:not("#choicesRatio")').on("change mousemove", function () {
-							var val = ($(this).val() - $(this).attr('min')) / ($(this).attr('max') - $(this).attr('min'))
-							$(this).css('background-image', '-webkit-gradient(linear, left center, right center, color-stop(' + val + ', #14B65A), color-stop(' + val + ', #D76A6B))')
-					})
-					$('input[type="range"]:not("#choicesRatio")').on("input", function () {
-							var val = $(this).val()
-							filterLikeRatio(val)
-					})
-				}
-			}
-			inserted = true
-			addDropdowns()
-			setTimeout(async function(){
-				if (await fetchSetting("genreFilters")) {
-					createGenres()
-				}
-				if (await fetchSetting("moreGameFilters")) {
-					createCustom()
-				}
-			}, 1000)
-		}
-	//}
-}, 10)
-
-setInterval(function() {
-	doBatch()
-}, 1000)
-
 function addCommas(nStr){
 	nStr += '';
 	var x = nStr.split('.');
@@ -548,9 +530,45 @@ function kFormatter(num) {
     return Math.abs(num) > 999 ? Math.abs(num) > 999999 ? Math.sign(num)*((Math.abs(num)/1000000).toFixed(1)) + 'm' : Math.sign(num)*((Math.abs(num)/1000).toFixed(1)) + 'k' : Math.sign(num)*Math.abs(num)
 }
 
+function kFormatter2(num) {
+    return Math.abs(num) > 999 ? Math.abs(num) > 999999 ? Math.sign(num)*((Math.abs(num)/1000000).toFixed(1)) + 'M' : Math.sign(num)*((Math.abs(num)/1000).toFixed(1)) + 'K' : Math.sign(num)*Math.abs(num)
+}
+
+function addGame(gameElement, universeId, gameName, gameLink, gameIcon, players, likeRatio) {
+	/**gameHTML = `<li class="popular-today-card list-item game-card game-tile universe-${parseInt(universeId)}" id="${parseInt(universeId)}" title="${stripTags(gameName)}" style="display: inline-block;"><div class="game-card-container"><a class="game-card-link" href="${stripTags(gameLink)}" id="${parseInt(universeId)}"><div class="game-card-thumb-container"><span class="thumbnail-2d-container game-card-thumb"><img class="" src="${stripTags(gameIcon)}" alt="${stripTags(gameName)}" title="${stripTags(gameName)}"></span></div><div class="game-card-name game-name-title" title="${stripTags(gameName)}">${stripTags(gameName)}</div>
+	<div data-testid="game-tile-card-info" class="game-card-info"><span class="info-label icon-votes-gray"></span><span data-testid="game-tile-card-info-vote-label" class="info-label vote-percentage-label">${parseInt(likeRatio)}%</span><span class="info-label icon-playing-counts-gray"></span><span class="info-label playing-counts-label" title="${parseInt(players)}">${kFormatter2(parseInt(players))}</span></div>
+	</a></div></li>`**/
+	gameHTML = `<div title="${stripTags(gameName)}" class="large-game-tile game-tile-container large-tile-universe-${universeId}">
+	<a href="${stripTags(gameLink)}" class="large-game-tile-container">
+	  <div class="cursor-pointer">
+		<div class="large-game-tile-thumb-container placeholder-game-thumbnail" style="overflow:hidden;">
+		  <img class="placeholder-game-thumbnail large-game-tile-thumb" src="${stripTags(gameIcon)}" />
+		</div>
+		<div class="large-game-tile-overlay">
+		  <div class="large-game-tile-info-container">
+			<h1 class="text-overflow large-game-tile-name">${stripTags(gameName)}</h1>
+			<div class="game-card-info large-game-tile-info">
+			  <span class="info-label icon-votes-gray-white-70"></span>
+			  <span class="info-label vote-percentage-label">${parseInt(likeRatio)}%</span>
+			  <span class="info-label icon-playing-counts-gray-white-70"></span>
+			  <span class="info-label playing-counts-label" title="${players} active players">${addCommas(players)}</span>
+			  <img style="margin-left:10px;background-image:none;width:16px;" src="${chrome.runtime.getURL('/images/timer_dark.svg')}" class="info-label icon-pastname">
+			  <span class="info-label ropro-hours-played" title="--- hours played by RoPro users in the past day">--- hours</span>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+  </div>`
+	if (gameElement != null) {
+		gameCards = gameElement.parentNode.getElementsByClassName('game-cards')[0]
+		gameCards.innerHTML += gameHTML
+	}
+}
+
 function addPopularGame(universeId, gameName, gameLink, gameIcon, hours) {
-	gameHTML = `<li class="popular-today-card list-item game-card game-tile checked" id="${parseInt(universeId)}" title="${stripTags(gameName)}" style="display: inline-block;"><div class="game-card-container"><a class="game-card-link" href="${stripTags(gameLink)}" id="${parseInt(universeId)}"><div class="game-card-thumb-container"><span class="thumbnail-2d-container game-card-thumb"><img class="" src="${stripTags(gameIcon)}" alt="${stripTags(gameName)}" title="${stripTags(gameName)}"></span></div><div class="game-card-name game-name-title" title="${stripTags(gameName)}">${stripTags(gameName)}</div><div style="margin-top:-4px;" class="game-card-info">
-    <img style="background-image:none;margin:-6px;margin-top:0px;margin-bottom:0.5px;transform:scale(0.4);border:none;margin-left:-8px;margin-top:-0.6px;margin-right:-9px;" src="https://ropro.io/images/timer_${stripTags(clocktheme)}.svg" class="info-label icon-pastname"><span style="font-size:10.5px;" title="Played for ${addCommas(parseInt(hours).toString())} hours by RoPro users in the last 24 hours" class="info-label vote-percentage-label">${kFormatter(parseInt(hours))} Hours Today</span>
+	gameHTML = `<li class="popular-today-card list-item game-card game-tile universe-${parseInt(universeId)}" id="${parseInt(universeId)}" title="${stripTags(gameName)}" style="display: inline-block;"><div class="game-card-container"><a class="game-card-link" href="${stripTags(gameLink)}" id="${parseInt(universeId)}"><div class="game-card-thumb-container"><span class="thumbnail-2d-container game-card-thumb"><img class="" src="${stripTags(gameIcon)}" alt="${stripTags(gameName)}" title="${stripTags(gameName)}"></span></div><div class="game-card-name game-name-title" title="${stripTags(gameName)}">${stripTags(gameName)}</div><div style="margin-top:-4px;" class="game-card-info">
+    <img style="background-image:none;margin:-6px;margin-top:0px;margin-bottom:0.5px;transform:scale(0.4);border:none;margin-left:-8px;margin-top:-0.6px;margin-right:-9px;" src="${chrome.runtime.getURL(`/images/timer_${stripTags(clocktheme)}.svg`)}" class="info-label icon-pastname"><span style="font-size:10.5px;" title="Played for ${addCommas(parseInt(hours).toString())} hours by RoPro users in the last 24 hours" class="info-label vote-percentage-label">${kFormatter(parseInt(hours))} Hours Today</span>
     </div></a></div></li>`
 	popularToday = document.getElementById('popularToday')
 	if (popularToday != null) {
@@ -559,25 +577,86 @@ function addPopularGame(universeId, gameName, gameLink, gameIcon, hours) {
 	}
 }
 
+var topPopularGames = {}
+
+async function loadTopPopular() {
+	page = parseInt(document.getElementById('topPopular').getAttribute('data-page'))
+	if (page == 0) {
+		topPopularGames = {}
+	}
+	for (var i = 0; i < 1; i++) {
+		var games = await fetchGames(i + page)
+		games = games.games
+		for (var j = 0; j < games.length; j++) {
+			if (!gamesDictCache.hasOwnProperty(games[j].universeId)) {
+				gamesCache.push(games[j])
+				gamesDictCache[games[j].universeId] = games[j]
+			}
+		}
+	}
+	var universeIds = []
+	for (var i = 0; i < gamesCache.length; i++) {
+		if (!topPopularGames.hasOwnProperty(gamesCache[i].universeId)) {
+			universeIds.push(gamesCache[i].universeId)
+		}
+	}
+	document.getElementById('topPopularLoading').style.display = "none"
+	universeIds.sort(function(a, b) {
+		return gamesDictCache[b].playerCount - gamesDictCache[a].playerCount
+	})
+	universeIds = universeIds.slice(0, 50)
+	for (var i = 0; i < Math.min(50, universeIds.length); i++) {
+		addGame(document.getElementById('topPopular'), universeIds[i], gamesDictCache[universeIds[i]].name, "https://www.roblox.com/games/" + parseInt(gamesDictCache[universeIds[i]].placeId), "", gamesDictCache[universeIds[i]].playerCount, parseInt(gamesDictCache[universeIds[i]].totalUpVotes / (gamesDictCache[universeIds[i]].totalUpVotes + gamesDictCache[universeIds[i]].totalDownVotes) * 100))
+		topPopularGames[universeIds[i]] = true
+	}
+	document.getElementById('topPopular').setAttribute('data-page', parseInt(document.getElementById('topPopular').getAttribute('data-page')) + 1)
+	document.getElementById('topPopular').parentNode.getElementsByClassName('next')[0].classList.remove('disabled')
+	setTimeout(async function() {
+		totalPlaytime = await fetchTotalPlaytimePastDay(universeIds)
+		for (var i = 0; i < totalPlaytime.length; i++) {
+			document.getElementsByClassName('large-tile-universe-' + parseInt(totalPlaytime[i].universeid))[0].getElementsByClassName('ropro-hours-played')[0].innerText = kFormatter(totalPlaytime[i].hours) + " hours"
+			document.getElementsByClassName('large-tile-universe-' + parseInt(totalPlaytime[i].universeid))[0].getElementsByClassName('ropro-hours-played')[0].title = addCommas(totalPlaytime[i].hours) + " hours played by RoPro users in the past day"
+		}
+	})
+	universeIcons = await fetchGameThumbnails(universeIds.slice(0, 5))
+	for (var i = 0; i < universeIcons.data.length; i++) {
+		thumbnail = ""
+		if (universeIcons.data[i].thumbnails.length > 0 && universeIcons.data[i].thumbnails[0].hasOwnProperty('imageUrl')) {
+			thumbnail = universeIcons.data[i].thumbnails[0].imageUrl
+		}
+		gamesDictCache[universeIcons.data[i].universeId]["icon"] = thumbnail
+		document.getElementsByClassName('large-tile-universe-' + parseInt(universeIcons.data[i].universeId))[0].getElementsByClassName('large-game-tile-thumb')[0].src = thumbnail
+	}
+	universeIcons = await fetchGameThumbnails(universeIds.slice(5, 50))
+	for (var i = 0; i < universeIcons.data.length; i++) {
+		thumbnail = ""
+		if (universeIcons.data[i].thumbnails.length > 0 && universeIcons.data[i].thumbnails[0].hasOwnProperty('imageUrl')) {
+			thumbnail = universeIcons.data[i].thumbnails[0].imageUrl
+		}
+		gamesDictCache[universeIcons.data[i].universeId]["icon"] = thumbnail
+		document.getElementsByClassName('large-tile-universe-' + parseInt(universeIcons.data[i].universeId))[0].getElementsByClassName('large-game-tile-thumb')[0].src = thumbnail
+	}
+}
+
 async function loadPopularToday() {
 	popularTodayRow = document.getElementById('popularToday')
-	popularToday = await fetchPopularToday()
+	var popularToday = await fetchPopularToday()
 	popularToday = JSON.parse(popularToday)
-	universeIds = []
-	universeDict = {}
+	var universeIds = []
+	var universeDict = {}
 	for (i = 0; i < popularToday.length; i++) {
 		universeIds.push(popularToday[i].universeid)
-		universeDict[popularToday[i].universeid] = popularToday[i].hours
+		universeDict[popularToday[i].universeid] = {"hours": popularToday[i].hours}
 	}
 	universeDetails = await fetchUniverseDetails(universeIds)
 	universeIcons = await fetchGameIcons(universeIds)
 	for (i = 0; i < universeDetails.data.length; i++) {
-		universeDict[universeDetails.data[i].id] = {"name": universeDetails.data[i].name, "link": "https://www.roblox.com/games/" + universeDetails.data[i].rootPlaceId, "hours": universeDict[universeDetails.data[i].id]}
+		universeDict[universeDetails.data[i].id] = {"name": universeDetails.data[i].name, "link": "https://www.roblox.com/games/" + universeDetails.data[i].rootPlaceId, "hours": universeDict[universeDetails.data[i].id].hours}
 	}
 	for (i = 0; i < universeIcons.data.length; i++) {
 		universeDict[universeIcons.data[i].targetId]["icon"] = universeIcons.data[i].imageUrl
 	}
-	document.getElementById('popularTodayLoading').remove()
+	document.getElementById('popularTodayLoading').style.display = "none"
 	for (i = 0; i < universeIds.length; i++) {
 		addPopularGame(universeIds[i], universeDict[universeIds[i]].name, universeDict[universeIds[i]].link, universeDict[universeIds[i]].icon, universeDict[universeIds[i]].hours)
 	}
@@ -594,11 +673,84 @@ function getOffset( el ) {
     return { top: _y, left: _x };
 }
 
+async function addTopPopular() {
+	if (await fetchSetting("mostPopularSort")) {
+		topPopularHTML = `<div id="topPopular" data-page="0" class="container-header games-filter-changer top-popular"><h3>Most Popular</h3></div></a><div class="horizontal-scroller games-list"><span id="topPopularLoading" style="position:absolute; top:0px; right:0px; display: block; width: 100px; height: 120px; visibility: initial !important;margin-right:calc(50% - 50px);margin-top:10px;transform:scale(1);" class="spinner spinner-default"></span><div class="clearfix horizontal-scroll-window" style="overflow-x:clip;overflow-y:visible;"><div class="horizontally-scrollable" style="left: 0px;"><ul id="topPopularList" class="hlist games game-cards game-tile-list"></ul></div><div style="height:270px;z-index:2;" class="scroller prev disabled" role="button" aria-hidden="true"><div class="arrow"><span class="icon-games-carousel-left"></span></div></div><div style="height:270px;z-index:2;" class="scroller next" role="button" aria-hidden="true"><div class="arrow"><span class="icon-games-carousel-right"></span></div></div></div></div>`
+		var div = document.createElement('div')
+		div.setAttribute('class', 'games-list-container is-windows')
+		div.setAttribute('style', 'margin-bottom:30px;')
+		div.innerHTML += topPopularHTML
+		document.getElementsByClassName('games-list-container')[0].parentNode.insertBefore(div, document.getElementsByClassName('games-list-container')[0])
+		if (document.getElementsByClassName('top-popular').length <= 1) {
+			loadTopPopular()
+		}
+		div.getElementsByClassName('scroller next')[0].addEventListener('click', function(){
+			horizontalScroll = this.parentNode.getElementsByClassName('horizontally-scrollable')[0]
+			scrollNext = this.parentNode.getElementsByClassName('scroller next')[0]
+			scrollPrev = this.parentNode.getElementsByClassName('scroller prev')[0]
+			difference = getOffset(scrollNext).left - getOffset(scrollPrev).left
+			cardWidth = $(this.parentNode.getElementsByClassName('large-game-tile')[0]).outerWidth(true)
+			if (!this.classList.contains("disabled")) {
+				topPopularLeftScroll = topPopularLeftScroll - Math.floor(difference / cardWidth) * cardWidth
+				horizontalScroll.style.left = topPopularLeftScroll + "px"
+				if (!scrollNext.classList.contains('disabled') && this.parentNode.getElementsByClassName('large-game-tile').length < Math.abs(Math.floor(topPopularLeftScroll / cardWidth)) + Math.ceil(difference / cardWidth)) {
+					scrollNext.classList.add("disabled")
+					if (document.getElementById('topPopularGenre') == null || document.getElementById('topPopularGenre').innerText == "All Genres") {
+						loadTopPopular()
+					}
+				}
+				if (Math.abs(Math.floor(topPopularLeftScroll / cardWidth)) > 0) {
+					scrollPrev.classList.remove("disabled")
+				}
+			}
+		})
+		div.getElementsByClassName('scroller prev')[0].addEventListener('click', function(){
+			horizontalScroll = this.parentNode.getElementsByClassName('horizontally-scrollable')[0]
+			scrollNext = this.parentNode.getElementsByClassName('scroller next')[0]
+			scrollPrev = this.parentNode.getElementsByClassName('scroller prev')[0]
+			difference = getOffset(scrollNext).left - getOffset(scrollPrev).left
+			cardWidth = $(this.parentNode.getElementsByClassName('large-game-tile')[0]).outerWidth(true)
+			if (!this.classList.contains("disabled")) {
+				topPopularLeftScroll = topPopularLeftScroll + Math.floor(difference / cardWidth) * cardWidth
+				if (topPopularLeftScroll > 0) {
+					topPopularLeftScroll = 0
+				}
+				horizontalScroll.style.left = topPopularLeftScroll + "px"
+				if (Math.abs(Math.floor(topPopularLeftScroll / cardWidth)) == 0) {
+					scrollPrev.classList.add("disabled")
+				}
+				if (this.parentNode.getElementsByClassName('large-game-tile').length >= Math.abs(Math.floor(topPopularLeftScroll / cardWidth)) + Math.ceil(difference / cardWidth)) {
+					scrollNext.classList.remove("disabled")
+				}
+			}
+		})
+		$('.games-filter-changer').click(function() {
+			if (this.id != 'topPopular' && this.id != 'popularToday') {
+				div.style.display = "none"
+			}
+		})
+		if (await fetchSetting("genreFilters")) {
+			var genreDiv = document.createElement('div')
+			genreDiv.innerHTML = `
+			<div style="z-index:1000;width:170px;display:inline-block;left:20px;margin-top:-5px;" class="input-group-btn">
+				<button type="button" class="input-dropdown-btn" data-toggle="dropdown" aria-expanded="false">
+					<span class="rbx-selection-label" id="topPopularGenre" data-bind="label">All Genres</span>
+					<span class="icon-down-16x16"></span>
+				</button>
+				<ul id="topPopularGenreList" data-toggle="dropdown-menu" class="dropdown-menu" role="menu">
+				</ul>
+			</div>`
+			document.getElementById('topPopular').appendChild(genreDiv)
+			createGenres(document.getElementById('topPopularGenreList'))
+		}
+	}
+}
+
 async function addRoProPopular() {
 	if (await fetchSetting("popularToday") && document.getElementById('popularToday') == null) {
 		leftScroll = 0;
-		roProPopularHTML = `<div id="popularToday" class="container-header games-filter-changer popular-today"><h3>Popular Today With RoPro Users</h3></div></a><div class="horizontal-scroller games-list"><span id="popularTodayLoading" style="position:absolute; top:0px; right:0px; display: block; width: 100px; height: 120px; visibility: initial !important;margin-right:calc(50% - 50px);margin-top:10px;transform:scale(1);" class="spinner spinner-default"></span><div class="clearfix horizontal-scroll-window"><div class="horizontally-scrollable" style="left: 0px;"><ul class="hlist games game-cards game-tile-list"></ul></div><div class="scroller prev disabled" role="button" aria-hidden="true"><div class="arrow"><span class="icon-games-carousel-left"></span></div></div><div class="scroller next" role="button" aria-hidden="true"><div class="arrow"><span class="icon-games-carousel-right"></span></div></div></div></div>`
-		div = document.createElement('div')
+		roProPopularHTML = `<div id="popularToday" class="container-header games-filter-changer popular-today"><h3>Popular Today With RoPro Users</h3></div></a><div class="horizontal-scroller games-list"><span id="popularTodayLoading" style="position:absolute; top:0px; right:0px; display: block; width: 100px; height: 120px; visibility: initial !important;margin-right:calc(50% - 50px);margin-top:10px;transform:scale(1);" class="spinner spinner-default"></span><div class="clearfix horizontal-scroll-window" style="overflow:hidden;"><div class="horizontally-scrollable" style="left: 0px;"><ul class="hlist games game-cards game-tile-list"></ul></div><div class="scroller prev disabled" role="button" aria-hidden="true"><div class="arrow"><span class="icon-games-carousel-left"></span></div></div><div class="scroller next" role="button" aria-hidden="true"><div class="arrow"><span class="icon-games-carousel-right"></span></div></div></div></div>`
+		var div = document.createElement('div')
 		div.setAttribute('class', 'games-list-container is-windows')
 		div.innerHTML += roProPopularHTML
 		for (i = 0; i < document.getElementsByClassName('games-list-container').length; i++) {
@@ -647,6 +799,11 @@ async function addRoProPopular() {
 				}
 			}
 		})
+		$('.games-filter-changer').click(function() {
+			if (this.id != 'topPopular' && this.id != 'popularToday') {
+				div.style.display = "none"
+			}
+		})
 	}
 }
 
@@ -654,7 +811,8 @@ var myInterval = setInterval(function(){
     if (document.getElementsByClassName('container-header games-filter-changer').length > 0) {
 		clearInterval(myInterval)
         if (document.getElementsByClassName('container-header games-filter-changer').length > 1) {
-            addRoProPopular()
+			addTopPopular()
+			addRoProPopular()
         }
     }
-}, 500)
+}, 100)

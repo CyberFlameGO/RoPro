@@ -2,7 +2,7 @@
 
 RoPro (https://ropro.io) v1.3
 
-RoPro was wholly designed and coded by:
+The RoPro extension is developed by:
                                
 ,------.  ,--. ,-----.,------. 
 |  .-.  \ |  |'  .--./|  .---' 
@@ -90,7 +90,7 @@ function projectedDisplay() {
 	div = document.createElement('div')
 	div.setAttribute('style','top:0px;left:0px;bottom:none!important;')
 	div.setAttribute('class', 'asset-restriction-icon')
-	div.innerHTML = `<span class="rbx-tooltip" data-toggle="tooltip" title="" data-original-title="Projected item."><img width=250 src="https://ropro.io/images/projected_icon.png"></span>`
+	div.innerHTML = `<span class="rbx-tooltip" data-toggle="tooltip" title="" data-original-title="Projected item."><img width=250 src="${chrome.runtime.getURL('/images/projected_icon.png')}"></span>`
 	assetThumbnail.appendChild(div)
 }
 
@@ -100,11 +100,11 @@ function addValue(itemValue, itemDemand, itemID) {
 		details.getElementsByClassName('item-type-field-container')[0].setAttribute('class', 'clearfix item-field-container')
 		valueDiv = document.createElement('div')
 		valueDiv.setAttribute('class', 'clearfix item-field-container')
-		valueDiv.innerHTML += '<div class="font-header-1 text-subheader text-label text-overflow field-label"><img src="https://ropro.io/images/ropro_icon_small.png" width="15px"> Value</div><div class="field-content"><a class="text-name item-genre wait-for-i18n-format-render" target="_blank" href="https://www.rolimons.com/item/' + parseInt(itemID) + '">' + addCommas(parseInt(itemValue)) + '</a><span class="wait-for-i18n-format-render"></span></div>'
+		valueDiv.innerHTML += `<div class="font-header-1 text-subheader text-label text-overflow field-label"><img src="${chrome.runtime.getURL('/images/ropro_icon_small.png')}" width="15px"> Value</div><div class="field-content"><a class="text-name item-genre wait-for-i18n-format-render" target="_blank" href="https://www.rolimons.com/item/` + parseInt(itemID) + '">' + addCommas(parseInt(itemValue)) + '</a><span class="wait-for-i18n-format-render"></span></div>'
 		details.insertBefore(valueDiv, details.childNodes[2])
 		demandDiv = document.createElement('div')
 		demandDiv.setAttribute('class', 'clearfix item-field-container')
-		demandDiv.innerHTML += '<div class="font-header-1 text-subheader text-label text-overflow field-label"><img src="https://ropro.io/images/ropro_icon_small.png" width="15px"> Demand</div><div class="field-content"><a class="text-name item-genre wait-for-i18n-format-render" target="_blank" href="https://www.rolimons.com/item/' + parseInt(itemID) + '">' + stripTags(itemDemand) + '</a><span class="wait-for-i18n-format-render"></span></div>'
+		demandDiv.innerHTML += `<div class="font-header-1 text-subheader text-label text-overflow field-label"><img src="${chrome.runtime.getURL('/images/ropro_icon_small.png')}" width="15px"> Demand</div><div class="field-content"><a class="text-name item-genre wait-for-i18n-format-render" target="_blank" href="https://www.rolimons.com/item/` + parseInt(itemID) + '">' + stripTags(itemDemand) + '</a><span class="wait-for-i18n-format-render"></span></div>'
 		details.insertBefore(demandDiv, details.childNodes[3])
 	}
 }

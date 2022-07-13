@@ -280,7 +280,7 @@
 .head-slider input[type=range]::-webkit-slider-thumb{
   -webkit-appearance: none!important;
   background:initial!important;
-  background-image: url(https://ropro.io/images/selector_icon.png)!important;
+  background-image: url(chrome-extension://__MSG_@@extension_id__/images/selector_icon.png)!important;
   background-size: contain!important;
   border: 0px!important;
   transform:scale(0.9)!important;

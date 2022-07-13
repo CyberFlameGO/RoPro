@@ -2,7 +2,7 @@
 
 RoPro (https://ropro.io) v1.3
 
-RoPro was wholly designed and coded by:
+The RoPro extension is developed by:
                                
 ,------.  ,--. ,-----.,------. 
 |  .-.  \ |  |'  .--./|  .---' 
@@ -122,14 +122,89 @@ async function checkAlerts() {
 	}
 }
 
+function addThemeMain(theme) {
+	console.log(theme)
+	themeName = theme['name']
+	profileThemeName = theme['name']
+	if ('repeat' in theme){
+		repeat = theme['repeat']
+	} else {
+		repeat = "repeat"
+	}
+	if ('width' in theme) {
+		width = theme['width']
+	} else {
+		width = "100%"
+	}
+	if ('color' in theme) {
+		color = theme['color']
+	} else {
+		color = ""
+	}
+	themeImages = theme['images'].split(",")
+	var myInterval1 = setInterval(function(){
+		mainContainer = document.getElementById('container-main')
+		if (mainContainer == null) {
+			return
+		} else {
+			clearInterval(myInterval1)
+		}
+		if (themeImages.length == 1) {
+			mainContainer.style.backgroundImage = `url(${stripTags(themeImages[0])})`
+			mainContainer.style.backgroundSize = width
+		} else {
+			mainContainer.style.backgroundImage = `url(${stripTags(themeImages[0])}), url(${stripTags(themeImages[1])})`
+			mainContainer.style.backgroundPosition = "left top, right top"
+			if (width == "100% 100%") {
+				mainContainer.style.backgroundSize = "50% 100%"
+			} else {
+				mainContainer.style.backgroundSize = "50%"
+			}
+			if (repeat == "repeat") {
+				repeat = "repeat-y"
+			}
+		}
+		mainContainer.style.backgroundColor = color
+		mainContainer.style.backgroundRepeat = repeat
+		mainContainer.style.padding = "20px"
+	}, 50)
+	var myInterval2 = setInterval(function(){
+		contentContainer = document.getElementsByClassName('content')
+		if (contentContainer.length == 0) {
+			return
+		} else {
+			clearInterval(myInterval2)
+		}
+		contentContainer = contentContainer[0]
+		contentContainer.style.padding = "20px"
+		contentContainer.style.borderRadius = "10px"
+		if (window.location.href.includes('/home') || window.location.href.match('/games/[0-9]+/').length > 0) {
+			contentContainer.style.maxWidth = "1000px"
+		}
+	}, 50)
+	var myInterval3 = setInterval(function(){
+		right = document.getElementById('Skyscraper-Abp-Right')
+		left = document.getElementById('Skyscraper-Abp-Left')
+		if (right == null && left == null) {
+			return
+		} else {
+			clearInterval(myInterval3)
+		}
+		if (window.location.href.includes('/home') || window.location.href.match('/games/[0-9]+/').length > 0) {
+			document.getElementById('Skyscraper-Abp-Right').style.marginRight = "-200px"
+			document.getElementById('Skyscraper-Abp-Left').style.marginLeft = "-185px"
+		}
+	}, 50)
+}
+
 async function insertMenuItems() {
 	tradeOffersPage = await fetchSetting('tradeOffersPage')
 	sandbox = await fetchSetting('sandbox')
 	offerLI = document.createElement('li')
-	newButtonHTML = '<a class="sandbox-icon dynamic-overflow-container text-nav" href="/offers" id="nav-inventory"><div><span style="transform:scale(1.2);" class="new-menu-icon icon-nav-trade"></span></div><span class="font-header-2 dynamic-ellipsis-item">Trade Offers</span></a>'
+	newButtonHTML = '<a class="offers-icon dynamic-overflow-container text-nav" href="/offers" id="nav-inventory"><div><span style="transform:scale(0.8);margin-top:-1px;" class="new-menu-icon icon-nav-trade"></span></div><span class="font-header-2 dynamic-ellipsis-item">Trade Offers</span></a>'
 	offerLI.innerHTML += newButtonHTML
 	sandboxLI = document.createElement('li')
-	newButtonHTML = '<a class="offers-icon dynamic-overflow-container text-nav" href="/sandbox" id="nav-inventory"><div><span class="new-menu-icon icon-nav-charactercustomizer"></span></div><span class="font-header-2 dynamic-ellipsis-item">Sandbox</span></a>'
+	newButtonHTML = '<a class="sandbox-icon dynamic-overflow-container text-nav" href="/sandbox" id="nav-inventory"><div><span style="transform:scale(0.85);margin-left:1px;" class="new-menu-icon icon-nav-charactercustomizer"></span></div><span class="font-header-2 dynamic-ellipsis-item">Sandbox</span></a>'
 	sandboxLI.innerHTML += newButtonHTML
 	while(!document.querySelector(".left-col-list")) {
 		await new Promise(r => setTimeout(r, 10));
@@ -173,7 +248,7 @@ async function insertMenuItems() {
 		li3 = document.createElement('li')
 		li3.style.marginLeft = "6px"
 		li3.classList.add('buttontooltip')
-		li3.innerHTML = '<img class="ropro-icon" style="margin-top:3.5px;margin-left:0px;width:30px;" src="https://ropro.io/images/' + stripTags(subscriptionPrefix) + '_icon_shadow.png"><span style="margin-top:-5.5px;margin-left:3px;top:45px;left:-160px;width:190px;" class="tooltiptext"><p style="color:white;"><b>RoPro v1.3</b></p>' + stripTags(subscriptionName) + ' Active</span>'
+		li3.innerHTML = '<img class="ropro-icon" style="margin-top:3.5px;margin-left:0px;width:30px;" src="' + chrome.runtime.getURL('/images/' + stripTags(subscriptionPrefix) + '_icon_shadow.png') + '"><span style="margin-top:-5.5px;margin-left:3px;top:45px;left:-160px;width:190px;" class="tooltiptext"><p style="color:white;"><b>RoPro v1.3</b></p>' + stripTags(subscriptionName) + ' Active</span>'
 		document.getElementsByClassName('nav navbar-right rbx-navbar-icon-group')[0].appendChild(li3)
 		li3.addEventListener('click', function() {
 			openOptions()
@@ -204,6 +279,7 @@ insertMenuItems()
 setTimeout(async function() {
     user = parseInt(document.getElementsByName('user-data')[0].attributes['data-userid'].value)
     if (!isNaN(user) && user != await getStorage('rpUserID')) {
+		console.log("Updating UserID")
 		setStorage('rpUserID', user)
         validateLicense()
     }
@@ -217,4 +293,10 @@ setTimeout(async function() {
 		}
 	}
 	checkAlertContainer()
+	if (!window.location.href.includes('/profile') && await fetchSetting('globalThemes')) {
+		theme = await getStorage('globalTheme')
+		if (typeof theme != 'undefined' && theme != null) {
+			addThemeMain(JSON.parse(theme))
+		}
+	}
 }, 1)

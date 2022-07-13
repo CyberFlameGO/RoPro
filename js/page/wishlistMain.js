@@ -2,7 +2,7 @@
 
 RoPro (https://ropro.io) v1.3
 
-RoPro was wholly designed and coded by:
+The RoPro extension is developed by:
                                
 ,------.  ,--. ,-----.,------. 
 |  .-.  \ |  |'  .--./|  .---' 
@@ -35,7 +35,7 @@ https://ropro.io/privacy-policy
 
 
 var wishlistHTML = `<div style="position:relative;" class="container-header">
-      <h1>RoPro ${chrome.i18n.getMessage("TradeOffers")} <img class="offers-icon-big" style="height:30px;margin-bottom:5px;margin-left:5px;" src="https://ropro.io/images/offers_icon.svg"></h1>
+      <h1>RoPro ${chrome.i18n.getMessage("TradeOffers")} <img class="offers-icon-big" style="height:30px;margin-bottom:5px;margin-left:5px;" src="${chrome.runtime.getURL('/images/offers_icon.svg')}"></h1>
 	  <button id="createOfferButton" type="button" class="btn-fixed-width-lg btn-growth-lg" style="margin-top:-40px;background-color:#0084dd;border:0px;font-size:18px;padding:5px;float:right;">${chrome.i18n.getMessage("CreateOffer")}</button>
 	  <button id="refreshOffers" type="button" class="btn-fixed-width-lg btn-growth-lg" style="margin-right:200px;margin-top:-40px;background-color:lime green;border:0px;font-size:18px;padding:5px;float:right;">Refresh Offers</button>
 	  <span id="offersLoading" style="width: 100px; height: 15px; float:right;display:none;position:absolute;top:14px;right:380px;" class="spinner spinner-default"></span>
@@ -166,6 +166,38 @@ function fetchSetting(setting) {
 	})
 }
 
+function getAssetThumbnail(id) {
+	return new Promise(resolve => {
+		if (id <= 0) {
+			resolve(chrome.runtime.getURL('/images/empty.png'))
+		}
+		chrome.runtime.sendMessage({greeting: "GetURLCached", url:"https://api.ropro.io/getAssetThumbnailUrl.php?id=" + parseInt(id)}, 
+			function(data) {
+					resolve(data)
+			})
+	})
+}
+
+var thumbnailCache = {}
+
+function setAssetThumbnail(id) {
+	if (id <= 0) {
+		return
+	}
+	if (id in thumbnailCache) {
+		$('.ropro-image-' + parseInt(id)).attr("src", stripTags(thumbnailCache[id]))
+		return thumbnailCache[id]
+	}
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "GetURLCached", url:"https://api.ropro.io/getAssetThumbnailUrl.php?id=" + parseInt(id)}, 
+			function(data) {
+					thumbnailCache[id] = data
+					resolve(data)
+					$('.ropro-image-' + parseInt(id)).attr("src", stripTags(data))
+			})
+	})
+}
+
 function addCommas(nStr){
 	nStr += '';
 	var x = nStr.split('.');
@@ -178,6 +210,16 @@ function addCommas(nStr){
 	return x1 + x2;
 }
 
+function checkVerification() {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "CheckVerification"}, 
+			function(data) {
+				resolve(data)
+			}
+		)
+	})
+}
+
 function stripTags(s) {
 	if (typeof s == "undefined") {
 		return s
@@ -186,34 +228,38 @@ function stripTags(s) {
 }
 
 async function postOffer() {
-	offerEditor = document.getElementById('offerEditor')
-	containers = [document.getElementById('itemContainer1'), document.getElementById('itemContainer2'), document.getElementById('itemContainer3'), document.getElementById('itemContainer4')]
-	wantContainer = document.getElementById('itemContainer5')
-	wantContainer2 = document.getElementById('itemContainer6')
-	wantContainer3 = document.getElementById('itemContainer7')
-	wantContainer4 = document.getElementById('itemContainer8')
-	noteContainer = document.getElementById('noteContainer')
-	userID = await getStorage('rpUserID')
-	json = {userid: userID, want_item: wantContainer.getAttribute("itemid"), want_item2: wantContainer2.getAttribute("itemid"), want_item3: wantContainer3.getAttribute("itemid"), want_item4: wantContainer4.getAttribute("itemid"), want_value: 0, item1: containers[0].getAttribute("itemid"), item2: containers[1].getAttribute("itemid"), item3: containers[2].getAttribute("itemid"), item4: containers[3].getAttribute("itemid"), note: noteContainer.value}
-	premium = await fetchPremium(userID)
-	if (premium == false) {
-		alert("You must have Roblox Premium to trade or post RoPro trade offers.")
-	} else {
-		return new Promise(resolve => {
-			chrome.runtime.sendMessage({greeting: "PostURL", url:"https://api.ropro.io/postWishlist.php", jsonData: json}, 
-			function(data) {
-				response = JSON.parse(data)
-				if ('error' in response) { // Wishlist post errored
-					alert(response['error'])
-				} else { // Successfully posted wishlist
-					refreshWishlist()
-					document.getElementById('offerEditor').remove()
-					createOfferButton.innerHTML = chrome.i18n.getMessage("CreateOffer")
-					document.getElementById("seemore_wishlist").setAttribute("page", 0)
-				}
-				resolve(data)
+	if (await checkVerification()) {
+		offerEditor = document.getElementById('offerEditor')
+		containers = [document.getElementById('itemContainer1'), document.getElementById('itemContainer2'), document.getElementById('itemContainer3'), document.getElementById('itemContainer4')]
+		wantContainer = document.getElementById('itemContainer5')
+		wantContainer2 = document.getElementById('itemContainer6')
+		wantContainer3 = document.getElementById('itemContainer7')
+		wantContainer4 = document.getElementById('itemContainer8')
+		noteContainer = document.getElementById('noteContainer')
+		userID = await getStorage('rpUserID')
+		json = {userid: userID, want_item: wantContainer.getAttribute("itemid"), want_item2: wantContainer2.getAttribute("itemid"), want_item3: wantContainer3.getAttribute("itemid"), want_item4: wantContainer4.getAttribute("itemid"), want_value: 0, item1: containers[0].getAttribute("itemid"), item2: containers[1].getAttribute("itemid"), item3: containers[2].getAttribute("itemid"), item4: containers[3].getAttribute("itemid"), note: noteContainer.value}
+		premium = await fetchPremium(userID)
+		if (premium == false) {
+			alert("You must have Roblox Premium to trade or post RoPro trade offers.")
+		} else {
+			return new Promise(resolve => {
+				chrome.runtime.sendMessage({greeting: "PostURL", url:"https://api.ropro.io/postWishlist.php", jsonData: json}, 
+				function(data) {
+					response = JSON.parse(data)
+					if ('error' in response) { // Wishlist post errored
+						alert(response['error'])
+					} else { // Successfully posted wishlist
+						refreshWishlist()
+						document.getElementById('offerEditor').remove()
+						createOfferButton.innerHTML = chrome.i18n.getMessage("CreateOffer")
+						document.getElementById("seemore_wishlist").setAttribute("page", 0)
+					}
+					resolve(data)
+				})
 			})
-		})
+		}			
+	} else {
+		alert("You must verify your user with RoPro at roblox.com/home before posting trade offers.")
 	}
 }
 
@@ -326,13 +372,13 @@ function createItem(item, index, noValue) {
 	itemElement.setAttribute("style", "position:relative;" + shift)
 	href = ""
 	if (id == -1) {
-		src = "https://ropro.io/images/empty.png"
+		src = chrome.runtime.getURL('/images/empty.png')
 		tooltip = ""
 		name = ""
 		rap = "-1"
 		value = "-1"
 	} else if (id > -9 && id < -1) {
-		icons = {2: "https://ropro.io/images/Demand_Dark.svg", 3: "https://ropro.io/images/Rares_Dark.svg", 4: "https://ropro.io/images/Upgrade_Dark.svg", 5: "https://ropro.io/images/Downgrade_Dark.svg", 6: "https://ropro.io/images/Robux_Dark.svg", 7: "https://ropro.io/images/RAP_Dark.svg", 8: "https://ropro.io/images/Any_Dark.svg"}
+		icons = {2: chrome.runtime.getURL('/images/Demand_Dark.svg'), 3: chrome.runtime.getURL('/images/Rares_Dark.svg'), 4: chrome.runtime.getURL('/images/Upgrade_Dark.svg'), 5: chrome.runtime.getURL('/images/Downgrade_Dark.svg'), 6: chrome.runtime.getURL('/images/Robux_Dark.svg'), 7: chrome.runtime.getURL('/images/RAP_Dark.svg'), 8: chrome.runtime.getURL('/images/Any_Dark.svg')}
 		names = {2: "Demand Items", 3: "Rare Items", 4: "Upgrades", 5: "Downgrades", 6: "Robux", 7: "RAP Items", 8: "Any Items"}
 		src = icons[Math.abs(id)]
 		name = names[Math.abs(id)]
@@ -356,11 +402,11 @@ function createItem(item, index, noValue) {
 			height = 60
 			top_px = -55
 			valueText = `<div style="margin-top:-5px;display: inline-block;">
-			<img style="width:10px;" src="https://ropro.io/images/ropro_icon_small.png">
+			<img style="width:10px;" src="${chrome.runtime.getURL('/images/ropro_icon_small.png')}">
 			<span style="font-size:12px;" class="rbx-text-navbar-right text-header">${addCommas(parseInt(value))}</span></div>`
 			href=`href='https://www.roblox.com/catalog/${parseInt(id)}/Item'`
 		}
-		src = `https://www.roblox.com/asset-thumbnail/image?assetId=${parseInt(id)}&width=420&height=420&format=png`
+		src = chrome.runtime.getURL('/images/empty.png')
 		tooltip = `
 		<div class="offer-item-name input-group input-field" style="height:${height}px!important;top:${top_px}px!important;"><a style="font-size:13px;font-weight:bold;" ${id > 0 ? `href="https://roblox.com/catalog/${parseInt(id)}/item"` : ''}>${stripTags(name)}</a>
 		<br><div style="height:20px;margin-top:-5px;display: inline-block;">
@@ -376,7 +422,7 @@ function createItem(item, index, noValue) {
 	<thumbnail-2d id="${id}" rap="${rap}" value="${value}" class="offeritem item-card-thumb-container ng-isolate-scope" style="transform:scale(0.6);margin:-20px;display:inline-block;">
 	<a ${href}>
 		<span style="width:126px;height:126px;" class="thumbnail-2d-container">
-		<img class="ng-scope ng-isolate-scope ${(id > -9 && id < -1) ? "ropro-special-icon" : ""}" src="${src}"/>
+		<img class="ropro-image-${parseInt(id)} ng-scope ng-isolate-scope ${(id > -9 && id < -1) ? "ropro-special-icon" : ""}" src="${src}"/>
 		</span>
 	</a>
 	</thumbnail-2d>
@@ -427,10 +473,10 @@ offerHTML = `
 		<span style="margin-left:-5px;margin-right:-8px;margin-bottom:0px;transform: scale(0.4);" id="nav-robux" class="icon-robux-28x28 roblox-popover-close"></span>
 		<span style="font-size:12px;" class="rbx-text-navbar-right text-header total-value">---</span></div></div>
 		<div style="position:absolute;left:630px;bottom:-18px;font-size:12px;" class="wantitemvalue"><div style="margin-top:-5px;display: inline-block;">
-		<img style="width:10px;margin-left:4px;" src="https://ropro.io/images/ropro_icon_small.png">
+		<img style="width:10px;margin-left:4px;" src="${chrome.runtime.getURL('/images/ropro_icon_small.png')}">
 		<span style="font-size:12px;" class="rbx-text-navbar-right text-header total-value">---</span></div></div>
 		<div style="position:absolute;left:260px;bottom:-18px;font-size:12px;" class="itemvalue"><div style="margin-top:-5px;display: inline-block;">
-		<img style="width:10px;margin-left:4px;" src="https://ropro.io/images/ropro_icon_small.png">
+		<img style="width:10px;margin-left:4px;" src="${chrome.runtime.getURL('/images/ropro_icon_small.png')}">
 		<span style="font-size:12px;" class="rbx-text-navbar-right text-header total-value">---</span></div></div>
 	   <div style="position:absolute;left:125px;width:345px;">
 		  <span style="text-align:center;display:block;" class="offering">Offering:</span>
@@ -475,7 +521,7 @@ return offerElement
 function addItem(container, secondary){
 	itemID = parseInt(container.getAttribute("itemid"))
 	itemImage = container.getElementsByTagName("img")[0]
-	emptyImage = "https://ropro.io/images/empty.png"
+	emptyImage = chrome.runtime.getURL('/images/empty.png')
 	if (itemID == -1) {
 		if (container.id != "itemContainer5" && container.id != "itemContainer6" && container.id != "itemContainer7" && container.id != "itemContainer8") {
 			createInventory(container, secondary)
@@ -503,8 +549,8 @@ function addItem(container, secondary){
 function hoverItem(container){
 	itemID = parseInt(container.getAttribute("itemid"))
 	itemImage = container.getElementsByTagName("img")[0]
-	addImage = "https://ropro.io/images/add_button_small.png"
-	closeImage = "https://ropro.io/images/close_button_small.png"
+	addImage = chrome.runtime.getURL('/images/add_button_small.png')
+	closeImage = chrome.runtime.getURL('/images/close_button_small.png')
 	if (itemID == -1) {
 		itemImage.style.filter = ""
 		itemImage.src = addImage
@@ -514,18 +560,22 @@ function hoverItem(container){
 	}
 }
 
-function leaveItem(container){
-	icons = {2: "https://ropro.io/images/Demand_Dark.svg", 3: "https://ropro.io/images/Rares_Dark.svg", 4: "https://ropro.io/images/Upgrade_Dark.svg", 5: "https://ropro.io/images/Downgrade_Dark.svg", 6: "https://ropro.io/images/Robux_Dark.svg", 7: "https://ropro.io/images/RAP_Dark.svg", 8: "https://ropro.io/images/Any_Dark.svg"}
+async function leaveItem(container){
+	icons = {2: chrome.runtime.getURL('/images/Demand_Dark.svg'), 3: chrome.runtime.getURL('/images/Rares_Dark.svg'), 4: chrome.runtime.getURL('/images/Upgrade_Dark.svg'), 5: chrome.runtime.getURL('/images/Downgrade_Dark.svg'), 6: chrome.runtime.getURL('/images/Robux_Dark.svg'), 7: chrome.runtime.getURL('/images/RAP_Dark.svg'), 8: chrome.runtime.getURL('/images/Any_Dark.svg')}
 	itemID = parseInt(container.getAttribute("itemid"))
 	itemImage = container.getElementsByTagName("img")[0]
-	emptyImage = "https://ropro.io/images/empty.png"
+	emptyImage = chrome.runtime.getURL('/images/empty.png')
 	if (itemID == -1) {
 		itemImage.src = emptyImage
 	} else {
 		if ($('.light-theme').length > 0 && itemID < -1) {
 			itemImage.style.filter = "invert(1)"
 		}
-		itemImage.src = itemID < -1 ? icons[Math.abs(itemID)] : `https://www.roblox.com/asset-thumbnail/image?assetId=${itemID}&width=420&height=420&format=png`
+		if (itemID > -1) {
+			itemImage.src = await getAssetThumbnail(itemID)
+		} else {
+			itemImage.src = icons[Math.abs(itemID)]
+		}
 	}
 }
 
@@ -555,13 +605,13 @@ offerHTML = `
    <span style="margin-left:-5px;margin-right:-8px;margin-bottom:0px;transform: scale(0.4);" id="nav-robux" class="icon-robux-28x28 roblox-popover-close"></span>
    <span style="font-size:12px;" class="rbx-text-navbar-right text-header total-value">---</span></div></div>
    <div style="position:absolute;left:260px;bottom:12px;font-size:12px;" class="itemvalue"><div style="margin-top:-5px;display: inline-block;">
-   <img style="width:10px;margin-left:4px;" src="https://ropro.io/images/ropro_icon_small.png">
+   <img style="width:10px;margin-left:4px;" src="${chrome.runtime.getURL('/images/ropro_icon_small.png')}">
    <span style="font-size:12px;" class="rbx-text-navbar-right text-header total-value">---</span></div></div>
    <div style="position:absolute;left:635px;bottom:30px;font-size:12px;" class="wantitemrap"><div style="display:inline-block;font-size:12px;margin-right:0px;"></div><div style="height:20px;margin-top:-5px;display: inline-block;">
 	<span style="margin-left:-5px;margin-right:-8px;margin-bottom:0px;transform: scale(0.4);" id="nav-robux" class="icon-robux-28x28 roblox-popover-close"></span>
 	<span style="font-size:12px;" class="rbx-text-navbar-right text-header total-value">---</span></div></div>
 	<div style="position:absolute;left:635px;bottom:12px;font-size:12px;" class="wantitemvalue"><div style="margin-top:-5px;display: inline-block;">
-	<img style="width:10px;margin-left:4px;" src="https://ropro.io/images/ropro_icon_small.png">
+	<img style="width:10px;margin-left:4px;" src="${chrome.runtime.getURL('/images/ropro_icon_small.png')}">
 	<span style="font-size:12px;" class="rbx-text-navbar-right text-header total-value">---</span></div></div>
    <div style="margin-top:0px;" class="resale-info">
 	   <div style="position:absolute;left:125px;width:345px;top:0px;">
@@ -569,28 +619,28 @@ offerHTML = `
 			<thumbnail-2d class="item-card-thumb-container ng-isolate-scope" style="transform:scale(0.6);margin:-20px;display:inline-block;">
 			<a itemid="-1" id="itemContainer1">
 				<span style="width:126px;height:126px;" class="thumbnail-2d-container">
-				<img class="ng-scope ng-isolate-scope" src="https://ropro.io/images/empty.png"/>
+				<img class="ng-scope ng-isolate-scope" src="${chrome.runtime.getURL('/images/empty.png')}"/>
 				</span>
 			</a>
 			</thumbnail-2d>
 						<thumbnail-2d class="item-card-thumb-container ng-isolate-scope" style="transform:scale(0.6);margin:-20px;display:inline-block;">
 			<a itemid="-1" id="itemContainer2">
 				<span style="width:126px;height:126px;" class="thumbnail-2d-container">
-				<img class="ng-scope ng-isolate-scope" src="https://ropro.io/images/empty.png"/>
+				<img class="ng-scope ng-isolate-scope" src="${chrome.runtime.getURL('/images/empty.png')}"/>
 				</span>
 			</a>
 			</thumbnail-2d>
 						<thumbnail-2d class="item-card-thumb-container ng-isolate-scope" style="transform:scale(0.6);margin:-20px;display:inline-block;">
 			<a itemid="-1" id="itemContainer3">
 				<span style="width:126px;height:126px;" class="thumbnail-2d-container">
-				<img class="ng-scope ng-isolate-scope" src="https://ropro.io/images/empty.png"/>
+				<img class="ng-scope ng-isolate-scope" src="${chrome.runtime.getURL('/images/empty.png')}"/>
 				</span>
 			</a>
 			</thumbnail-2d>
 			<thumbnail-2d class="item-card-thumb-container ng-isolate-scope" style="transform:scale(0.6);margin:-20px;display:inline-block;">
 			<a itemid="-1" id="itemContainer4">
 				<span style="width:126px;height:126px;" class="thumbnail-2d-container">
-				<img class="ng-scope ng-isolate-scope" src="https://ropro.io/images/empty.png"/>
+				<img class="ng-scope ng-isolate-scope" src="${chrome.runtime.getURL('/images/empty.png')}"/>
 				</span>
 			</a>
 			</thumbnail-2d>
@@ -601,28 +651,28 @@ offerHTML = `
 		  			<thumbnail-2d class="item-card-thumb-container ng-isolate-scope" style="transform:scale(0.6);margin:-20px;display:inline-block;">
 			<a itemid="-1" id="itemContainer5">
 				<span style="width:126px;height:126px;" class="thumbnail-2d-container">
-				<img class="ng-scope ng-isolate-scope" src="https://ropro.io/images/empty.png"/>
+				<img class="ng-scope ng-isolate-scope" src="${chrome.runtime.getURL('/images/empty.png')}"/>
 				</span>
 			</a>
 			</thumbnail-2d>
 			<thumbnail-2d class="item-card-thumb-container ng-isolate-scope" style="transform:scale(0.6);margin:-20px;display:inline-block;">
 			<a itemid="-1" id="itemContainer6">
 				<span style="width:126px;height:126px;" class="thumbnail-2d-container">
-				<img class="ng-scope ng-isolate-scope" src="https://ropro.io/images/empty.png"/>
+				<img class="ng-scope ng-isolate-scope" src="${chrome.runtime.getURL('/images/empty.png')}"/>
 				</span>
 			</a>
 			</thumbnail-2d>
 			<thumbnail-2d class="item-card-thumb-container ng-isolate-scope" style="transform:scale(0.6);margin:-20px;display:inline-block;">
 			<a itemid="-1" id="itemContainer7">
 				<span style="width:126px;height:126px;" class="thumbnail-2d-container">
-				<img class="ng-scope ng-isolate-scope" src="https://ropro.io/images/empty.png"/>
+				<img class="ng-scope ng-isolate-scope" src="${chrome.runtime.getURL('/images/empty.png')}"/>
 				</span>
 			</a>
 			</thumbnail-2d>
 			<thumbnail-2d class="item-card-thumb-container ng-isolate-scope" style="transform:scale(0.6);margin:-20px;display:inline-block;">
 			<a itemid="-1" id="itemContainer8">
 				<span style="width:126px;height:126px;" class="thumbnail-2d-container">
-				<img class="ng-scope ng-isolate-scope" src="https://ropro.io/images/empty.png"/>
+				<img class="ng-scope ng-isolate-scope" src="${chrome.runtime.getURL('/images/empty.png')}"/>
 				</span>
 			</a>
 			</thumbnail-2d>
@@ -693,11 +743,11 @@ function createInventoryItem(itemID, itemName, itemRAP, itemValue, itemQuantity,
 		valueString = ""
 	} else {
 		margin = 5
-		valueString = `<br><span style="float:right;"><img style="width:10px;" src="https://ropro.io/images/ropro_icon_small.png"> ${stripTags(addCommas(itemValue))}</span>`
+		valueString = `<br><span style="float:right;"><img style="width:10px;" src="${chrome.runtime.getURL('/images/ropro_icon_small.png')}"> ${stripTags(addCommas(itemValue))}</span>`
 	}
 	itemHTML = `<div class="section-content" style="padding:0px;width:260px;height:100px;position:absolute;left:5px;">
 						<a href="https://www.roblox.com/catalog/${parseInt(itemID)}/Item">
-							<img style="margin-left:10px;width:60px;float:left;" class="border-bottom" src="https://www.roblox.com/asset-thumbnail/image?assetId=${parseInt(itemID)}&amp;width=420&amp;height=420&amp;format=png"><div class="border-bottom" style="position:absolute;right:5px;"><div style="margin-top:${margin}px;font-size:13px;float:left;"><span style="float:right;">x ${parseInt(itemQuantity)}</span><br><span style="float:right;margin-top:-5px;margin-bottom:-5px;"><span style="margin-left:-5px;margin-right:-8px;margin-bottom:0px;transform: scale(0.4);" id="nav-robux" class="icon-robux-28x28 roblox-popover-close"></span> ${stripTags(addCommas(itemRAP))}</span>${valueString}</div><div style="float:right;">
+							<img style="margin-left:10px;width:60px;float:left;" class="border-bottom ropro-image-${parseInt(itemID)}" src="${chrome.runtime.getURL('/images/empty.png')}"><div class="border-bottom" style="position:absolute;right:5px;"><div style="margin-top:${margin}px;font-size:13px;float:left;"><span style="float:right;">x ${parseInt(itemQuantity)}</span><br><span style="float:right;margin-top:-5px;margin-bottom:-5px;"><span style="margin-left:-5px;margin-right:-8px;margin-bottom:0px;transform: scale(0.4);" id="nav-robux" class="icon-robux-28x28 roblox-popover-close"></span> ${stripTags(addCommas(itemRAP))}</span>${valueString}</div><div style="float:right;">
 						</a>
 					<button type="button" class="btn-growth-lg createOfferButton" itemID="${parseInt(itemID)}" itemName="${stripTags(itemName)}" itemRAP="${parseInt(itemRAP)}" itemValue="${parseInt(itemValue)}" style="margin:5px;margin-left:10px;margin-top:15px;height:40px;width:40px;background-color:#0084DD;border:0px;font-size:30px;padding:5px;float:right;">+</button></div></div>
 						<span style="" class="rbx-divider"></span>
@@ -720,7 +770,7 @@ function createCatalogItem(itemID, itemName, itemRAP, itemValue, secondary) {
 	itemRAP = parseInt(itemRAP)
 	itemValue = parseInt(itemValue)
 	catalogItemInfo[parseInt(itemID)] = {"rap": parseInt(itemRAP), "value": parseInt(itemValue)}
-	icons = {2: "https://ropro.io/images/Demand_Dark.svg", 3: "https://ropro.io/images/Rares_Dark.svg", 4: "https://ropro.io/images/Upgrade_Dark.svg", 5: "https://ropro.io/images/Downgrade_Dark.svg", 6: "https://ropro.io/images/Robux_Dark.svg", 7: "https://ropro.io/images/RAP_Dark.svg", 8: "https://ropro.io/images/Any_Dark.svg"}
+	icons = {2: chrome.runtime.getURL('/images/Demand_Dark.svg'), 3: chrome.runtime.getURL('/images/Rares_Dark.svg'), 4: chrome.runtime.getURL('/images/Upgrade_Dark.svg'), 5: chrome.runtime.getURL('/images/Downgrade_Dark.svg'), 6: chrome.runtime.getURL('/images/Robux_Dark.svg'), 7: chrome.runtime.getURL('/images/RAP_Dark.svg'), 8: chrome.runtime.getURL('/images/Any_Dark.svg')}
 	itemHTML = `<div class="section-content" style="padding:0px;width:260px;height:100px;position:absolute;left:5px;">
 						<a>
 							<img style="margin-left:10px;width:60px;float:left;" class="border-bottom item-icon" src="${icons[Math.abs(itemID)]}"><div class="border-bottom" style="position:absolute;right:5px;"><div style="margin-top:17px;font-size:13px;float:left;"><br></div><div style="float:right;">
@@ -765,6 +815,7 @@ async function populateInventory(search, secondary) {
 			if (myItem['quantity'] - count > 0) {
 				newItem = createInventoryItem(myItem['assetId'], myItem['name'], myInventoryItemInfo[myItem['assetId']]['rap'], myInventoryItemInfo[myItem['assetId']]['value'], myItem['quantity'] - count, secondary)
 				inventoryList.appendChild(newItem)
+				setAssetThumbnail(myItem['assetId'])
 			}
 		}
 	}
@@ -855,8 +906,9 @@ async function createCatalogSearch(container, secondary) {
 					li.setAttribute('itemname', stripTags(items[j].name))
 					li.setAttribute('itemrap', parseInt(items[j].rap))
 					li.setAttribute('itemvalue', parseInt(items[j].value))
-					li.innerHTML = `<div style="z-index:1000;margin-top:0px;padding-left:5px;height:30px;position:relative;"><div style="margin-left:0px;display:inline-block;width:255px;text-align:left;overflow:hidden;white-space: nowrap;"><img style="width:30px;margin-left:-4px;margin-right:5px;margin-bottom:3px;" src="https://www.roblox.com/asset-thumbnail/image?assetId=${parseInt(items[j].id)}&amp;width=420&amp;height=420&amp;format=png" id="tradeFilterImage"><span id="tradeFilterText">${stripTags(items[j].name)}</span></div></div>`
+					li.innerHTML = `<div style="z-index:1000;margin-top:0px;padding-left:5px;height:30px;position:relative;"><div style="margin-left:0px;display:inline-block;width:255px;text-align:left;overflow:hidden;white-space: nowrap;"><img style="width:30px;margin-left:-4px;margin-right:5px;margin-bottom:3px;" class="ropro-image-${parseInt(items[j].id)}" src="${chrome.runtime.getURL('/images/empty.png')}" id="tradeFilterImage"><span id="tradeFilterText">${stripTags(items[j].name)}</span></div></div>`
 					list.appendChild(li)
+					setAssetThumbnail(items[j].id)
 					li.addEventListener('click', function(){
 						itemName = this.getAttribute('itemname')
 						itemID = this.getAttribute('itemid')
@@ -870,11 +922,11 @@ async function createCatalogSearch(container, secondary) {
 							valueString = ""
 						} else {
 							margin = 5
-							valueString = `<br><span style="float:right;"><img style="width:10px;" src="https://ropro.io/images/ropro_icon_small.png"> ${stripTags(addCommas(itemValue))}</span>`
+							valueString = `<br><span style="float:right;"><img style="width:10px;" src="${chrome.runtime.getURL('/images/ropro_icon_small.png')}"> ${stripTags(addCommas(itemValue))}</span>`
 						}
 						itemHTML = `<div class="section-content" style="padding:0px;width:260px;height:100px;position:absolute;left:5px;">
 											<a href="https://www.roblox.com/catalog/${parseInt(itemID)}/Item">
-												<img style="margin-left:10px;width:60px;float:left;" class="border-bottom" src="https://www.roblox.com/asset-thumbnail/image?assetId=${parseInt(itemID)}&amp;width=420&amp;height=420&amp;format=png"><div class="border-bottom" style="position:absolute;right:5px;"><div style="margin-top:${margin}px;font-size:13px;float:left;"><span style="float:right;">x 1}</span><br><span style="float:right;margin-top:-5px;margin-bottom:-5px;"><span style="margin-left:-5px;margin-right:-8px;margin-bottom:0px;transform: scale(0.4);" id="nav-robux" class="icon-robux-28x28 roblox-popover-close"></span> ${stripTags(addCommas(itemRAP))}</span>${valueString}</div><div style="float:right;">
+												<img style="margin-left:10px;width:60px;float:left;" class="border-bottom ropro-image-${parseInt(itemID)}" src="${chrome.runtime.getURL('/images/empty.png')}"><div class="border-bottom" style="position:absolute;right:5px;"><div style="margin-top:${margin}px;font-size:13px;float:left;"><span style="float:right;">x 1}</span><br><span style="float:right;margin-top:-5px;margin-bottom:-5px;"><span style="margin-left:-5px;margin-right:-8px;margin-bottom:0px;transform: scale(0.4);" id="nav-robux" class="icon-robux-28x28 roblox-popover-close"></span> ${stripTags(addCommas(itemRAP))}</span>${valueString}</div><div style="float:right;">
 											</a>
 										<button type="button" class="btn-growth-lg createOfferButton" itemID="${parseInt(itemID)}" itemName="${stripTags(itemName)}" itemRAP="${parseInt(itemRAP)}" itemValue="${parseInt(itemValue)}" style="margin:5px;margin-left:10px;margin-top:15px;height:40px;width:40px;background-color:#0084DD;border:0px;font-size:30px;padding:5px;float:right;">+</button></div></div>
 											<span style="" class="rbx-divider"></span>
@@ -884,6 +936,7 @@ async function createCatalogSearch(container, secondary) {
 											</div>
 											</div>`
 						li.innerHTML += itemHTML
+						setAssetThumbnail(itemID)
 						catalogItemInfo[parseInt(itemID)] = {"rap": parseInt(itemRAP), "value": parseInt(itemValue)}
 						insertItem(li.getElementsByClassName('createOfferButton')[0], true)
 					})
@@ -963,16 +1016,20 @@ async function createWish(myUser, json) {
 	for (i = json.items.length - 1; i >= 0; i--) {
 		item = json.items[i]
 		insertAfter(createItem(item, i, false), offering)
+		setAssetThumbnail(item['id'])
 	}
-	console.log(json)
 	myItem = createItem(json.item4, 0, false)
 	insertAfter(myItem, want)
+	setAssetThumbnail(json.item4['id'])
 	myItem = createItem(json.item3, 0, false)
 	insertAfter(myItem, want)
+	setAssetThumbnail(json.item3['id'])
 	myItem = createItem(json.item2, 0, false)
 	insertAfter(myItem, want)
+	setAssetThumbnail(json.item2['id'])
 	myItem = createItem(json.item, 0, false)
 	insertAfter(myItem, want)
+	setAssetThumbnail(json.item['id'])
 	updateValue(myItem)
 }
 

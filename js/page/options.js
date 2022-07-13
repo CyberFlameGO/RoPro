@@ -2,7 +2,7 @@
 
 RoPro (https://ropro.io) v1.3
 
-RoPro was wholly designed and coded by:
+The RoPro extension is developed by:
                                
 ,------.  ,--. ,-----.,------. 
 |  .-.  \ |  |'  .--./|  .---' 
@@ -76,6 +76,16 @@ $('#notificationThreshold').change(function() {
 
 var settings = {}
 
+function updateGlobalTheme() {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "UpdateGlobalTheme"}, 
+			function(data) {
+				resolve(data)
+			}
+		)
+	})
+}
+
 function fetchSetting(setting) {
 	return new Promise(resolve => {
 		chrome.runtime.sendMessage({greeting: "GetSetting", setting: setting}, 
@@ -89,6 +99,16 @@ function fetchSetting(setting) {
 function fetchSettingValidity(setting) {
 	return new Promise(resolve => {
 		chrome.runtime.sendMessage({greeting: "GetSettingValidity", setting: setting}, 
+			function(data) {
+				resolve(data)
+			}
+		)
+	})
+}
+
+function fetchSettingValidityInfo(setting) {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "GetSettingValidityInfo", setting: setting}, 
 			function(data) {
 				resolve(data)
 			}
@@ -125,11 +145,30 @@ function setStorage(key, value) {
 	})
 }
 
+function checkVerification() {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "CheckVerification"}, 
+			function(data) {
+				resolve(data)
+			}
+		)
+	})
+}
+
 function getSubscription(userID) {
 	return new Promise(resolve => {
 		async function doGet(resolve) {
-			$.post("https://api.ropro.io/getSubscription.php?key=" + await getStorage("subscriptionKey") + "&options_page", function(data){
-				resolve('ultra_tier');
+			verificationDict = await getStorage('userVerification')
+			userID = await getStorage('rpUserID')
+			roproVerificationToken = "none"
+			if (typeof verificationDict != 'undefined') {
+				if (verificationDict.hasOwnProperty(userID)) {
+					roproVerificationToken = verificationDict[userID]
+				}
+			}
+			$.post({url: "https://api.ropro.io/getSubscription.php?key=" + await getStorage("subscriptionKey") + "&options_page", headers: {'ropro-verification': roproVerificationToken, 'ropro-id': userID}}, function(data){
+				setStorage('rpSubscription', "ultra_tier")
+				resolve("ultra_tier");
 			})
 		}
 		doGet(resolve)
@@ -150,13 +189,38 @@ $('.ui.fitted.toggle.checked.checkbox').click(function(){
 
 document.getElementById('saveDiscord').addEventListener('click', async function(){
 	userID = await getStorage('rpUserID')
-	$.post('https://api.ropro.io/saveDiscord.php', {userid: userID, discord: document.getElementById('discordValue').value})
+	if (await checkVerification()) {
+		verificationDict = await getStorage('userVerification')
+		roproVerificationToken = "none"
+		if (typeof verificationDict != 'undefined') {
+			if (verificationDict.hasOwnProperty(userID)) {
+				roproVerificationToken = verificationDict[userID]
+			}
+		}
+		$.post({'url':'https://api.ropro.io/saveDiscord.php', 'headers': {'ropro-verification': roproVerificationToken, 'ropro-id': userID}}, {userid: userID, discord: document.getElementById('discordValue').value}, function(data) {
+			if (document.getElementById('discordValue').value == "") {
+				alert("Cleared your Discord.")
+			} else {
+				alert("Updated your Discord. To remove your Discord, click save when the input box is empty.")
+			}
+		})
+	} else {
+		alert("You must verify your user with RoPro at roblox.com/home before updating your Discord.")
+	}
 })
 
 document.getElementById('activateSubscription').addEventListener('click', async function(){
 	var subscriptionKey = prompt("Please enter the subscription key we emailed you with your purchase:")
 	if (subscriptionKey != null && subscriptionKey.length > 0) {
-		$.post("https://api.ropro.io/activateKey.php?key=" + subscriptionKey, function(data){
+		verificationDict = await getStorage('userVerification')
+		userID = await getStorage('rpUserID')
+		roproVerificationToken = "none"
+		if (typeof verificationDict != 'undefined') {
+			if (verificationDict.hasOwnProperty(userID)) {
+				roproVerificationToken = verificationDict[userID]
+			}
+		}
+		$.post({url: "https://api.ropro.io/activateKey.php?key=" + subscriptionKey, headers: {'ropro-verification': roproVerificationToken , 'ropro-id': userID}}, function(data){
 			if (data == "success") {
 				alert("Successfully activated subscription.")
 				setTimeout(function(){
@@ -167,6 +231,8 @@ document.getElementById('activateSubscription').addEventListener('click', async 
 				alert("Error: This key has already been linked to another user. If you would like to change the Roblox account associated with your subscription please click the Manage Subscription button.")
 			} else if (data == "invalid_key") {
 				alert("Error: This key is invalid. Please double check the key or contact support at https://ropro.io/support")
+			} else if (data == "expired_key") {
+				alert("Error: This subscription has expired.")
 			} else if (data == "unknown_error") {
 				alert("Error: Unknown error. Please relaunch the extension to resolve this error.")
 			} else if (data == "not_logged_in") {
@@ -188,6 +254,7 @@ function getSettings() {
 	newSettings = {
 		"sandbox": check("sandbox"),
 		"profileThemes": check("profileThemes"),
+		"globalThemes": check("globalThemes"),
 		"lastOnline": check("lastOnline"),
 		"roproEggCollection": check("roproEggCollection"),
 		"genreFilters": check("genreFilters"),
@@ -253,6 +320,7 @@ function getSettings() {
 		"underOverRAP": check("underOverRAP"),
 		"winLossDisplay": check("winLossDisplay"),
 		"mostPlayedGames": check("mostPlayedGames"),
+		"mostPopularSort": check("mostPopularSort"),
 		"avatarEditorChanges": check("avatarEditorChanges"),
 		"playtimeTracking": check("playtimeTracking"),
 		"activeServerCount": check("activeServerCount"),
@@ -269,8 +337,13 @@ function getSettings() {
 	changed = typeof settings == 'undefined' || !shallowEqual(settings, newSettings)
 	if (changed) {
 		console.log(newSettings)
+		oldSettings = settings
 		settings = newSettings
 		setStorage("rpSettings", settings)
+		if (newSettings['globalThemes'] == true && oldSettings['globalThemes'] != newSettings['globalThemes']) {
+			console.log("Updating global theme.")
+			updateGlobalTheme()
+		}
 	}
 }
 
@@ -298,7 +371,8 @@ async function main() {
 		settingElement = document.getElementById(setting)
 		if (settingElement != null) {
 			if (settingElement.tagName == "DIV") {
-				if (await fetchSettingValidity(setting)) {
+				var validity = await fetchSettingValidityInfo(setting)
+				if (validity[0]) {
 					if (await fetchSetting(setting)) {
 						if (!settingElement.classList.contains("checked")) {
 							settingElement.classList.add("checked")
@@ -318,6 +392,11 @@ async function main() {
 					settingElement.classList.add("disabled")
 					settingElement.style.pointerEvents = "none"
 					settingElement.getElementsByTagName("input")[0].removeAttribute("checked")
+					if (validity[1]) {
+						div = document.createElement('div')
+						div.innerHTML = `<div style="position:absolute;font-size:8.5px;width:500px;text-align:left;top:15px;font-style:italic;">Feature currently disabled for maintenance.</div>`
+						settingElement.parentNode.getElementsByTagName('p')[0].appendChild(div.childNodes[0])
+					}
 				}
 			} else if (settingElement.tagName == "SELECT") {
 				if (settingElement.id == "notificationThreshold") {
@@ -388,6 +467,9 @@ async function main() {
 	}
 	document.getElementById('userIcon').setAttribute('src', 'https://www.roblox.com/headshot-thumbnail/image?userId=' + parseInt(userID) + '&width=420&height=420&format=png')
 	document.getElementById('usernameText').innerHTML = stripTags(username)
+	document.getElementById('reloadExtension').addEventListener('click', function(){
+		chrome.runtime.reload()
+	})
 }
 main()
 

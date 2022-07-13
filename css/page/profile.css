@@ -19,7 +19,7 @@
 }
 
 .rolilike:hover{
-	content: url("https://ropro.io/images/like2.png");
+	content: url(chrome-extension://__MSG_@@extension_id__/images/like2.png);
 }
 .ropro-user-info:hover .ropro-info-card{
 	display:block!important;

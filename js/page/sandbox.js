@@ -2,7 +2,7 @@
 
 RoPro (https://ropro.io) v1.3
 
-RoPro was wholly designed and coded by:
+The RoPro extension is developed by:
                                
 ,------.  ,--. ,-----.,------. 
 |  .-.  \ |  |'  .--./|  .---' 
@@ -34,14 +34,16 @@ https://ropro.io/privacy-policy
 
 var sandboxHTML = `
 <div style="margin-top:4px;margin-left:15px;">
-	<h1 style="display:inline-block;" class="ng-binding">RoPro Avatar Sandbox <img class="sandbox-icon-big" style="height:60px;margin-bottom:0px;" src="https://ropro.io/images/sandbox_icon.svg"></h1>
+	<h1 style="display:inline-block;" class="ng-binding">RoPro Avatar Sandbox <img class="sandbox-icon-big" style="height:60px;margin-bottom:0px;" src="${chrome.runtime.getURL('/images/empty.png')}"></h1>
 	<div id="upgradeCTA" style="margin-top:20px;float:right;display:inline-block;" class="upgrade-cta catalog-header"> <div style="display:inline-block;margin-right:5px;" class="ng-binding upgradeText">Upgrade to save your outfits!</div>
 	<a style="display:inline-block;" class="btn-primary-md ng-binding upgradeButtonText" target="_blank" href="https://ropro.io#upgrade-standard">Upgrade</a> </div>
 	<div style="pointer-events: none;position:relative;display:inline-block;float:left;max-height:610px;" id = "maincontent">
 		<div style="pointer-events:initial;position:relative;width:970px;z-index:1;" class="sandbox-frame" id="sandboxFrame">
-			<iframe class="sandbox-iframe" style="z-index:1;" id="sandboxView" src="https://ropro.io/3dviewer/?load"></iframe>
-			<span id="fullscreenToggle" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'" style="opacity:0.5;position:absolute;bottom:10px;right:10px;z-index:100;width:40px;height:37px;" class="sandbox-fullscreen-toggle fullscreen toggle-three-dee btn-control btn-control-small ng-binding"><img id="fullscreenImage" src="https://ropro.io/images/fullscreen_0.png" style="height:20px;margin:-10px;" onclick=""></span>
-			<div style="position: absolute; bottom: 10px; left: 10px; z-index: 100; " class="avatar-type-toggle pill-toggle ng-scope" data-toggle="tooltip" title="Switch between classic R6 avatar and more expressive next generation R15 avatar"> <input type="radio" id="radio-R6" value="R6" class="ng-pristine ng-untouched ng-valid ng-not-empty" name="15"> <label for="radio-R6">R6</label> <input type="radio" id="radio-R15" value="R15" class="ng-pristine ng-untouched ng-valid ng-not-empty" name="16"> <label for="radio-R15">R15</label> </div>
+		<iframe class="sandbox-iframe" style="z-index:1;position:absolute;display:block;width:970px;display:none;" id="loaderView" src="https://ropro.io/render/?load"></iframe>
+			<iframe class="sandbox-iframe" style="z-index:1;" id="sandboxView" src="https://ropro.io/render/?load"></iframe>
+			<span id="fullscreenToggle" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'" style="opacity:0.5;position:absolute;bottom:10px;right:10px;z-index:100;width:40px;height:37px;display:none;" class="sandbox-fullscreen-toggle fullscreen toggle-three-dee btn-control btn-control-small ng-binding"><img id="fullscreenImage" src="${chrome.runtime.getURL('/images/fullscreen_0.png')}" style="height:20px;margin:-10px;" onclick=""></span>
+			<div style="position: absolute; bottom: 5px; left: 10px; z-index: 100; " class="avatar-type-toggle pill-toggle ng-scope" data-toggle="tooltip" title="" data-original-title="Switch between 2D and 3D rendering in the Avatar Sandbox"> <input type="radio" id="radio-2D" value="2D" checked=true class="ng-pristine ng-untouched ng-valid ng-not-empty" name="17"> <label for="radio-2D">2D</label> <input type="radio" id="radio-3D" value="3D" class="ng-pristine ng-untouched ng-valid ng-not-empty" name="18"> <label for="radio-3D">3D</label> </div>
+			<div style="position: absolute; bottom: 5px; left: 90px; z-index: 100; " class="avatar-type-toggle pill-toggle ng-scope" data-toggle="tooltip" title="Switch between classic R6 avatar and more expressive next generation R15 avatar"> <input type="radio" id="radio-R6" value="R6" class="ng-pristine ng-untouched ng-valid ng-not-empty" name="15"> <label for="radio-R6">R6</label> <input type="radio" id="radio-R15" value="R15" class="ng-pristine ng-untouched ng-valid ng-not-empty" name="16"> <label for="radio-R15">R15</label> </div>
 			</div>
 			<div style="float:left;position:relative;width:277px;" id="wearing">
 				<h5 style="padding-bottom:0px;" class="ng-binding"><span class="outfitCostText">Outfit Cost:</span> <span>
@@ -55,7 +57,7 @@ var sandboxHTML = `
 				<div style="line-height:0px;pointer-events:initial;" id="wearingContainer"></div>
 			</div>
 			<div style="position:relative;width:277px;" id="backgroundChoice">
-			<div style="margin-top:5px;float:left;position:relative;width:277px;height:240px;pointer-events:initial;" id="roproMerch">
+			<div style="margin-top:5px;float:left;position:relative;width:277px;height:240px;pointer-events:initial;display:none;" id="roproMerch">
 				<h3 style="padding-bottom:0px;" class="ng-binding"><span class="roproMerchText">RoPro Merch</span> </h3>
 				
 				<p id="merchSubtitle" style="margin-top:-2px;font-size:13px;" class="ng-binding merchText">Buy four or more shirts/pants to unlock a special "RoPro Donor" profile icon.</p>
@@ -64,57 +66,63 @@ var sandboxHTML = `
 				</div>
 				<div id="scrollRight" style="margin-top: 70px; height: 170px; margin-right: 18px; width: 20px; display: block;" class="scroller next" role="button" aria-hidden="true"><div style="transform:scale(0.8);margin-right:-9px;" class="arrow"><span class="icon-games-carousel-right"></span></div></div>
 			</div>
+			<div style="pointer-events:initial;margin-top:10px;float:left;position:relative;width:277px;height:80px;">
+				<h3 style="padding-bottom:0px;" class="ng-binding"><span>Advanced Equip</span> </h3>
+				<div>
+				<input id="advancedEquipInput" style="border-radius:5px;margin-bottom:0px;margin-top:2px;padding-left:10px;" class="form-control input-field" placeholder="Enter Item ID" maxlength="50" ng-keypress="" ng-model="">
+				</div>
+			</div>
 				<!--<h3 style="margin-top:5px;float:left;padding-bottom:0px;" class="ng-binding backgroundText">Background</h3>
 				<p style="float:left;margin-top:-2px;font-size:13px;" class="ng-binding chooseBackgroundText">Choose a background below.</p>
 				<div style="float:left;pointer-events:initial;" id="backgroundContainer">
 				<div><div id="default" style="display:inline-block;width:50px;height:50px;margin:2px;" class="thumbnail-2d-container background-selector"><a style="position:relative;">
 				<img class="item-card-thumb-container" style="width:100%;height:100%;" src="https://ropro.io/3dviewer/backgrounds/default_background.png">
-				<img src="https://ropro.io/images/checkmark_done.gif" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
+				<img src="${chrome.runtime.getURL('/images/checkmark_done.gif')}" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
 				</a>
 				</div></div>
 				<div><div id="sky" style="display:inline-block;width:50px;height:50px;margin:2px;" class="thumbnail-2d-container background-selector"><a style="position:relative;">
 				<img class="item-card-thumb-container" style="width:100%;height:100%;" src="https://ropro.io/3dviewer/backgrounds/sky_background.png">
-				<img src="https://ropro.io/images/empty.png" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
+				<img src="${chrome.runtime.getURL('/images/empty.png')}" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
 				</a>
 				</div></div>
 				<div><div id="crossroads" style="display:inline-block;width:50px;height:50px;margin:2px;" class="thumbnail-2d-container background-selector"><a style="position:relative;">
 				<img class="item-card-thumb-container" style="width:100%;height:100%;" src="https://ropro.io/3dviewer/backgrounds/crossroads_background.png">
-				<img src="https://ropro.io/images/empty.png" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
+				<img src="${chrome.runtime.getURL('/images/empty.png')}" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
 				</a>
 				</div></div>
 				<div><div id="roblox_hq" style="display:inline-block;width:50px;height:50px;margin:2px;" class="thumbnail-2d-container background-selector"><a style="position:relative;">
 				<img class="item-card-thumb-container" style="width:100%;height:100%;" src="https://ropro.io/3dviewer/backgrounds/roblox_hq_background.png">
-				<img src="https://ropro.io/images/empty.png" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
+				<img src="${chrome.runtime.getURL('/images/empty.png')}" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
 				</a>
 				</div></div>
 				<div><div id="trade_hangout" style="display:inline-block;width:50px;height:50px;margin:2px;" class="thumbnail-2d-container background-selector"><a style="position:relative;">
 				<img class="item-card-thumb-container" style="width:100%;height:100%;" src="https://ropro.io/3dviewer/backgrounds/trade_hangout_background.png">
-				<img src="https://ropro.io/images/empty.png" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
+				<img src="${chrome.runtime.getURL('/images/empty.png')}" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
 				</a>
 				</div></div>
 				<div><div id="playground" style="display:inline-block;width:50px;height:50px;margin:2px;" class="thumbnail-2d-container background-selector"><a style="position:relative;">
 				<img class="item-card-thumb-container" style="width:100%;height:100%;" src="https://ropro.io/3dviewer/backgrounds/playground_background.png">
-				<img src="https://ropro.io/images/empty.png" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
+				<img src="${chrome.runtime.getURL('/images/empty.png')}" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
 				</a>
 				</div></div>
 				<div><div id="shuttle2" style="display:inline-block;width:50px;height:50px;margin:2px;" class="thumbnail-2d-container background-selector"><a style="position:relative;">
 				<img class="item-card-thumb-container" style="width:100%;height:100%;" src="https://ropro.io/3dviewer/backgrounds/shuttle2_background.png">
-				<img src="https://ropro.io/images/empty.png" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
+				<img src="${chrome.runtime.getURL('/images/empty.png')}" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
 				</a>
 				</div></div>
 				<div><div id="school" style="display:inline-block;width:50px;height:50px;margin:2px;" class="thumbnail-2d-container background-selector"><a style="position:relative;">
 				<img class="item-card-thumb-container" style="width:100%;height:100%;" src="https://ropro.io/3dviewer/backgrounds/school_background.png">
-				<img src="https://ropro.io/images/empty.png" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
+				<img src="${chrome.runtime.getURL('/images/empty.png')}" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
 				</a>
 				</div></div>
 				<div><div id="oval_office" style="display:inline-block;width:50px;height:50px;margin:2px;" class="thumbnail-2d-container background-selector"><a style="position:relative;">
 				<img class="item-card-thumb-container" style="width:100%;height:100%;" src="https://ropro.io/3dviewer/backgrounds/oval_office_background.png">
-				<img src="https://ropro.io/images/empty.png" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
+				<img src="${chrome.runtime.getURL('/images/empty.png')}" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
 				</a>
 				</div></div>
 				<div><div id="pirate" style="display:inline-block;width:50px;height:50px;margin:2px;" class="thumbnail-2d-container background-selector"><a style="position:relative;">
 				<img class="item-card-thumb-container" style="width:100%;height:100%;" src="https://ropro.io/3dviewer/backgrounds/pirate_background.png">
-				<img src="https://ropro.io/images/empty.png" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
+				<img src="${chrome.runtime.getURL('/images/empty.png')}" class="background-checkmark-image active" style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-57px;top:-52px;">
 				</a>
 				</div></div>-->
 							<div style="margin-top:5px;float:left;position:relative;width:277px;" id="roproOutfits">
@@ -139,9 +147,9 @@ var sandboxHTML = `
 		<a index="2" style="font-size:13px;" class="catalog-tab">Accessories</a>
 		<a index="3" style="font-size:13px;" class="catalog-tab">UGC</a>
 		<a index="4" style="font-size:13px;" class="catalog-tab">Body</a>
-		<a index="5" style="font-size:13px;" class="catalog-tab">Clothing</a>
+		<a index="5" style="font-size:13px;" class="catalog-tab">Layered</a>
+		<a index="5" style="font-size:13px;" class="catalog-tab">Classic</a>
 		<a index="6" style="font-size:13px;" class="catalog-tab">Characters</a>
-		<a index="7" style="font-size:13px;" class="catalog-tab">Animations</a>
 	</div>
 	<div id="Limiteds">
 	</div>
@@ -151,11 +159,11 @@ var sandboxHTML = `
 	</div>
 	<div id="Body">
 	</div>
-	<div id="Clothing">
+	<div id="Layered">
+	</div>
+	<div id="Classic">
 	</div>
 	<div id="Characters">
-	</div>
-	<div id="Animations">
 	</div>
 </div>
 `
@@ -163,35 +171,37 @@ var sandboxHTML = `
 var wearing = []
 var wearingCostDict = {}
 var wearingInfoDict = {}
+var assetTypeDict = {}
+var assetPriceDict = {}
 var userID = 1
 var playerType = "R15"
 
 var sorts = {
 	"Limiteds":{"Most Popular":"?Category=2&limit=30&Subcategory=2&SortType=1&SortAggregation=5", "All Limiteds":"?category=Collectibles&limit=30&subcategory=Collectibles", "Accessories":"?category=Collectibles&limit=30&subcategory=Accessories", "Faces":"?category=Collectibles&limit=30&subcategory=Faces"},
-	"Accessories":{"All Accessories":"?category=Accessories&creatorTargetId=1&limit=30&subcategory=Accessories", "Hats": "?category=Accessories&creatorTargetId=1&limit=30&subcategory=HeadAccessories", "Hair": "?category=BodyParts&creatorTargetId=1&limit=30&subcategory=HairAccessories", "Face":"?category=Accessories&creatorTargetId=1&limit=30&subcategory=FaceAccessories", "Neck":"?category=Accessories&creatorTargetId=1&limit=30&subcategory=NeckAccessories", "Shoulder":"?category=Accessories&creatorTargetId=1&limit=30&subcategory=ShoulderAccessories", "Front":"?category=Accessories&creatorTargetId=1&limit=30&subcategory=FrontAccessories", "Back":"?category=Accessories&creatorTargetId=1&limit=30&subcategory=BackAccessories", "Waist":"?category=Accessories&creatorTargetId=1&limit=30&subcategory=WaistAccessories"},
+	"Accessories":{"All Accessories":"?category=Accessories&creatorTargetId=1&limit=30&subcategory=Accessories", "Gear": "?category=Accessories&creatorTargetId=1&limit=30&subcategory=Gear", "Hats": "?category=Accessories&creatorTargetId=1&limit=30&subcategory=HeadAccessories", "Hair": "?category=BodyParts&creatorTargetId=1&limit=30&subcategory=HairAccessories", "Face":"?category=Accessories&creatorTargetId=1&limit=30&subcategory=FaceAccessories", "Neck":"?category=Accessories&creatorTargetId=1&limit=30&subcategory=NeckAccessories", "Shoulder":"?category=Accessories&creatorTargetId=1&limit=30&subcategory=ShoulderAccessories", "Front":"?category=Accessories&creatorTargetId=1&limit=30&subcategory=FrontAccessories", "Back":"?category=Accessories&creatorTargetId=1&limit=30&subcategory=BackAccessories", "Waist":"?category=Accessories&creatorTargetId=1&limit=30&subcategory=WaistAccessories"},
 	"UGC":{"All Accessories":"?category=CommunityCreations&limit=30&subcategory=CommunityCreations", "Hats": "?category=CommunityCreations&limit=30&subcategory=HeadAccessories", "Hair": "?category=CommunityCreations&limit=30&subcategory=HairAccessories", "Face":"?category=CommunityCreations&limit=30&subcategory=FaceAccessories", "Neck":"?category=CommunityCreations&limit=30&subcategory=NeckAccessories", "Shoulder":"?category=CommunityCreations&limit=30&subcategory=ShoulderAccessories", "Front":"?category=CommunityCreations&limit=30&subcategory=FrontAccessories", "Back":"?category=CommunityCreations&limit=30&subcategory=BackAccessories", "Waist":"?category=CommunityCreations&limit=30&subcategory=WaistAccessories"},
 	"Body":{"Faces": "?category=BodyParts&limit=30&subcategory=Faces", "Heads":"?category=BodyParts&limit=30&subcategory=Heads"},
-	"Clothing":{"All Clothing":"?category=Clothing&limit=30&subcategory=Clothing", "Shirts":"?category=Clothing&limit=30&subcategory=Shirts", "T-Shirts": "?category=Clothing&limit=30&subcategory=Tshirts", "Pants":"?category=Clothing&limit=30&subcategory=Pants"},
-	"Characters":{"Characters":"?category=Characters&sortAggregation=5&sortType=2&limit=30"},
-	"Animations":{"Animations":"?category=AvatarAnimations&subcategory=AvatarAnimations&sortAggregation=5&sortType=2&limit=30"}
+	"Layered":{"T-Shirts":"?category=Clothing&limit=30&subcategory=TShirtAccessories", "Shirts":"?category=Clothing&limit=30&subcategory=ShirtAccessories", "Sweaters": "?category=Clothing&limit=30&subcategory=SweaterAccessories", "Jackets": "?category=Clothing&limit=30&subcategory=JacketAccessories", "Pants": "?category=Clothing&limit=30&subcategory=PantsAccessories", "Shorts": "?category=Clothing&limit=30&subcategory=ShortsAccessories", "Dresses/Skirts": "?category=Clothing&limit=30&subcategory=DressSkirtAccessories", "Shoes": "?category=Clothing&limit=30&subcategory=ShoesBundles"},
+	"Classic":{"Shirts":"?category=Clothing&limit=30&subcategory=ClassicShirts", "Pants":"?category=Clothing&limit=30&subcategory=ClassicPants", "T-Shirts": "?category=Clothing&limit=30&subcategory=ClassicTShirts"},
+	"Characters":{"Characters":"?category=Characters&sortAggregation=5&sortType=2&limit=30"}
 	}
 var subsort = {
 	"Limiteds":["",""],
 	"Accessories":["",""],
 	"UGC":["",""],
 	"Body":["",""],
-	"Clothing":["",""],
-	"Characters":["",""],
-	"Animations":["",""]
+	"Layered":["",""],
+	"Classic":["",""],
+	"Characters":["",""]
 	}
 var cursors = {
 	"Limiteds":["",""],
 	"Accessories":["",""],
 	"UGC":["",""],
 	"Body":["",""],
-	"Clothing":["",""],
-	"Characters":["",""],
-	"Animations":["",""]
+	"Layered":["",""],
+	"Classic":["",""],
+	"Characters":["",""]
 	}
 var currentTab = "Limiteds"
 var currentSort = "Most Popular"
@@ -201,32 +211,49 @@ var pageLoading = false
 var tabs = {}
 var background = "default"
 var currentAnimation = null
+var thumbnailConfig = {"thumbnailId": 2, "thumbnailType": "2d", "size": "420x420"}
+var scales = {"bodyType": 0, "depth": 0, "head": 0, "height": 0, "proportion": 0, "width": 0}
+var playerAvatarType = {}
+var bodyColors = {}
+var assets = []
+var avatarRules = {}
+var bodyColorPalette = {}
+var layeredClothingOrder = {64: 7, 65: 7, 68: 7, 67: 10, 66: 4, 69: 5, 72: 6, 70: 3, 71: 3}
 
-function fetchAssetsView(assetIds) {
+function fetchAvatarRules() {
 	return new Promise(resolve => {
-		function getURL(assetIds) {
-			chrome.runtime.sendMessage({greeting: "GetURL", url:"https://avatar.roblox.com/v1/try-on/3d?assetIds="+assetIds.join(",")+"&addAccoutrements=false"}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://avatar.roblox.com/v1/avatar-rules"}, 
+			function(data) {
+					resolve(data)
+			})
+	})
+}
+
+function fetchAssetsView(renderParameters, overrideCancelled = false) {
+	return new Promise(resolve => {
+		function getURL(renderParameters) {
+			chrome.runtime.sendMessage({greeting: "PostValidatedURL", url:"https://avatar.roblox.com/v1/avatar/render", jsonData: renderParameters}, 
 				function(data) {
-					if (JSON.stringify(assetIds) == JSON.stringify(wearing)) {
-						if (data != "ERROR") {
-							if (data.final) {
-								resolve(data.url)
+					if (overrideCancelled || renderParameters == JSON.stringify(getRenderParameters())) {
+						if (data == null) {
+							setTimeout(function(){
+								getURL(renderParameters)
+							}, 2000)
+						} else {
+							if (data.state == "Completed") {
+								resolve(data.imageUrl)
 							} else {
 								setTimeout(function(){
-									getURL(assetIds)
-								}, 3000)
+									getURL(renderParameters)
+								}, 2000)
 							}
-						} else {
-							setTimeout(function(){
-								getURL(assetIds)
-							}, 3000)
 						}
 					} else {
 						resolve("CANCELLED")
 					}
 				})
 		}
-		getURL([...assetIds])
+		getURL(renderParameters)
 	})
 }
 
@@ -240,7 +267,7 @@ function fetchAssetsView2D(assetIds) {
 					} else {
 						setTimeout(function(){
 							getURL(assetIds)
-						}, 3000)
+						}, 2000)
 					}
 				})
 		}
@@ -343,6 +370,9 @@ function fetchDetails(items) {
 		chrome.runtime.sendMessage({greeting: "PostValidatedURL", url:"https://catalog.roblox.com/v1/catalog/items/details", jsonData: JSON.stringify(items)}, 
 			function(data) {
 				if (data != null) {
+					for (var i = 0; i < data.data.length; i++) {
+						assetTypeDict[data.data[i].id] = data.data[i].assetType
+					}
 					resolve(data)
 				} else {
 					itemArray = {"data": []}
@@ -410,6 +440,23 @@ function fetchLimitedSellers(assetId) {
 	})
 }
 
+var thumbnailCache = {}
+
+function setAssetThumbnail(id) {
+	if (id in thumbnailCache) {
+		$('.ropro-image-' + parseInt(id)).attr("src", stripTags(thumbnailCache[id]))
+		return thumbnailCache[id]
+	}
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "GetURLCached", url:"https://api.ropro.io/getAssetThumbnailUrl.php?id=" + parseInt(id)}, 
+			function(data) {
+					thumbnailCache[id] = data
+					resolve(data)
+					$('.ropro-image-' + parseInt(id)).attr("src", stripTags(data))
+			})
+	})
+}
+
 function getStorage(key) {
 	return new Promise(resolve => {
 		chrome.storage.sync.get(key, function (obj) {
@@ -426,6 +473,13 @@ function getUserId() {
 			}
 		)
 	})
+}
+
+function getRenderParameters() {
+	params = {}
+	params["avatarDefinition"] = {"assets": wearing, "bodyColors": bodyColors, "playerAvatarType": playerAvatarType, "scales": scales}
+	params["thumbnailConfig"] = thumbnailConfig
+	return params
 }
 
 function addCommas(nStr){
@@ -471,8 +525,8 @@ function stripTags(s) {
 	<a class="item-card-thumb-container">
 	<thumbnail-2d id="${parseInt(id)}" type="Asset" style="overflow:visible;height:76px;width:76px;position:relative;" class="item-card-thumb-container item-card-thumb ng-isolate-scope  ${parseInt(id)}">
 	<span class="thumbnail-2d-container">
-	<img class="item-card-image" style="height:76px;width:76px;position:absolute;margin-left:5px;margin-top:5px;" src="https://www.roblox.com/asset-thumbnail/image?assetId=${parseInt(id)}&amp;width=420&amp;height=420&amp;format=png"></span>
-	<img style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-50px;top:-35px;" class="checkmark-image " src="https://ropro.io/images/checkmark_start.png">
+	<img class="item-card-image" style="height:76px;width:76px;position:absolute;margin-left:5px;margin-top:5px;" src="${chrome.runtime.getURL('/images/empty.png')}"></span>
+	<img style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-50px;top:-35px;" class="checkmark-image " src="${chrome.runtime.getURL('/images/checkmark_start.png')}">
 	</thumbnail-2d> </a> </div> <div style="width:76px;" class="item-card-caption"> <div class="item-card-equipped ng-hide"> <div class="item-card-equipped-label"></div>
 	<span class="icon-check-selection"></span> </div>
 	<a target="_blank" href="https://www.roblox.com/catalog/${parseInt(id)}/item" class="item-card-name-link">
@@ -489,15 +543,15 @@ function stripTags(s) {
 	li.innerHTML = merchHTML
 	li.getElementsByClassName('item-card-thumb')[0].addEventListener('click', async function() {
 		if ($(this).find('.checkmark-image').attr('class').includes('active')) {
-			$(this).find('.checkmark-image').attr('src','https://ropro.io/images/checkmark_end.png')
+			$(this).find('.checkmark-image').attr('src', chrome.runtime.getURL('/images/checkmark_end.png'))
 			$(this).find('.checkmark-image').removeClass('active')
 			removeItem(parseInt($(this).attr('id')))
 		} else {
 			$(this).find('.checkmark-image').addClass('active')
-			$(this).find('.checkmark-image').attr('src','https://ropro.io/images/checkmark.png')
+			$(this).find('.checkmark-image').attr('src',chrome.runtime.getURL('/images/checkmark.png'))
 			function changeImage(checkmark) {
 				setTimeout(function(){
-					$(checkmark).find('.checkmark-image').attr('src','https://ropro.io/images/checkmark_done.gif')
+					$(checkmark).find('.checkmark-image').attr('src',chrome.runtime.getURL('/images/checkmark_done.gif'))
 				}, 400)
 			}
 			changeImage(this)
@@ -545,51 +599,55 @@ async function calculateCost(assetId) {
 }
 
 function addOutfit(userID, assets, name, thumbnail) {
-	outfitHTML = `<div class="outfit-delete" style="z-index:10000;position:absolute;top:-8px;right:-8px;white-space:nowrap;"><a><img style="z-index:10000;height:15px;" src="https://ropro.io/images/close_button.png"></a></div>
+	outfitHTML = `<div class="outfit-delete" style="z-index:10000;position:absolute;top:-8px;right:-8px;white-space:nowrap;"><a><img style="z-index:10000;height:15px;" src="${chrome.runtime.getURL('/images/close_button.png')}"></a></div>
 				<div class="outfit-name input-group input-field">${stripTags(name)}</div>
-				<div assets='${JSON.stringify(assets)}' outfit-name="${stripTags(name)}" style="display:inline-block;width:50px;height:50px;margin:2px;" class="thumbnail-2d-container outfit-selector"><a style="position:relative;">
+				<div assets='${JSON.stringify(assets)}' outfit-name="${stripTags(name)}" style="display:inline-block;width:85px;height:85px;margin:2px;" class="thumbnail-2d-container outfit-selector"><a style="position:relative;">
 				<img class="item-card-thumb-container" style="width:100%;height:100%;" src="${stripTags(thumbnail)}">
 				</a>
 				</div>`
 	div = document.createElement('div')
 	div.setAttribute('class', 'outfit-div')
-	div.setAttribute('style', 'display:inline-block;width:50px;height:50px;position:relative;margin:2px;')
+	div.setAttribute('style', 'display:inline-block;width:85px;height:85px;position:relative;margin:2px;')
 	div.innerHTML = outfitHTML
 	document.getElementById('outfitContainer').insertBefore(div, document.getElementById('outfitContainer').childNodes[0])
 	div.getElementsByClassName('outfit-delete')[0].addEventListener('click', function() {
 		this.parentNode.remove();
 		deleteOutfit(userID, assets);
 	});
-	div.getElementsByClassName('outfit-selector')[0].addEventListener('click', function() {
-		for (i = 0; i < wearing.length; i++) {
-			delete wearingCostDict[wearing[i]]
+	div.getElementsByClassName('outfit-selector')[0].addEventListener('click', async function() {
+		ids = getIds(wearing)
+		var itemsArray = []
+		for (i = 0; i < ids.length; i++) {
+			delete wearingCostDict[ids[i]]
+			itemsArray.push({"id":ids[i],"itemType":"Asset"})
 		}
 		calculateCost(-1)
 		wearing = []
+		await fetchDetails({"items":itemsArray})
 		addItemBulk(assets)
 	})
-	if (thumbnail == "https://t2.rbxcdn.com/ffc3cf81492f26555592d46357f0658e" || thumbnail == "") {
-		updateOutfitThumbnail(userID, div, assets);
-	}
 	return div
 }
 
 async function updateOutfitThumbnail(userID, div, outfitAssets) {
-	setTimeout(async function() {
-		url = await fetchAssetsView2D(outfitAssets)
-		url = stripTags(url)
-		if (url == 'https://t2.rbxcdn.com/ffc3cf81492f26555592d46357f0658e') {
-			updateOutfitThumbnail(userID, div, outfitAssets)
-		} else {
-			div.getElementsByTagName('img')[1].setAttribute('src', url);
-			await updateThumbnail(userID, outfitAssets, url);
-		}
-	}, 5000)
+	var params = getRenderParameters()
+	params["thumbnailConfig"] = {"thumbnailId": 2, "thumbnailType": "2d", "size": "420x420"}
+	url = await fetchAssetsView(JSON.stringify(params), true)
+	url = stripTags(url)
+	if (url == 'CANCELLED') {
+		updateOutfitThumbnail(userID, div, outfitAssets)
+	} else {
+		div.getElementsByTagName('img')[1].setAttribute('src', url);
+		await updateThumbnail(userID, outfitAssets, url);
+	}
 }
 
 async function createOutfit(name) {
-	outfitAssets = [...wearing]
-	url = await fetchAssetsView2D(outfitAssets)
+	outfitAssets = [...getIds(wearing)]
+	//var params = getRenderParameters()
+	//params["thumbnailConfig"] = {"thumbnailId": 2, "thumbnailType": "2d", "size": "420x420"}
+	//url = await fetchAssetsView(JSON.stringify(params))
+	url = chrome.runtime.getURL('/images/empty.png')
 	userId = await getUserId()
 	createOutfitReq = await createNewOutfit(outfitAssets, stripTags(name), url, userId)
 	if (createOutfitReq == "1") {
@@ -625,37 +683,37 @@ const paidList = () => {
 
 const paidItemsList = paidList()
 
-function createItem(name, assetId, price, limited, limitedU, itemType, thumbnail) {
+function createItem(name, assetId, price, limited, limitedU, itemType, thumbnail, bundleType = "") {
 	li = document.createElement('li')
 	li.style.height = "200px"
 	li.style.width = "126px"
 	li.style.marginLeft = "5px"
 	li.style.marginRight = "5px"
 	li.style.display = "inline-block"
-	if (wearing.includes(assetId)) {
+	if (getIds(wearing).includes(assetId)) {
 		active = "active"
-		src = "https://ropro.io/images/checkmark_done.gif"
+		src = chrome.runtime.getURL('/images/checkmark_done.gif')
 	} else {
 		active = ""
-		src = "https://ropro.io/images/checkmark_start.png"
+		src = chrome.runtime.getURL('/images/checkmark_start.png')
 	}
 	if (thumbnail.length == 0) {
-		thumbnail = `https://www.roblox.com/asset-thumbnail/image?assetId=${parseInt(assetId)}&width=420&height=420&format=png`
+		thumbnail = chrome.runtime.getURL('/images/empty.png')
 	}
 	if (itemType == "Bundle") {
 		subdirectory = "bundles"
 	} else {
 		subdirectory = "catalog"
 	}
-	if ((itemType == "Bundle" || itemType == "61") && price != "Free") {
-		paidItemsList.addPaidItem(parseInt(assetId))
+	console.log(bundleType)
+	if ((itemType == "Bundle" || itemType == "61") && price != "Free" && bundleType != "Shoes") {
+		//paidItemsList.addPaidItem(parseInt(assetId))
 	}
 	itemHTML = `<div style="float:left;margin-left:1px;margin-right:1px;"><div class="item-card-container remove-panel"><div class="item-card-link">
 	<a class="item-card-thumb-container">
 	<thumbnail-2d id=${parseInt(assetId)} type="${stripTags(itemType)}" style="overflow:visible;height:126px;width:126px;position:relative;" class="item-card-thumb-container item-card-thumb ng-isolate-scope ${active} ${parseInt(assetId)}">
 	<span class="thumbnail-2d-container">
-	<img class="item-card-image" style="height:126px;width:126px;position:absolute;" src="${stripTags(thumbnail)}">
-	${(itemType == "Bundle" || itemType == "61") && price != "Free" ? `<img class="standard-icon-image" style="height:50px;width:50px;position:absolute;left:0px;bottom:0px;" src="https://ropro.io/images/standard_icon_shadow.png">` : ``}
+	<img class="item-card-image ropro-image-${parseInt(assetId)}" style="height:126px;width:126px;position:absolute;" src="${stripTags(thumbnail)}">
 	</span>
 	<img style="pointer-events:none;transform:scale(0.4);overflow:visible;width:164px;height:126px;position:absolute;right:-50px;top:-35px;" class="checkmark-image ${active}" src="${src}">
 	</thumbnail-2d> </a> </div> <div class="item-card-caption"> <div class="item-card-equipped ng-hide"> <div class="item-card-equipped-label"></div>
@@ -692,7 +750,7 @@ tabHTML = `
 <div id="navbar-universal-search" style="margin-top:10px;margin-right:14px;float:right;width:680px;" role="search">
    <div class="search-container">
       <div class="input-group">
-         <input style="width:530px;unicode-bidi:bidi-override;direction:LTR;" class="form-control input-field search-input sandbox-search" placeholder="Search" maxlength="50" ng-keypress="onKeywordKeypress($event, true)" ng-model="searchLayout.keyword"> 
+         <input style="width:530px;unicode-bidi:bidi-override!important;direction:LTR!important;" class="input-field sandbox-search" placeholder="Search" maxlength="50"> 
          <div style="width:150px;" class="input-group-btn">
             <button style="height:38px;" type="button" class="input-dropdown-btn category-options ng-scope"> <span style="font-size:13px;" class="text-overflow rbx-selection-label ng-binding">${stripTags(firstTab)}</span> <span class="icon-down-16x16"></span> </button> 
             <ul page="0" style="width:150px;display:block;" class="dropdown_menu dropdown_menu-4 dropdown-menu dropdown-custom">
@@ -723,7 +781,7 @@ function createUpgradeModal() {
     modalDiv.style.zIndex = 100000
     modalHTML = `<div id="standardUpgradeModal" style="z-index:10000;display:block;" class="upgrade-modal"><div style="background-color:#232527;position:absolute;width:500px;height:500px;left:-webkit-calc(50% - 250px);top:-webkit-calc(50% - 250px);" class="modal-content upgrade-modal-content">
     <span style="margin-top:5px;margin-right:5px;font-size:40px;" class="upgrade-modal-close">×</span>
-    <h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:20px;left:40px;"><img style="width:70px;left:0px;" src="https://ropro.io/images/standard_icon.png"> Standard Tier Feature</h2><div style="font-family:HCo Gotham SSm;color:white;font-size:17px;position:absolute;top:115px;left:200px;width:270px;">Trying on paid Animations/Characters & saving Sandbox Outfits is only available for<br><b><img style="width:20px;margin-top:-3px;margin-right:3px;" src="https://ropro.io/images/standard_icon.png">RoPro Standard Tier+</b><br>subscribers.</div><div style="font-family:HCo Gotham SSm;color:white;font-size:18px;position:absolute;top:270px;left:200px;width:270px;"><u>More Subscription Benefits:</u>
+    <h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:20px;left:40px;"><img style="width:70px;left:0px;" src="${chrome.runtime.getURL('/images/standard_icon.png')}"> Standard Tier Feature</h2><div style="font-family:HCo Gotham SSm;color:white;font-size:17px;position:absolute;top:115px;left:200px;width:270px;">Trying on paid Characters & saving Sandbox Outfits is only available for<br><b><img style="width:20px;margin-top:-3px;margin-right:3px;" src="${chrome.runtime.getURL('/images/standard_icon.png')}">RoPro Standard Tier+</b><br>subscribers.</div><div style="font-family:HCo Gotham SSm;color:white;font-size:18px;position:absolute;top:270px;left:200px;width:270px;"><u>More Subscription Benefits:</u>
     <ul style="margin-left:20px;font-size:12px;font-family:HCo Gotham SSm;">
     <li style="list-style-type:circle;">Fastest Server &amp; Server Size Sort</li>
     <li style="list-style-type:circle;">More Game Filters &amp; Like Ratio Filter</li><li style="list-style-type:circle;">Trade Value &amp; Demand Calculator</li><li style="list-style-type:circle;">More Game Playtime Sorts</li><li style="list-style-type:circle;">And many more! Find a full list <a style="text-decoration:underline;cursor:pointer;" href="https://ropro.io#standard" target="_blank">here</a>.</li></ul>
@@ -787,10 +845,9 @@ async function updatePage(cursor, keyword, back) {
 						loadedFlag = true
 						itemList.innerHTML = ""
 					}
-					if (item.assetType != 19) {
-						itemElement = createItem(stripTags(item.name), item.id, price, false, false, parseInt(item.assetType).toString(), "")
-						itemList.innerHTML += itemElement.outerHTML
-					}
+					itemElement = createItem(stripTags(item.name), item.id, price, false, false, parseInt(item.assetType).toString(), "")
+					itemList.innerHTML += itemElement.outerHTML
+					setAssetThumbnail(item.id)
 				} else {
 					bundleIds.push(item.id)
 					bundleItems.push(item)
@@ -830,7 +887,7 @@ async function updatePage(cursor, keyword, back) {
 						loadedFlag = true
 						itemList.innerHTML = ""
 					}
-					itemElement = createItem(stripTags(item.name), item.id, price, false, false, "Bundle", stripTags(bundleThumbnails[bundle.id]))
+					itemElement = createItem(stripTags(item.name), item.id, price, false, false, "Bundle", stripTags(bundleThumbnails[bundle.id]), bundle.bundleType)
 					itemList.innerHTML += itemElement.outerHTML
 				}
 			}
@@ -869,7 +926,7 @@ async function updatePage(cursor, keyword, back) {
 			itemList.innerHTML += pagerHTML
 			$(itemList).find('.item-card-thumb').click(async function() {
 				if ($(this).attr('class').includes('active')) {
-					$(this).find('.checkmark-image').attr('src','https://ropro.io/images/checkmark_end.png')
+					$(this).find('.checkmark-image').attr('src', chrome.runtime.getURL('/images/checkmark_end.png'))
 					$(this).find('.checkmark-image').removeClass('active')
 					if ($(this).attr('type') == "Bundle") {
 						bundleDetails = await fetchBundleDetails($(this).attr('id'))
@@ -892,10 +949,10 @@ async function updatePage(cursor, keyword, back) {
 						upgradeModal()
 					} else {
 						$(this).find('.checkmark-image').addClass('active')
-						$(this).find('.checkmark-image').attr('src','https://ropro.io/images/checkmark.png')
+						$(this).find('.checkmark-image').attr('src', chrome.runtime.getURL('/images/checkmark.png'))
 						function changeImage(checkmark) {
 							setTimeout(function(){
-								$(checkmark).find('.checkmark-image').attr('src','https://ropro.io/images/checkmark_done.gif')
+								$(checkmark).find('.checkmark-image').attr('src', chrome.runtime.getURL('/images/checkmark_done.gif'))
 							}, 400)
 						}
 						changeImage(this)
@@ -904,41 +961,36 @@ async function updatePage(cursor, keyword, back) {
 							bundleItems = bundleDetails[0].items
 							animationItems = []
 							bundleAssetIds = []
-							for (i = 0; i < bundleItems.length; i++) {
-								item = bundleItems[i]
-								if (item.type == "UserOutfit") {
-									outfitDetails = await fetchOutfitDetails(item.id)
-									assets = outfitDetails.assets
-									for (j = 0; j < assets.length; j++) {
-										asset = assets[j]
-										if ((!asset.assetType.name.includes("Animation")) || currentTab == "Animations") {
-											if (asset.assetType.name.includes("Animation")) {
-												animationItems.push(asset)
-											} else {
-												bundleAssetIds.push(asset.id)
+							if (bundleDetails[0].bundleType == "Shoes") {
+								for (var i = 0; i < bundleItems.length; i++) {
+									item = bundleItems[i]
+									if (i == 0) {
+										assetTypeDict[item.id] = 70
+									} else {
+										assetTypeDict[item.id] = 71
+									}
+									bundleAssetIds.push(item.id)
+								}
+							} else {
+								for (var i = 0; i < bundleItems.length; i++) {
+									item = bundleItems[i]
+									if (item.type == "UserOutfit") {
+										outfitDetails = await fetchOutfitDetails(item.id)
+										assets = outfitDetails.assets
+										for (j = 0; j < assets.length; j++) {
+											asset = assets[j]
+											if ((!asset.assetType.name.includes("Animation")) || currentTab == "Animations") {
+												if (asset.assetType.name.includes("Animation")) {
+													animationItems.push(asset)
+												} else {
+													bundleAssetIds.push(asset.id)
+												}
 											}
 										}
 									}
 								}
 							}
 							addItemBulk(bundleAssetIds)
-							if (animationItems.length > 0) {
-								ul = document.createElement('ul')
-								ul.setAttribute('style', 'cursor:default;color:white;background-color:#191B1D;padding:10px;position:absolute;top:-25px;width:200px;border-radius:15px;z-index:1000;')
-								ul.innerHTML = `<li style="margin-bottom:5px;"><u><b>Select Animation</b></u></li>`
-								for (b = 0; b < animationItems.length; b++) {
-									li = document.createElement('li')
-									li.style.cursor = "pointer"
-									li.setAttribute('itemid', '' + parseInt(animationItems[b].id))
-									li.innerHTML = `<img src="https://www.roblox.com/asset-thumbnail/image?assetId=${parseInt(animationItems[b].id)}&amp;width=420&amp;height=420&amp;format=png" style="width:30px;margin-right:5px;">${stripTags(animationItems[b].name)}`
-									ul.appendChild(li)
-									li.addEventListener('click', function() {
-										addItem(parseInt(this.getAttribute('itemid')))
-										this.parentNode.remove()
-									})
-								}
-								this.parentNode.appendChild(ul)
-							}
 						} else {
 							addItem(parseInt($(this).attr('id')))
 						}
@@ -965,18 +1017,24 @@ async function updatePage(cursor, keyword, back) {
 	}
 }
 
-/**		itemList = currentPage.getElementsByClassName('item-list')[0]
-		itemList.innerHTML = `<div style="width:100px;margin:auto;"><img style="margin-top:0px;width:100px;" src="https://ropro.io/images/standard_icon.png"></div>
-		<h3 style="text-align:center;">
-			To try on Bundles, you must be a RoPro subscriber. <a style="display:inline-block;" class="btn-primary-md ng-binding" target="_blank" href="https://ropro.io#upgrade-standard">Upgrade</a>
-		</h3>`
-		upgradeModal() */
+async function loadWearing() {
+	document.getElementById('loaderView').setAttribute('style', 'position:absolute;display:block;')
+	updateCurrentlyWearing()
+	var params = getRenderParameters()
+	assetsViewURL = await fetchAssetsView(JSON.stringify(params))
+	if (assetsViewURL != "CANCELLED") {
+		document.getElementById("sandboxView").src = "https://ropro.io/render/?" + assetsViewURL.split(".com/")[1] + "&background=" + background
+		setTimeout(function(){
+			document.getElementById('loaderView').setAttribute('style', 'position:absolute;display:none;')
+		}, 500)
+	}
+}
 
 function updateCurrentlyWearing() {
 	wearingContainer = document.getElementById('wearingContainer')
 	wearingContainer.innerHTML = ""
 	for (i = 0; i < wearing.length; i++) {
-		item = parseInt(stripTags(wearing[i].toString()))
+		item = parseInt(wearing[i].id)
 		div = document.createElement("div")
 		div.innerHTML += `<div class="wearing-name input-group input-field"><a style="font-size:13px;font-weight:bold;" class="wearing-${item}" href="https://roblox.com/catalog/${item}/item">${stripTags(wearingInfoDict[item])}</a>
 		<br><div id="outfitCostDiv" style="margin-top:-10px;display: inline-block;">
@@ -984,11 +1042,12 @@ function updateCurrentlyWearing() {
 		<span style="font-size:12px;" class="rbx-text-navbar-right text-header wearing-robux-${item}">${wearingCostDict[item] == null ? "Offsale" : addCommas(parseInt(wearingCostDict[item]))}</span></div>
 		</div>
 		<div style="display:inline-block;width:50px;height:50px;" class="thumbnail-2d-container wearing-card">
-		<a><img itemid="${item}" class="item-card-thumb-container ${item}" style="width:100%;height:100%;" src="https://www.roblox.com/asset-thumbnail/image?assetId=${item}&width=420&height=420&format=png">
+		<a><img itemid="${item}" class="item-card-thumb-container ropro-image-${item}" style="width:100%;height:100%;" src="${chrome.runtime.getURL('/images/empty.png')}">
 		</a></div>`
 		div.setAttribute("class", "wearing-div")
 		wearingContainer.appendChild(div)
 		itemImage = div.getElementsByTagName("img")[0]
+		setAssetThumbnail(item)
 		function listen(itemImage) {
 			itemImage.addEventListener("click", function(){
 				itemID = itemImage.getAttribute("itemid")
@@ -999,46 +1058,61 @@ function updateCurrentlyWearing() {
 	}
 }
 
-async function loadWearing() {
-	updateCurrentlyWearing()
-	document.getElementById('sandboxView').contentWindow.postMessage({action: "set_wearing", items: wearing}, "https://ropro.io")
-}
-
-async function switchPlayerType(type) {
-	updateCurrentlyWearing()
-	document.getElementById('sandboxView').contentWindow.postMessage({action: "switch_player_type", type: type}, "https://ropro.io")
-}
-
 var userID;
+
+function getIds(wearing) {
+	ids = []
+	for (var i = 0; i < wearing.length; i++) {
+		ids.push(wearing[i].id)
+	}
+	return ids
+}
 
 async function loadCurrentlyWearing() {
 	userID = await getStorage("rpUserID")
-	console.log(userID)
-	document.getElementById('sandboxView').src = "https://ropro.io/sandbox_test/?user=" + userID + "&background=" + background
+	document.getElementById('sandboxView').src = "https://ropro.io/render/?background=" + background
 	currentlyWearing = await fetchCurrentlyWearing(userID)
-	playerType = currentlyWearing.playerAvatarType
-	if (playerType == "R6") {
-		document.getElementById('radio-R6').click()
+	avatarRules = await fetchAvatarRules()
+	for (const [_, value] of Object.entries(avatarRules.bodyColorsPalette)) {
+		bodyColorPalette[value['brickColorId']] = value['hexColor']
+	}
+	playerAvatarType = {"playerAvatarType": currentlyWearing.playerAvatarType}
+	bodyColors = {"headColor": bodyColorPalette[currentlyWearing.bodyColors.headColorId], "torsoColor": bodyColorPalette[currentlyWearing.bodyColors.torsoColorId], "leftArmColor": bodyColorPalette[currentlyWearing.bodyColors.leftArmColorId], "rightArmColor": bodyColorPalette[currentlyWearing.bodyColors.rightArmColorId], "leftLegColor": bodyColorPalette[currentlyWearing.bodyColors.leftLegColorId], "rightLegColor": bodyColorPalette[currentlyWearing.bodyColors.rightLegColorId]}
+	scales = currentlyWearing.scales
+	if (currentlyWearing.playerAvatarType == "R6") {
+		document.getElementById('radio-R6').checked = true
 	} else {
-		document.getElementById('radio-R15').click()
+		document.getElementById('radio-R15').checked = true
 	}
 	document.getElementById('radio-R6').addEventListener('click', function() {
 		document.getElementById('radio-R15').checked = false
-		switchPlayerType("R6")
-		playerType = "R6"
+		playerAvatarType = {"playerAvatarType": "R6"}
+		loadWearing()
 	})
 	document.getElementById('radio-R15').addEventListener('click', function() {
 		document.getElementById('radio-R6').checked = false
-		switchPlayerType("R15")
-		playerType = "R15"
+		playerAvatarType = {"playerAvatarType": "R15"}
+		loadWearing()
+	})
+	document.getElementById('radio-2D').addEventListener('click', function() {
+		document.getElementById('fullscreenToggle').style.display = "none"
+		document.getElementById('radio-3D').checked = false
+		thumbnailConfig = {"thumbnailId": 2, "thumbnailType": "2d", "size": "420x420"}
+		loadWearing()
+	})
+	document.getElementById('radio-3D').addEventListener('click', function() {
+		document.getElementById('fullscreenToggle').style.display = "block"
+		document.getElementById('radio-2D').checked = false
+		thumbnailConfig = {"thumbnailId": 3, "thumbnailType": "3d", "size": "420x420"}
+		loadWearing()
 	})
     assets = currentlyWearing.assets
     for (i = 0; i < assets.length; i++) {
-        asset = assets[i]
-        if (!asset.assetType.name.includes("Animation")) {
-            wearing.push(asset.id)
-            calculateCost(asset.id)
-        }
+		if (!assets[i].assetType.name.includes('Animation') || assets[i].name.includes('Idle')) {
+			asset = assets[i]
+			wearing.push(asset)
+			calculateCost(asset.id)
+		}
     }
 	loadWearing()
 	//Do outfit loading
@@ -1059,8 +1133,7 @@ async function loadCurrentlyWearing() {
 }
 
 async function addItem(assetId) {
-	if (paidItemsList.getPaidItems().includes(assetId) && !await fetchSetting("sandboxOutfits")) {
-	} else {
+	if (!(paidItemsList.getPaidItems().includes(assetId) && !await fetchSetting("sandboxOutfits"))) {
 		if (activeTab == "Animations") {
 			if (currentAnimation != null) {
 				removeItem(currentAnimation)
@@ -1074,25 +1147,41 @@ async function addItem(assetId) {
 				playerType = "R15"
 			}
 		}
-		wearing.push(parseInt(assetId))
-		loadWearing()
+		assetType = -1
+		if (parseInt(assetId) in assetTypeDict) {
+			assetType = assetTypeDict[parseInt(assetId)]
+		}
+		if (assetType in layeredClothingOrder) {
+			wearing.push({"id": parseInt(assetId), "meta": {"order": layeredClothingOrder[assetType], "version": 1}})
+		} else {
+			wearing.push({"id": parseInt(assetId)})
+		}
 		calculateCost(assetId)
+		loadWearing()
 	}
 }
 
 function addItemBulk(assetIds) {
 	for (i = 0; i < assetIds.length; i++) {
 		assetId = assetIds[i]
-		wearing.push(parseInt(assetId))
+		assetType = -1
+		if (parseInt(assetId) in assetTypeDict) {
+			assetType = assetTypeDict[parseInt(assetId)]
+		}
+		if (assetType in layeredClothingOrder) {
+			wearing.push({"id": parseInt(assetId), "meta": {"order": layeredClothingOrder[assetType], "version": 1}})
+		} else {
+			wearing.push({"id": parseInt(assetId)})
+		}
 		calculateCost(assetId)
 	}
 	loadWearing()
 }
 
 function removeItem(assetId) {
-	index = wearing.indexOf(parseInt(assetId))
+	index = getIds(wearing).indexOf(parseInt(assetId))
 	if (index != -1) {
-		$('.'+assetId).find('.checkmark-image').attr('src','https://ropro.io/images/checkmark_end.png')
+		$('.'+assetId).find('.checkmark-image').attr('src', chrome.runtime.getURL('/images/checkmark_end.png'))
 		$('.'+assetId).find('.checkmark-image').removeClass('active')
 		wearing.splice(index, 1)
 		delete wearingCostDict[assetId]
@@ -1104,7 +1193,7 @@ function removeItem(assetId) {
 function removeItemBulk(assetIds) {
 	for (i = 0; i < assetIds.length; i++) {
 		assetId = assetIds[i]
-		index = wearing.indexOf(parseInt(assetId))
+		index = getIds(wearing).indexOf(parseInt(assetId))
 		if (index != -1) {
 			wearing.splice(index, 1)
 			delete wearingCostDict[assetId]
@@ -1119,6 +1208,27 @@ function clearItems() {
 	loadWearing()
 }
 
+async function advancedEquip(id) {
+	if (parseInt(id).toString() != id) {
+		alert("Invalid input. Input must be a numerical item ID.")
+		return
+	}
+	itemDetails = await fetchDetails({"items": [{"id":parseInt(id),"itemType":"Asset"}]})
+	if (itemDetails.data.length == 0) {
+		alert("Item not found.")
+		return
+	}
+	if (itemDetails.data[0].productId == -1) {
+		alert("Invalid item ID.")
+		return
+	}
+	if (getIds(wearing).includes(parseInt(id))) {
+		alert("You already have this item equipped.")
+		return
+	}
+	addItem(parseInt(id))
+}
+
 async function sandboxMain() {
 	sandbox = document.createElement("div")
 	sandbox.innerHTML += sandboxHTML
@@ -1127,11 +1237,11 @@ async function sandboxMain() {
 	sandbox.setAttribute("style", "width:1000px;margin:auto;")
 	document.getElementsByClassName('content')[0].appendChild(sandbox)
 	$(sandbox).find('.background-selector').click(function() {
-		$('.background-checkmark-image').attr('src', 'https://ropro.io/images/empty.png')
-		$(this).find('.background-checkmark-image').attr('src', 'https://ropro.io/images/checkmark.png')
+		$('.background-checkmark-image').attr('src', chrome.runtime.getURL('/images/empty.png'))
+		$(this).find('.background-checkmark-image').attr('src', chrome.runtime.getURL('/images/checkmark.png'))
 		function changeImage(checkmark) {
 			setTimeout(function(){
-				$(checkmark).find('.background-checkmark-image').attr('src', 'https://ropro.io/images/checkmark_done.gif')
+				$(checkmark).find('.background-checkmark-image').attr('src', chrome.runtime.getURL('/images/checkmark_done.gif'))
 			}, 400)
 		}
 		changeImage(this)
@@ -1145,6 +1255,12 @@ async function sandboxMain() {
 	tab1.getElementsByClassName('input-dropdown-btn')[0].addEventListener('click', function(){
 		dropdown = tab1.getElementsByClassName('dropdown-custom')[0]
 		dropdown.classList.toggle("active")
+	})
+	$('#advancedEquipInput').on('keypress',function(e) {
+		if(e.which == 13) {
+			advancedEquip(this.value)
+			this.value = ""
+		}
 	})
 	$('.sandbox-search').on('keypress',function(e) {
 		if(e.which == 13) {
@@ -1243,10 +1359,10 @@ async function sandboxMain() {
 		state = sandboxFrame.getAttribute('class')
 		if (state == "sandbox-frame") {
 			sandboxFrame.setAttribute('class', 'sandbox-frame-full')
-			document.getElementById('fullscreenImage').src = "https://ropro.io/images/fullscreen_1.png"
+			document.getElementById('fullscreenImage').src = chrome.runtime.getURL('/images/fullscreen_1.png')
 		} else {
 			sandboxFrame.setAttribute('class', 'sandbox-frame')
-			document.getElementById('fullscreenImage').src = "https://ropro.io/images/fullscreen_0.png"
+			document.getElementById('fullscreenImage').src = chrome.runtime.getURL('/images/fullscreen_0.png')
 		}
 	})
 	if (await fetchSetting("sandboxOutfits")) {
@@ -1276,10 +1392,10 @@ async function sandboxMain() {
 			"id": merch[k]
 		  })
 	}
-	itemDetails = await fetchDetails(merchJSON)
-	for (k = 0; k < itemDetails.data.length; k++) {
-		addMerch(itemDetails.data[k].id, itemDetails.data[k].name, itemDetails.data[k].price)
-	}
+	//itemDetails = await fetchDetails(merchJSON)
+	//for (k = 0; k < itemDetails.data.length; k++) {
+		//addMerch(itemDetails.data[k].id, itemDetails.data[k].name, itemDetails.data[k].price)
+	//}
 	document.getElementById('scrollLeft').addEventListener('click', function() {
 		if (merchPage > 0) {
 			merchPage--

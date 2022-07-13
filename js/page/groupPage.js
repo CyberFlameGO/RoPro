@@ -2,7 +2,7 @@
 
 RoPro (https://ropro.io) v1.2
 
-RoPro was wholly designed and coded by:
+The RoPro extension is developed by:
                                
 ,------.  ,--. ,-----.,------. 
 |  .-.  \ |  |'  .--./|  .---' 

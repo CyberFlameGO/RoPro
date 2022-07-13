@@ -79,3 +79,7 @@
        -moz-transition: border 0.1s linear, box-shadow 0.1s linear;
             transition: border 0.1s linear, box-shadow 0.1s linear;
 }
+
+.ropro-verify-info:hover .ropro-verify-info-tooltip {
+  display: block!important;
+}

@@ -19,7 +19,7 @@
 	pointer-events:none;
 }
 
-.profile-selector-box #importDecalBox {
+.profile-selector-box #customThemeBox {
 	filter:blur(4px);
 	pointer-events:none;
 }
@@ -34,4 +34,8 @@
 
 .dark-theme .profile-selector-box .import-decal-outer {
 	background-color:#232527;
+}
+
+.ropro-toggle.btn-toggle.on {
+	background-color:#0084dd!important;
 }

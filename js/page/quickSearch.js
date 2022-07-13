@@ -2,7 +2,7 @@
 
 RoPro (https://ropro.io) v1.3
 
-RoPro was wholly designed and coded by:
+The RoPro extension is developed by:
                                
 ,------.  ,--. ,-----.,------. 
 |  .-.  \ |  |'  .--./|  .---' 
@@ -168,7 +168,7 @@ async function handleExperienceInput(e) {
 			}
 			if (query == $("#navbar-search-input").val() && game != null) {
 				quicksearchHTML = `<li style="height:0px;" universeId="0" class="ropro-quick-game-search quick-game-search navbar-search-option rbx-clickable-li"><a id="ropro-quick-search-link" href="https://roblox.com/games/${parseInt(game.placeId)}#ropro-quick-search" style="height:57px;position:relative;display:flex;align-items:center;padding-top:0px;padding-bottom:0px;"><div style="position:relative;display:inline-block;width:36px;height:36px;margin:-6px 6px -6px 0;border-radius:2px;border:1px solid #a0a0a0"><span><img class="ropro-quick-search-game-icon" style="width:100%;height:100%;opacity:0;transition:opacity .5s ease;" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="></span></div><div><div style="width:230px;font-size: 16px; font-weight:300;white-space:nowrap;overflow:hidden;text-overflow: ellipsis;"><b>${stripTags(game.name)}</b></div><div style="display:inline-block;font-size:12px;font-weight:400;" class="text-label">${stripTags(game.creatorName)}</div><div style="display:inline-block!important;"><span class="info-label icon-playing-counts-gray" style="transform:scale(0.45);margin:-10px;margin-left:0px;margin-right:-6px;"></span><span style="font-size:11px;" class="info-label playing-counts-label" title="${parseInt(game.playerCount)} Current Players">${kFormatter(parseInt(game.playerCount))}</span></div><button id="ropro-quick-play-button" type="button" style="position:absolute;right:31.5px;top:4px;width:50px;min-width:50px;height:50px;min-height:50px;padding:5px;transform:scale(0.6);" class="btn-full-width btn-common-play-game-lg btn-primary-md btn-min-width roproquickjoin" data-testid="play-button"><div class="quick-game-search-tooltip" style="display:none;position:absolute;width:auto;background-color:#191B1D;color:white;top:-30px;right:-40px;font-size:13px;padding:5px;border-radius:5px;">RoPro Quick Play</div><span style="margin-left:3px;transform:scale(0.75);" class="icon-common-play"></span></button>
-				<button type="button" id="ropro-quick-random-server-button" style="position:absolute;right:0px;top:4px;width:50px;min-width:50px;height:50px;min-height:50px;padding:5px;transform:scale(0.6);" class="btn-full-width btn-common-play-game-lg btn-primary-md btn-min-width roproquickjoin" data-testid="play-button"><div class="quick-game-search-tooltip" style="display:none;position:absolute;width:auto;background-color:#191B1D;color:white;top:-30px;right:-20px;font-size:13px;padding:5px;border-radius:5px;">Random Server</div><span style="margin-left:0px;transform:scale(0.75);filter:invert(1);background-image:url(https://ropro.io/images/random_server.svg);background-size: 36px 36px;" class="icon-common-play"></span></button></div></a></li>`
+				<button type="button" id="ropro-quick-random-server-button" style="position:absolute;right:0px;top:4px;width:50px;min-width:50px;height:50px;min-height:50px;padding:5px;transform:scale(0.6);" class="btn-full-width btn-common-play-game-lg btn-primary-md btn-min-width roproquickjoin" data-testid="play-button"><div class="quick-game-search-tooltip" style="display:none;position:absolute;width:auto;background-color:#191B1D;color:white;top:-30px;right:-20px;font-size:13px;padding:5px;border-radius:5px;">Random Server</div><span style="margin-left:0px;transform:scale(0.75);filter:invert(1);background-image:url(${chrome.runtime.getURL('/images/random_server.svg')});background-size: 36px 36px;" class="icon-common-play"></span></button></div></a></li>`
 				search = document.getElementsByClassName('navbar-search')
 				if (search.length > 0) {
 					experiences = $(search[0]).find('.navbar-search-option:has(.navbar-list-option-suffix:contains(Experiences))')
@@ -280,7 +280,7 @@ async function handleItemInput(e) {
 			console.log(item)
 			if (query == $("#navbar-search-input").val() && item != null) {
 				itemJSON = JSON.parse(item.json)
-				quicksearchHTML = `<li style="height:0px;position:relative;" itemid="${parseInt(item.id)}" class="ropro-quick-item-search quick-item-search navbar-search-option rbx-clickable-li"><a id="ropro-quick-item-link" href="https://roblox.com/catalog/${parseInt(item.id)}/#ropro-quick-item-search" style="height:57px;position:relative;display:flex;align-items:center;padding-top:0px;padding-bottom:0px;"><div style="position:relative;display:inline-block;width:36px;height:36px;margin:-6px 6px -6px 0;border-radius:2px;background-color:${$('.dark-theme').length > 0 ? '#343638' : '#C3C5C6'};"><span><img class="ropro-quick-search-item-icon" style="width:100%;height:100%;opacity:0;transition:opacity .5s ease;" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="></span></div><div><div style="max-width:300px;font-size: 16px; font-weight:300;white-space:nowrap;overflow:hidden;text-overflow: ellipsis;"><b>${stripTags(itemJSON[0])}</b></div><div style="display:inline-block!important;"><span style="font-size:11px;" class="info-label" title=""><b>RAP:</b> ${kFormatter(itemJSON[8])}  <b>Value:</b> ${kFormatter(itemJSON[16] == null ? itemJSON[8] : itemJSON[16])}</span></div></div></a><div style="width:30px;height:30px;position:absolute;top:15px;right:10px;"><button id="ropro-rolimons-button" type="button" style="width:50px;min-width:50px;height:50px;min-height:50px;padding:5px;transform:scale(0.6);background-color:#0084DD;margin-top:-10px;margin-left:-10px;" class="btn-full-width btn-common-play-game-lg btn-primary-md btn-min-width"><a href="https://www.rolimons.com/item/${parseInt(item.id)}" style="padding:10px;padding-bottom:5px;transform:scale(1.2);"><img src="https://ropro.io/images/rolimons_icon_white.png" style="margin-left:2px;width:20px;margin-top:-7px;"></a></button></div></li>`
+				quicksearchHTML = `<li style="height:0px;position:relative;" itemid="${parseInt(item.id)}" class="ropro-quick-item-search quick-item-search navbar-search-option rbx-clickable-li"><a id="ropro-quick-item-link" href="https://roblox.com/catalog/${parseInt(item.id)}/#ropro-quick-item-search" style="height:57px;position:relative;display:flex;align-items:center;padding-top:0px;padding-bottom:0px;"><div style="position:relative;display:inline-block;width:36px;height:36px;margin:-6px 6px -6px 0;border-radius:2px;background-color:${$('.dark-theme').length > 0 ? '#343638' : '#C3C5C6'};"><span><img class="ropro-quick-search-item-icon" style="width:100%;height:100%;opacity:0;transition:opacity .5s ease;" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="></span></div><div><div style="max-width:300px;font-size: 16px; font-weight:300;white-space:nowrap;overflow:hidden;text-overflow: ellipsis;"><b>${stripTags(itemJSON[0])}</b></div><div style="display:inline-block!important;"><span style="font-size:11px;" class="info-label" title=""><b>RAP:</b> ${kFormatter(itemJSON[8])}  <b>Value:</b> ${kFormatter(itemJSON[16] == null ? itemJSON[8] : itemJSON[16])}</span></div></div></a><div style="width:30px;height:30px;position:absolute;top:15px;right:10px;"><button id="ropro-rolimons-button" type="button" style="width:50px;min-width:50px;height:50px;min-height:50px;padding:5px;transform:scale(0.6);background-color:#0084DD;margin-top:-10px;margin-left:-10px;" class="btn-full-width btn-common-play-game-lg btn-primary-md btn-min-width"><a href="https://www.rolimons.com/item/${parseInt(item.id)}" style="padding:10px;padding-bottom:5px;transform:scale(1.2);"><img src="${chrome.runtime.getURL('/images/rolimons_icon_white.png')}" style="margin-left:2px;width:20px;margin-top:-7px;"></a></button></div></li>`
 				search = document.getElementsByClassName('navbar-search')
 				if (search.length > 0) {
 					avatarShop = $(search[0]).find('.navbar-search-option:has(.navbar-list-option-suffix:contains(Avatar Shop))')
@@ -306,7 +306,7 @@ async function handleItemInput(e) {
 							quicksearchLi.classList.add('loaded')
 						}
 						if (query == $("#navbar-search-input").val()) {
-							thumbnail = `https://www.roblox.com/asset-thumbnail/image?assetId=${parseInt(item.id)}&width=420&height=420&format=png`
+							thumbnail = `https://api.ropro.io/getAssetThumbnail.php?id=${parseInt(item.id)}`
 							itemIcon = quicksearchLi.getElementsByClassName('ropro-quick-search-item-icon')
 							if (itemIcon.length > 0) {
 								itemIcon[0].src = stripTags(thumbnail)
@@ -327,7 +327,7 @@ async function quicksearchMain() {
 	if (await fetchSetting('quickItemSearch')) {
 		quickItemSearch = true
 	} else {
-		quickItemSearch = true
+		quickItemSearch = false
 	}
 	if (await fetchSetting('experienceQuickSearch')) {
 		experienceQuickSearch = true

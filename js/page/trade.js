@@ -2,7 +2,7 @@
 
 RoPro (https://ropro.io) v1.3
 
-RoPro was wholly designed and coded by:
+The RoPro extension is developed by:
                                
 ,------.  ,--. ,-----.,------. 
 |  .-.  \ |  |'  .--./|  .---' 
@@ -324,7 +324,7 @@ function addRecentSaleCard(sale) {
 	price = Math.max(((newRAP - oldRAP) * -10 - oldRAP) / -1, 1)
 	percentChange = (((newRAP - oldRAP) / oldRAP) * 100).toFixed(1)
 	recentSaleCardHTML = `<li class="recent-sale-card" style="position:relative;padding:15px;padding-right:0px;padding-left:0px;padding-top:0px;padding-bottom:0px;margin-bottom:0px;margin-top:5px;"><div style="width:90%;padding:5px;background-color:#393B3D;margin-left:0px;border-radius:4px;margin-left:5%;" class="icon-text-wrapper clearfix icon-robux-price-container">
-	<span class="icon icon-robux-white-16x16 item-card-price-trend-icon" style="background-image: url('https://ropro.io/images/${newRAP >= oldRAP ? 'up_arrow' : 'down_arrow'}.png'); background-position: 0px 3px; background-size: 100%; width: 12px; margin-left: 0px; margin-bottom: 0px;"></span><span class="icon-robux-white-16x16 wait-for-i18n-format-render"></span>
+	<span class="icon icon-robux-white-16x16 item-card-price-trend-icon" style="background-image: url(${chrome.runtime.getURL(`/images/${newRAP >= oldRAP ? 'up_arrow' : 'down_arrow'}.png`)}); background-position: 0px 3px; background-size: 100%; width: 12px; margin-left: 0px; margin-bottom: 0px;"></span><span class="icon-robux-white-16x16 wait-for-i18n-format-render"></span>
 	<b class="text-robux-md wait-for-i18n-format-render item-card-rap">${addCommas(price)}</b>
 	</div><div style="position:absolute;right:12px;top:8px;font-size:12px;color:gray;">${formatTime(parseInt(sale.date)*1000)}</div>
 	<div class="recent-sale-more-info" style="position:absolute;left:-162px;top:-20px;font-size:12px;color:white;background-color:#393B3D;min-width:165px;height:85px;border-radius:7px;filter: drop-shadow(${percentChange >= 0 ? "#39ff14" : "#ff073a"} 0px 0px 2px);padding:5px;text-align:center;"><div style="width:60%;font-size:12px;float:left;"><b><u>New RAP</u><div><span class="icon-robux-white-16x16 wait-for-i18n-format-render" style="transform:scale(0.8);"></span><b class="text-robux-md wait-for-i18n-format-render item-card-rap" style="font-size:12px;">${addCommas(parseInt(newRAP))}</b></div></b><b><u>Old RAP</u><div><span class="icon-robux-white-16x16 wait-for-i18n-format-render" style="transform:scale(0.8);"></span><b class="text-robux-md wait-for-i18n-format-render item-card-rap" style="font-size:12px;">${addCommas(parseInt(oldRAP))}</b></div></b></div><div style="display:inline-block;width:40%;float:right;"><div style="margin-top:25px;font-size:18px;font-weight:bold;color:${percentChange >= 0 ? "#39ff14" : "#ff073a"};">${percentChange >= 0 ? "+" + Math.abs(percentChange): percentChange}%</div></div></div>
@@ -434,13 +434,13 @@ async function formatCard(itemid, infoCard) {
 	}
 
 	if (priceIncrease < 0) {
-		infoCard.getElementsByClassName('item-card-price-trend')[0].parentNode.getElementsByTagName('span')[0].style.backgroundImage = "url(https://ropro.io/images/down_arrow.png)"
+		infoCard.getElementsByClassName('item-card-price-trend')[0].parentNode.getElementsByTagName('span')[0].style.backgroundImage = `url(${chrome.runtime.getURL('/images/down_arrow.png')})`
 	}
 
 	infoCard.getElementsByClassName('item-card-price-trend')[0].innerHTML = priceIncrease + "%" + `<p style="font-size:9px;display:inline-block;margin-left:5px;"> Past Month</p>`
 
 	if (rap / salesMedian > 1.5) {
-		possiblyProjectedHTML = `<img src="https://ropro.io/images/warning_symbol.png" style="width:40px;float:left;margin-left:40px;"><b style="font-size:14px;float:right;margin-right:40px;"> Probably Projected</b><br><p style="font-size:10px;text-align:right;display:inline-block;float:right;margin-top:-3px;margin-right:40px;">RAP ${Math.round((rap - salesMedian) / salesMedian * 100)}% Above Median</p>`
+		possiblyProjectedHTML = `<img src="${chrome.runtime.getURL('/images/warning_symbol.png')}" style="width:40px;float:left;margin-left:40px;"><b style="font-size:14px;float:right;margin-right:40px;"> Probably Projected</b><br><p style="font-size:10px;text-align:right;display:inline-block;float:right;margin-top:-3px;margin-right:40px;">RAP ${Math.round((rap - salesMedian) / salesMedian * 100)}% Above Median</p>`
 		div = document.createElement('div')
 		div.setAttribute('style', 'left:8px;top:250px;position:absolute;background-color:#393b3d;padding:10px;border-radius:5px;filter: drop-shadow(#F9CE3A 0px 0px 5px);width:290px;')
 		div.innerHTML = possiblyProjectedHTML
@@ -472,7 +472,7 @@ async function addInfoCard(item, id) {
 	thumbnailContainer = item.getElementsByClassName("item-card-thumb-container")[0]
 	infoButton = document.createElement("div")
 	infoButton.setAttribute('style', 'cursor:pointer;')
-	infoButton.innerHTML = '<span style="transform:scale(0.8);top:4px;bottom:initial;left:4px;z-index:10000;" class="limited-icon-container tooltip-pastnames infocardbutton" data-toggle="tooltip" title="" data-original-title="RoPro Item Info Card"><img class="infocardicon" src="https://ropro.io/images/chart_icon.svg" style="width:28px;filter:invert(0.7);"></span></span>'
+	infoButton.innerHTML = `<span style="transform:scale(0.8);top:4px;bottom:initial;left:4px;z-index:10000;" class="limited-icon-container tooltip-pastnames infocardbutton" data-toggle="tooltip" title="" data-original-title="RoPro Item Info Card"><img class="infocardicon" src="${chrome.runtime.getURL('/images/chart_icon.svg')}" style="width:28px;filter:invert(0.7);"></span></span>`
 	thumbnailContainer.insertBefore(infoButton, thumbnailContainer.childNodes[1])
 	infoButton.addEventListener('click', function(e){
 		e.stopPropagation()
@@ -508,7 +508,7 @@ async function addInfoCard(item, id) {
 			
 															<b class="text-robux-md wait-for-i18n-format-render item-card-rap">---</b>
 													</div></div><div style="flex:1;padding:15px;padding-right:0px;"><h3 class="text-label field-label price-label">Monthly Trend</h3><div class="icon-text-wrapper clearfix icon-robux-price-container">
-															<span class="icon icon-robux-white-16x16 item-card-price-trend-icon" style="background-image:url(https://ropro.io/images/up_arrow.png);background-position:2px 2px;background-size:100%;width:12px;margin-left:-3px;margin-bottom:-1px;"></span>
+															<span class="icon icon-robux-white-16x16 item-card-price-trend-icon" style="background-image:url(${chrome.runtime.getURL('/images/up_arrow.png')});background-position:2px 2px;background-size:100%;width:12px;margin-left:-3px;margin-bottom:-1px;"></span>
 			
 															<b class="text-robux-md wait-for-i18n-format-render item-card-price-trend"><p style="font-size:11px;display:inline-block;margin-left:5px;"> This Month</p></b>
 													</div></div><div style="flex:1;padding:15px;padding-right:0px;"><h3 class="text-label field-label price-label">Circulation</h3><div class="icon-text-wrapper clearfix icon-robux-price-container">
@@ -613,7 +613,7 @@ function formatItem(item, id, json, inWindow) {
 		valueNode = robuxNode.cloneNode(true)
 		logoSpan = valueNode.getElementsByTagName("span")[0]
 		valueSpan = valueNode.getElementsByTagName("span")[1]
-		logoSpan.setAttribute("style", "background-image:url(https://ropro.io/images/ropro_icon_small.png);background-position:2px 2px;background-size:80%;")
+		logoSpan.setAttribute("style", `background-image:url(${chrome.runtime.getURL('/images/ropro_icon_small.png')});background-position:2px 2px;background-size:80%;`)
 		linkSpan = logoSpan.cloneNode(true)
 		linkSpan.setAttribute("style", "background-image:none;background-position:2px 2px;background-size:80%;")
 		linkSpan.innerHTML += '<a target = "_blank" href = "https://www.rolimons.com/item/' + parseInt(id) + '"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" width="1em" height="1em" style="vertical-align: -0.125em;-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path class="linkpath" d="M10.586 13.414a1 1 0 0 1-1.414 1.414 5 5 0 0 1 0-7.07l3.535-3.536a5 5 0 0 1 7.071 7.071l-1.485 1.486a7.017 7.017 0 0 0-.405-2.424l.476-.476a3 3 0 1 0-4.243-4.243l-3.535 3.536a3 3 0 0 0 0 4.242zm2.828-4.242a1 1 0 0 1 1.414 0 5 5 0 0 1 0 7.07l-3.535 3.536a5 5 0 0 1-7.071-7.07l1.485-1.486c-.008.82.127 1.641.405 2.423l-.476.476a3 3 0 1 0 4.243 4.243l3.535-3.536a3 3 0 0 0 0-4.242 1 1 0 0 1 0-1.414z" fill="#fff"></path></svg></a>'
@@ -638,11 +638,11 @@ function formatItem(item, id, json, inWindow) {
 			div = document.createElement('div')
 			div.style.display = "inline-block"
 			if (json[20] >= 0) {
-				positiveHTML = `<span class="icon icon-robux-16x16" style="background-image:url(https://ropro.io/images/up_arrow.png);background-position:0px 1px;background-size:80%;width:12px;margin-left:-3px;margin-bottom:-1px;"><div style="color:#6ED102;vertical-align:middle;margin-bottom:7px;margin-left:11px;font-size:11px;display:inline-block;"><b>${kFormatter(parseInt(json[20]))}</b></div></span>`
+				positiveHTML = `<span class="icon icon-robux-16x16" style="background-image:url(${chrome.runtime.getURL('/images/up_arrow.png')});background-position:0px 1px;background-size:80%;width:12px;margin-left:-3px;margin-bottom:-1px;"><div style="color:#6ED102;vertical-align:middle;margin-bottom:7px;margin-left:11px;font-size:11px;display:inline-block;"><b>${kFormatter(parseInt(json[20]))}</b></div></span>`
 				div.setAttribute("title", "Over RAP: +" + parseInt(json[20]))
 				div.innerHTML += positiveHTML
 			} else {
-				negativeHTML = `<span class="icon icon-robux-16x16" style="background-image:url(https://ropro.io/images/down_arrow.png);background-position:0px 3px;background-size:80%;width:12px;margin-left:-3px;margin-bottom:-1px;"><div style="color:#CC0700;vertical-align:middle;margin-bottom:7px;margin-left:11px;font-size:11px;display:inline-block;"><b>${kFormatter(parseInt(json[20])).toString().replace("-","")}</b></div></span>`
+				negativeHTML = `<span class="icon icon-robux-16x16" style="background-image:url(${chrome.runtime.getURL('/images/down_arrow.png')});background-position:0px 3px;background-size:80%;width:12px;margin-left:-3px;margin-bottom:-1px;"><div style="color:#CC0700;vertical-align:middle;margin-bottom:7px;margin-left:11px;font-size:11px;display:inline-block;"><b>${kFormatter(parseInt(json[20])).toString().replace("-","")}</b></div></span>`
 				div.setAttribute("title", "Under RAP: " + parseInt(json[20]))
 				div.innerHTML += negativeHTML
 			}
@@ -690,7 +690,7 @@ function formatTradeItem(item, id, json, inWindow) {
 		robuxNode = item.getElementsByClassName('item-value')[0]
 		logoSpan = robuxNode.childNodes[0].cloneNode(true)
 		valueSpan = robuxNode.childNodes[1].cloneNode(true)
-		logoSpan.setAttribute("style", "margin-left:5px; background-image:url(https://ropro.io/images/ropro_icon_small.png);background-position:3px 2px;background-size:80%;")
+		logoSpan.setAttribute("style", `margin-left:5px; background-image:url(${chrome.runtime.getURL('/images/ropro_icon_small.png')});background-position:3px 2px;background-size:80%;`)
 		linkSpan = logoSpan.cloneNode(true)
 		linkSpan.setAttribute("style", "background-image:none;background-position:2px 2px;background-size:80%;")
 		linkSpan.innerHTML += '<a style="margin-left:5px;" target = "_blank" href = "https://www.rolimons.com/item/' + parseInt(id) + '"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" width="1em" height="1em" style="vertical-align: -0.125em;-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path class="linkpath" d="M10.586 13.414a1 1 0 0 1-1.414 1.414 5 5 0 0 1 0-7.07l3.535-3.536a5 5 0 0 1 7.071 7.071l-1.485 1.486a7.017 7.017 0 0 0-.405-2.424l.476-.476a3 3 0 1 0-4.243-4.243l-3.535 3.536a3 3 0 0 0 0 4.242zm2.828-4.242a1 1 0 0 1 1.414 0 5 5 0 0 1 0 7.07l-3.535 3.536a5 5 0 0 1-7.071-7.07l1.485-1.486c-.008.82.127 1.641.405 2.423l-.476.476a3 3 0 1 0 4.243 4.243l3.535-3.536a3 3 0 0 0 0-4.242 1 1 0 0 1 0-1.414z" fill="#fff"></path></svg></a>'
@@ -750,12 +750,12 @@ async function formatTrades(items) {
 		}
 		totalTradeDemand = (totalTradeDemand / (totalTradeValue)).toFixed(1)
 		if (tradeValueCalculator) {
-			totalValue = '<div style="margin-top:-10px;" class="robux-line"> <span class="text-lead ng-binding" ng-bind="\'Label.TotalValue\' | translate">RoPro Rolimons Value:</span> <span class="robux-line-amount"> <span style="background-image:url(https://ropro.io/images/ropro_icon_small.png);background-position:2px 2px;background-size:80%;" class="icon-robux-16x16"></span><span class="text-robux-lg robux-line-value ng-binding">' + addCommas(parseInt(totalTradeValue)) + '</span> </span> </div>'
+			totalValue = `<div style="margin-top:-10px;" class="robux-line"> <span class="text-lead ng-binding" ng-bind="'Label.TotalValue' | translate">RoPro Rolimons Value:</span> <span class="robux-line-amount"> <span style="background-image:url(${chrome.runtime.getURL('/images/ropro_icon_small.png')});background-position:2px 2px;background-size:80%;" class="icon-robux-16x16"></span><span class="text-robux-lg robux-line-value ng-binding">` + addCommas(parseInt(totalTradeValue)) + '</span> </span> </div>'
 		} else {
 			totalValue = ''
 		}
 		if (tradeDemandRatingCalculator) {
-			totalDemand = '<div style = "margin-top:-10px;" class="robux-line"> <span class="text-lead ng-binding" ng-bind="\'Label.TotalValue\' | translate">RoPro Demand Rating:</span> <span class="robux-line-amount"> <span style="background-image:url(https://ropro.io/images/ropro_icon_small.png);background-position:2px 2px;background-size:80%;" class="icon-robux-16x16"></span><span class="text-robux-lg robux-line-value ng-binding">' + addCommas(totalTradeDemand) + '/5.0</span> </span> </div>'
+			totalDemand = `<div style = "margin-top:-10px;" class="robux-line"> <span class="text-lead ng-binding" ng-bind="'Label.TotalValue' | translate">RoPro Demand Rating:</span> <span class="robux-line-amount"> <span style="background-image:url(${chrome.runtime.getURL('/images/ropro_icon_small.png')});background-position:2px 2px;background-size:80%;" class="icon-robux-16x16"></span><span class="text-robux-lg robux-line-value ng-binding">` + addCommas(totalTradeDemand) + '/5.0</span> </span> </div>'
 		} else {
 			totalDemand = ''
 		}
@@ -790,13 +790,13 @@ function formatTradesWindow(items) {
 			if (tradeValueCalculator) {
 				rolimonsLine = robuxLine.cloneNode(true)
 				rolimonsLine.setAttribute("style", "margin-top:-5px")
-				rolimonsLine.innerHTML = '<span style="margin-top:-5px;" class="rolimons-value text-lead ng-binding">RoPro Rolimons Value:</span> <span class="robux-line-amount"> <span style="background-image:url(https://ropro.io/images/ropro_icon_small.png);background-position:2px 2px;background-size:80%;" class="icon-robux-16x16"></span><span class="text-robux-lg rolimons-line-value robux-line-value ng-binding">' + addCommas(parseInt(totalTradeValue)) + '</span> </span>'
+				rolimonsLine.innerHTML = `<span style="margin-top:-5px;" class="rolimons-value text-lead ng-binding">RoPro Rolimons Value:</span> <span class="robux-line-amount"> <span style="background-image:url(${chrome.runtime.getURL('/images/ropro_icon_small.png')});background-position:2px 2px;background-size:80%;" class="icon-robux-16x16"></span><span class="text-robux-lg rolimons-line-value robux-line-value ng-binding">` + addCommas(parseInt(totalTradeValue)) + '</span> </span>'
 				robuxLine.parentNode.appendChild(rolimonsLine)
 			}
 			if (tradeDemandRatingCalculator) {
 				rolimonsLine = robuxLine.cloneNode(true)
 				rolimonsLine.setAttribute("style", "margin-top:-5px")
-				rolimonsLine.innerHTML = '<span style="margin-top:-5px;" class="rolimons-demand text-lead ng-binding">Demand Rating:</span> <span class="robux-line-amount"> <span style="background-image:url(https://ropro.io/images/ropro_icon_small.png);background-position:2px 2px;background-size:80%;" class="icon-robux-16x16"></span><span class="text-robux-lg rolimons-line-demand robux-line-value ng-binding">' + addCommas(totalTradeDemand) + '/5.0</span> </span>'
+				rolimonsLine.innerHTML = `<span style="margin-top:-5px;" class="rolimons-demand text-lead ng-binding">Demand Rating:</span> <span class="robux-line-amount"> <span style="background-image:url(${chrome.runtime.getURL('/images/ropro_icon_small.png')});background-position:2px 2px;background-size:80%;" class="icon-robux-16x16"></span><span class="text-robux-lg rolimons-line-demand robux-line-value ng-binding">` + addCommas(totalTradeDemand) + '/5.0</span> </span>'
 				robuxLine.parentNode.appendChild(rolimonsLine)
 			}
 		} else {
@@ -813,7 +813,7 @@ function formatTradesWindow(items) {
 function projectedDisplay(assetThumbnail) {
 	if (typeof assetThumbnail != "undefined") {
 		div = document.createElement('div')
-		projectedHTML = `<span style="background: intial;background-color:initial;top:-2px;left:-2px;bottom:initial;" class="limited-icon-container ng-isolate-scope" uib-tooltip="Demand: Normal" title="Projected Item" tooltip-placement="top" tooltip-append-to-body="true" limited-icon="" layout-options="userAsset.layoutOptions"><img width="110" src="https://ropro.io/images/projected_icon.png"></span>`
+		projectedHTML = `<span style="background: intial;background-color:initial;top:-2px;left:-2px;bottom:initial;" class="limited-icon-container ng-isolate-scope" uib-tooltip="Demand: Normal" title="Projected Item" tooltip-placement="top" tooltip-append-to-body="true" limited-icon="" layout-options="userAsset.layoutOptions"><img width="110" src="${chrome.runtime.getURL('/images/projected_icon.png')}"></span>`
 		div.innerHTML += projectedHTML
 		assetThumbnail.appendChild(div)
 	}
@@ -838,7 +838,7 @@ async function checkTrade() {
 		difference = val2 - val1
 		differencePercent = ((Math.abs(val1 - val2) / ((val1 + val2) / 2)) * 100).toFixed(1)
 		differencePercent = Math.abs(((val1 - val2) / val1) * 100).toFixed(1)
-		winHTML = `<div style="position:absolute;display:block;top:-19.5px;left:159px;width:100%;text-align:center;width:250px;"><span class="robux-line-amount content"> <span class="icon icon-robux-16x16" style="background-image:url(https://ropro.io/images/${difference >= 0 ? 'up_arrow' : 'down_arrow'}.png);background-position:0px ${difference >= 0 ? -1 : 1}px;background-size:100%;width:12px;margin-left:1px;margin-bottom:-1px;margin-right:3px;"></span><span class="text-robux-lg robux-line-value ng-binding">${difference >= 0 ? "+" : ''}${addCommas(parseInt(difference))}</span><span style="vertical-align:top;" class="text-robux robux-line-value ng-binding"> (${parseFloat(differencePercent)}%)</span></span></div>`
+		winHTML = `<div style="position:absolute;display:block;top:-19.5px;left:159px;width:100%;text-align:center;width:250px;"><span class="robux-line-amount content"> <span class="icon icon-robux-16x16" style="background-image:url(${chrome.runtime.getURL(`/images/${difference >= 0 ? 'up_arrow' : 'down_arrow'}.png`)});background-position:0px ${difference >= 0 ? -1 : 1}px;background-size:100%;width:12px;margin-left:1px;margin-bottom:-1px;margin-right:3px;"></span><span class="text-robux-lg robux-line-value ng-binding">${difference >= 0 ? "+" : ''}${addCommas(parseInt(difference))}</span><span style="vertical-align:top;" class="text-robux robux-line-value ng-binding"> (${parseFloat(differencePercent)}%)</span></span></div>`
 		div = document.createElement('div')
 		div.innerHTML = winHTML
 		document.getElementsByClassName('trade-list-detail-offer-header')[1].style.position = "relative"
@@ -925,7 +925,7 @@ async function checkTradeWindowOffers() {
 			}
 			difference = val2 - val1
 			differencePercent = Math.abs(((val1 - val2) / val1) * 100).toFixed(1)
-			winHTML = `<div style="position:absolute;display:block;top:-19px;left:0px;text-align:center;width:100%;"><div class="rbx-divider" style="margin-top: 0px; margin-bottom: -10px;"></div><span class="robux-line-amount content"> <span class="icon icon-robux-16x16" style="background-image:url(https://ropro.io/images/${difference >= 0 ? 'up_arrow' : 'down_arrow'}.png);background-position:0px ${difference >= 0 ? -1 : 1}px;background-size:100%;width:12px;margin-left:1px;margin-bottom:-1px;margin-right:3px;"></span><span class="text-robux-lg robux-line-value ng-binding">${difference >= 0 ? "+" : ''}${addCommas(parseInt(difference))}</span><span style="vertical-align:top;" class="text-robux robux-line-value ng-binding"> (${(val1 == 0 || val2 == 0) ? "---" : parseFloat(differencePercent)}%)</span></span></div>`
+			winHTML = `<div style="position:absolute;display:block;top:-19px;left:0px;text-align:center;width:100%;"><div class="rbx-divider" style="margin-top: 0px; margin-bottom: -10px;"></div><span class="robux-line-amount content"> <span class="icon icon-robux-16x16" style="background-image:url(${chrome.runtime.getURL(`/images/${difference >= 0 ? 'up_arrow' : 'down_arrow'}.png`)});background-position:0px ${difference >= 0 ? -1 : 1}px;background-size:100%;width:12px;margin-left:1px;margin-bottom:-1px;margin-right:3px;"></span><span class="text-robux-lg robux-line-value ng-binding">${difference >= 0 ? "+" : ''}${addCommas(parseInt(difference))}</span><span style="vertical-align:top;" class="text-robux robux-line-value ng-binding"> (${(val1 == 0 || val2 == 0) ? "---" : parseFloat(differencePercent)}%)</span></span></div>`
 			div = document.createElement('div')
 			div.id = "winDiv"
 			div.innerHTML = winHTML
@@ -1018,7 +1018,7 @@ async function addBatchTradeDetails(tradeRows) {
 								tradeRowArray[j][1].getElementsByClassName('thumbnail-2d-container')[0].appendChild(thumbnail)
 							}
 							thumbnail.setAttribute("old-src", stripTags(thumbnail.src))
-							thumbnail.src = "https://ropro.io/images/robot.png"
+							thumbnail.src = chrome.runtime.getURL('/images/robot.png')
 						}
 					}
 				}, 200)
@@ -1049,7 +1049,7 @@ function addHideButton(tradeTitle) {
 	div.classList.add("inactive")
 	div.classList.add("buttontooltip")
 	div.style.display = "inline-block";
-	hideHTML = '<img class="hide-button limited-icon-container tooltip-pastnames" style="width:25px;margin-top:-3px;cursor:pointer;" src="https://ropro.io/images/serials_on'+theme2+'.png"><span style="margin-top:-5.5px;margin-left:3px;pointer-events:none;width:130px;" class="tooltiptext">Blur Serials</span>'
+	hideHTML = `<img class="hide-button limited-icon-container tooltip-pastnames" style="width:25px;margin-top:-3px;cursor:pointer;" src="${chrome.runtime.getURL('/images/serials_on'+theme2+'.png')}"><span style="margin-top:-5.5px;margin-left:3px;pointer-events:none;width:130px;" class="tooltiptext">Blur Serials</span>`
 	div.innerHTML += hideHTML
 	if (tradeTitle.parentNode.parentNode.getElementsByClassName('text-label ng-binding')[0].classList.contains("ng-hide")) {
 		tradeTitle.parentNode.parentNode.getElementsByClassName('text-label ng-binding')[0].innerHTML = ""
@@ -1060,11 +1060,11 @@ function addHideButton(tradeTitle) {
 	div.addEventListener("click", function() {
 		if (this.classList.contains("inactive")) {
 			this.classList.remove("inactive")
-			this.getElementsByTagName('img')[0].src = "https://ropro.io/images/serials_off"+theme2+".png"
+			this.getElementsByTagName('img')[0].src = chrome.runtime.getURL('/images/serials_on'+theme2+'.png')
 			toggleSerials()
 		} else {
 			this.classList.add("inactive")
-			this.getElementsByTagName('img')[0].src = "https://ropro.io/images/serials_on"+theme2+".png"
+			this.getElementsByTagName('img')[0].src = chrome.runtime.getURL('/images/serials_on'+theme2+'.png')
 			toggleSerials()	
 		}
 	})
@@ -1078,38 +1078,6 @@ function toggleHighlight() {
 		selectedTrade.classList.add("highlighted-trade")
 	}
 }
-
-/**
-function addHighlightButton(tradeTitle) {
-	if ($('.light-theme').length > 0) {
-		theme3 = "lightmode"
-	} else {
-		theme3 = "darkmode"
-	}
-	div = document.createElement("div")
-	div.classList.add("inactive")
-	div.classList.add("buttontooltip")
-	div.style.display = "inline-block";
-	highlightHTML = '<img class="highlight-button limited-icon-container tooltip-pastnames" style="width:25px;margin-left:5px;margin-top:-3px;cursor:pointer;" src="https://ropro.io/images/highlighter_inactive_'+theme3+'.png"><span style="margin-top:-5.5px;margin-left:3px;pointer-events:none;width:150px;" class="tooltiptext">Highlight Trade</span>'
-	div.innerHTML += highlightHTML
-	if (tradeTitle.parentNode.parentNode.getElementsByClassName('text-label ng-binding')[0].classList.contains("ng-hide")) {
-		tradeTitle.parentNode.parentNode.getElementsByClassName('text-label ng-binding')[0].innerHTML = ""
-		tradeTitle.parentNode.parentNode.getElementsByClassName('text-label ng-binding')[0].classList.remove("ng-hide")
-	}
-	tradeTitle.parentNode.parentNode.getElementsByClassName('text-label ng-binding')[0].appendChild(div)
-	tradeTitle.classList.add("highlight-button-inserted")
-	div.addEventListener("click", function() {
-		if (this.classList.contains("inactive")) {
-			this.classList.remove("inactive")
-			this.getElementsByTagName('img')[0].src = "https://ropro.io/images/highlighter_active_"+theme3+".png"
-			toggleHighlight()
-		} else {
-			this.classList.add("inactive")
-			this.getElementsByTagName('img')[0].src = "https://ropro.io/images/highlighter_inactive_"+theme3+".png"
-			toggleHighlight()
-		}
-	})
-} */
 
 async function addTradeFlag(tradeTitle) {
 	tradeTitle.classList.add("trade-flag-inserted")
@@ -1132,9 +1100,9 @@ async function addTradeFlag(tradeTitle) {
 			div.classList.add("buttontooltip")
 			div.classList.add("trade-flag-div")
 			if (flag == "0") {
-				flagHTML = '<img class="hide-button limited-icon-container tooltip-pastnames trade-flag" style="width:25px;margin-top:-3px;cursor:pointer;" src="https://ropro.io/images/trade_flag_inactive_'+theme+'3.png"><span style="margin-top:-5.5px;margin-left:3px;pointer-events:none;" class="tooltiptext">Flag User as Trade Bot</span>'
+				flagHTML = `<img class="hide-button limited-icon-container tooltip-pastnames trade-flag" style="width:25px;margin-top:-3px;cursor:pointer;" src="${chrome.runtime.getURL('/images/trade_flag_inactive_'+theme+'3.png')}"><span style="margin-top:-5.5px;margin-left:3px;pointer-events:none;" class="tooltiptext">Flag User as Trade Bot</span>`
 			} else {
-				flagHTML = '<img class="hide-button limited-icon-container tooltip-pastnames trade-flag active" style="width:25px;margin-top:-3px;cursor:pointer;" src="https://ropro.io/images/trade_flag_active_'+theme+'3.png"><span style="margin-top:-5.5px;margin-left:3px;pointer-events:none;" class="tooltiptext">User Flagged as Trade Bot</span>'
+				flagHTML = `<img class="hide-button limited-icon-container tooltip-pastnames trade-flag active" style="width:25px;margin-top:-3px;cursor:pointer;" src="${chrome.runtime.getURL('/images/trade_flag_active_'+theme+'3.png')}"><span style="margin-top:-5.5px;margin-left:3px;pointer-events:none;" class="tooltiptext">User Flagged as Trade Bot</span>`
 			}
 			div.innerHTML += flagHTML
 			if (tradeTitle.parentNode.parentNode.getElementsByClassName('trade-flag').length == 0) {
@@ -1156,7 +1124,7 @@ async function addTradeFlag(tradeTitle) {
 							thumbnail.src = thumbnail.getAttribute("old-src")
 						}
 						this.classList.remove("active")
-						this.src = "https://ropro.io/images/trade_flag_inactive_" + theme + "3.png"
+						this.src = chrome.runtime.getURL('/images/trade_flag_inactive_'+theme+'3.png')
 						this.parentNode.getElementsByClassName('tooltiptext')[0].innerHTML = "Flag User as Trade Bot"
 						flagTrader(userID, "remove")
 					} else {
@@ -1172,10 +1140,10 @@ async function addTradeFlag(tradeTitle) {
 								row.get(i).getElementsByClassName('thumbnail-2d-container')[0].appendChild(thumbnail)
 							}
 							thumbnail.setAttribute("old-src", stripTags(thumbnail.src))
-							thumbnail.src = "https://ropro.io/images/robot.png"
+							thumbnail.src = chrome.runtime.getURL('/images/robot.png')
 						}
 						this.classList.add("active")
-						this.src = "https://ropro.io/images/trade_flag_active_" + theme + "3.png"
+						this.src = chrome.runtime.getURL('/images/trade_flag_active_'+theme+'3.png')
 						this.parentNode.getElementsByClassName('tooltiptext')[0].innerHTML = "User Flagged as Trade Bot"
 						flagTrader(userID, "add")
 					}
@@ -1233,7 +1201,7 @@ async function declineAllInbounds(info) {
 	info.parentNode.childNodes[0].style.margin = "-15px"
 	info.parentNode.childNodes[0].style.marginRight = "-5px"
 	info.parentNode.childNodes[0].style.marginBottom = "-10px"
-	info.parentNode.childNodes[0].src = "https://ropro.io/images/checkmark.png"
+	info.parentNode.childNodes[0].src = chrome.runtime.getURL('/images/checkmark.png')
 	div = document.createElement('div')
 	div.innerHTML = `<a style="width: 240px;color: white; background-color: rgb(0, 132, 221); float: right; margin: 10px;position:absolute;right:140px;bottom:40px;" class="btn-growth-md btn-secondary-md" id="secondaryClose"><p style="font-weight:bold;color:white;">Close</p></a>`
 	info.appendChild(div)
@@ -1268,7 +1236,7 @@ async function declineOldTrades(info, age, tradesType) {
 	info.parentNode.childNodes[0].style.margin = "-15px"
 	info.parentNode.childNodes[0].style.marginRight = "-5px"
 	info.parentNode.childNodes[0].style.marginBottom = "-10px"
-	info.parentNode.childNodes[0].src = "https://ropro.io/images/checkmark.png"
+	info.parentNode.childNodes[0].src = chrome.runtime.getURL('/images/checkmark.png')
 	div = document.createElement('div')
 	div.innerHTML = `<a style="width: 240px;color: white; background-color: rgb(0, 132, 221); float: right; margin: 10px;position:absolute;right:140px;bottom:40px;" class="btn-growth-md btn-secondary-md" id="secondaryClose"><p style="font-weight:bold;color:white;">Close</p></a>`
 	info.appendChild(div)
@@ -1428,7 +1396,7 @@ async function declineAllInboundLosses(info, percentLoss) {
 	info.parentNode.childNodes[0].style.margin = "-15px"
 	info.parentNode.childNodes[0].style.marginRight = "-5px"
 	info.parentNode.childNodes[0].style.marginBottom = "-10px"
-	info.parentNode.childNodes[0].src = "https://ropro.io/images/checkmark.png"
+	info.parentNode.childNodes[0].src = chrome.runtime.getURL('/images/checkmark.png')
 	div = document.createElement('div')
 	div.innerHTML = `<a style="width: 240px;color: white; background-color: rgb(0, 132, 221); float: right; margin: 10px;position:absolute;right:140px;bottom:40px;" class="btn-growth-md btn-secondary-md" id="secondaryClose"><p style="font-weight:bold;color:white;">Close</p></a>`
 	info.appendChild(div)
@@ -1545,7 +1513,7 @@ async function declineInvalidInbounds(info) {
 	info.parentNode.childNodes[0].style.margin = "-15px"
 	info.parentNode.childNodes[0].style.marginRight = "-5px"
 	info.parentNode.childNodes[0].style.marginBottom = "-10px"
-	info.parentNode.childNodes[0].src = "https://ropro.io/images/checkmark.png"
+	info.parentNode.childNodes[0].src = chrome.runtime.getURL('/images/checkmark.png')
 	div = document.createElement('div')
 	div.innerHTML = `<a style="width: 240px;color: white; background-color: rgb(0, 132, 221); float: right; margin: 10px;position:absolute;right:140px;bottom:40px;" class="btn-growth-md btn-secondary-md" id="secondaryClose"><p style="font-weight:bold;color:white;">Close</p></a>`
 	info.appendChild(div)
@@ -1630,7 +1598,7 @@ async function declineProjectedInbounds(info, type) {
 	info.parentNode.childNodes[0].style.marginRight = "-5px"
 	info.parentNode.childNodes[0].style.marginBottom = "-10px"
 	info.parentNode.style.marginTop = "-20px"
-	info.parentNode.childNodes[0].src = "https://ropro.io/images/checkmark.png"
+	info.parentNode.childNodes[0].src = chrome.runtime.getURL('/images/checkmark.png')
 	div = document.createElement('div')
 	div.innerHTML = `<a style="width: 240px;color: white; background-color: rgb(0, 132, 221); float: right; margin: 10px;position:absolute;right:140px;bottom:40px;" class="btn-growth-md btn-secondary-md" id="secondaryClose"><p style="font-weight:bold;color:white;">Close</p></a>`
 	info.appendChild(div)
@@ -1645,7 +1613,7 @@ async function filterTradesByItem(info, item) {
 	if (!await fetchSetting('moreTradePanel')) {
 		return
 	}
-	filterHTML = `<div style="margin-top:7px;padding-left:5px;background-color:#393B3D;border-radius:5px;height:30px;position:relative;white-space:nowrap;overflow:hidden;"><span style="float:left;margin-top:4px;font-weight:bold;">Trade Filter: </span><div style="margin-left:5px;display:inline-block;width:65%;text-align:left;overflow:hidden;white-space: nowrap;"><img style="width:30px;margin-right:5px;margin-bottom:3px;" src="https://www.roblox.com/asset-thumbnail/image?assetId=${parseInt(item.id)}&width=420&height=420&format=png" id="tradeFilterImage"><span id="tradeFilterText">${stripTags(item.name)}</span></div><p style="position:absolute;right:5px;top:0px;font-size:18px;cursor:pointer;">x</p></div>`
+	filterHTML = `<div style="margin-top:7px;padding-left:5px;background-color:#393B3D;border-radius:5px;height:30px;position:relative;white-space:nowrap;overflow:hidden;"><span style="float:left;margin-top:4px;font-weight:bold;">Trade Filter: </span><div style="margin-left:5px;display:inline-block;width:65%;text-align:left;overflow:hidden;white-space: nowrap;"><img style="width:30px;margin-right:5px;margin-bottom:3px;" src="https://api.ropro.io/getAssetThumbnail.php?id=${parseInt(item.id)}" id="tradeFilterImage"><span id="tradeFilterText">${stripTags(item.name)}</span></div><p style="position:absolute;right:5px;top:0px;font-size:18px;cursor:pointer;">x</p></div>`
 	loadedCount = 0
 	info.innerHTML = "Loading Inbound Trades..."
 	trades = await fetchTradesType("Inbound")
@@ -1735,7 +1703,7 @@ async function filterTradesByItem(info, item) {
 		info.parentNode.childNodes[0].style.marginRight = "-5px"
 		info.parentNode.childNodes[0].style.marginBottom = "-10px"
 		info.parentNode.style.marginTop = "-70px"
-		info.parentNode.childNodes[0].src = "https://ropro.io/images/checkmark.png"
+		info.parentNode.childNodes[0].src = chrome.runtime.getURL('/images/checkmark.png')
 		div = document.createElement('div')
 		div.innerHTML = `<p id="secondaryReload" style="margin-top:3px;cursor:pointer;">Reload</p><a style="width: 240px;color: white; background-color: rgb(0, 132, 221); float: right; margin: 10px;position:absolute;right:140px;bottom:40px;" class="btn-growth-md btn-secondary-md" id="secondaryClose"><p style="font-weight:bold;color:white;">Close</p></a>`
 		info.appendChild(div)
@@ -1813,7 +1781,7 @@ async function cancelAllOutbounds(info) {
 	info.parentNode.childNodes[0].style.margin = "-15px"
 	info.parentNode.childNodes[0].style.marginRight = "-5px"
 	info.parentNode.childNodes[0].style.marginBottom = "-10px"
-	info.parentNode.childNodes[0].src = "https://ropro.io/images/checkmark.png"
+	info.parentNode.childNodes[0].src = chrome.runtime.getURL('/images/checkmark.png')
 	div = document.createElement('div')
 	div.innerHTML = `<a style="width: 240px;color: white; background-color: rgb(0, 132, 221); float: right; margin: 10px;position:absolute;right:140px;bottom:40px;" class="btn-growth-md btn-secondary-md" id="secondaryClose"><p style="font-weight:bold;color:white;">Close</p></a>`
 	info.appendChild(div)
@@ -1965,7 +1933,7 @@ async function cancelAllOutboundLosses(info, percentLoss) {
 	info.parentNode.childNodes[0].style.margin = "-15px"
 	info.parentNode.childNodes[0].style.marginRight = "-5px"
 	info.parentNode.childNodes[0].style.marginBottom = "-10px"
-	info.parentNode.childNodes[0].src = "https://ropro.io/images/checkmark.png"
+	info.parentNode.childNodes[0].src = chrome.runtime.getURL('/images/checkmark.png')
 	div = document.createElement('div')
 	div.innerHTML = `<a style="width: 240px;color: white; background-color: rgb(0, 132, 221); float: right; margin: 10px;position:absolute;right:140px;bottom:40px;" class="btn-growth-md btn-secondary-md" id="secondaryClose"><p style="font-weight:bold;color:white;">Close</p></a>`
 	info.appendChild(div)
@@ -1999,7 +1967,7 @@ async function declineFlaggedTradeBotters(info) {
 	info.parentNode.childNodes[0].style.margin = "-15px"
 	info.parentNode.childNodes[0].style.marginRight = "-5px"
 	info.parentNode.childNodes[0].style.marginBottom = "-10px"
-	info.parentNode.childNodes[0].src = "https://ropro.io/images/checkmark.png"
+	info.parentNode.childNodes[0].src = chrome.runtime.getURL('/images/checkmark.png')
 	div = document.createElement('div')
 	div.innerHTML = `<a style="width: 240px;color: white; background-color: rgb(0, 132, 221); float: right; margin: 10px;position:absolute;right:140px;bottom:40px;" class="btn-growth-md btn-secondary-md" id="secondaryClose"><p style="font-weight:bold;color:white;">Close</p></a>`
 	info.appendChild(div)
@@ -2052,7 +2020,7 @@ async function declineSuspectedTradeBotters(info) {
 	info.parentNode.childNodes[0].style.margin = "-15px"
 	info.parentNode.childNodes[0].style.marginRight = "-5px"
 	info.parentNode.childNodes[0].style.marginBottom = "-10px"
-	info.parentNode.childNodes[0].src = "https://ropro.io/images/checkmark.png"
+	info.parentNode.childNodes[0].src = chrome.runtime.getURL('/images/checkmark.png')
 	div = document.createElement('div')
 	div.innerHTML = `<a style="width: 240px;color: white; background-color: rgb(0, 132, 221); float: right; margin: 10px;position:absolute;right:140px;bottom:20px;" class="btn-growth-md btn-secondary-md" id="secondaryClose"><p style="font-weight:bold;color:white;">Close</p></a>`
 	info.appendChild(div)
@@ -2097,7 +2065,7 @@ async function addTradePanel() {
 			<div style="background-color:#232527;position:absolute;width:600px;height:775px;left:calc(50% - 300px);top:calc(50% - 400px);" class="dark-theme modal-content upgrade-modal-content">
 				<span style="margin-top:5px;margin-right:5px;font-size:40px;" class="upgrade-modal-close">×</span>
 				<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;">
-					<img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="https://ropro.io/images/ropro_logo.svg">
+					<img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="${chrome.runtime.getURL('/images/ropro_logo.png')}">
 					<p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p>
 				</h2>
 				<video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance9.webm" autoplay="" loop="" muted=""></video>
@@ -2105,35 +2073,35 @@ async function addTradePanel() {
 				<div style="position:absolute;top:110px;width:550px;height:675px;left:25px;">
 					<li class="panel-button" style="display: block;margin:10px;position:relative">
 						<a style="width:100%;color:white;background-color:#0084DD;" class="btn-growth-md btn-secondary-md" id="declineAllInbounds">
-							<img src="https://ropro.io/images/inbound_icon.png" style="width:20px;float:left;">
+							<img src="${chrome.runtime.getURL('/images/inbound_icon.png')}" style="width:20px;float:left;">
 							<p style="font-weight:bold;color:white;">Decline All Inbounds</p>
 						</a>
 						<span style="position:absolute;top:-3px;left:535px;width:210px;background-color:black;padding:10px;border-radius:10px;display:none;" class="panel-button-info">Decline all trades you have inbound.</span>
 					</li>
 					<li class="panel-button" style="display: block;margin:10px;position:relative;">
 						<a style="width:100%;color:white;background-color:#0084DD;" class="btn-growth-md btn-secondary-md" id="cancelAllOutbounds">
-							<img src="https://ropro.io/images/inbound_icon.png" style="width:20px;float:left;transform: scaleX(-1);">
+							<img src="${chrome.runtime.getURL('/images/inbound_icon.png')}" style="width:20px;float:left;transform: scaleX(-1);">
 							<p style="font-weight:bold;color:white;">Cancel All Outbounds</p>
 						</a>
 						<span style="position:absolute;top:-3px;left:535px;width:210px;background-color:black;padding:10px;border-radius:10px;display:none;" class="panel-button-info">Cancel all trades you have outbound.</span>
 					</li>
 					<li class="panel-button" style="display: block;margin:10px;position:relative;">
 						<a style="width:100%;color:white;background-color:#0084DD;" class="btn-growth-md btn-secondary-md" id="declineFlaggedTradeBotters">
-							<img src="https://ropro.io/images/robot_white2.png" style="margin:-3px;width:30px;float:left;transform: scaleX(-1);">
+							<img src="${chrome.runtime.getURL('/images/robot_white2.png')}" style="margin:-3px;width:30px;float:left;transform: scaleX(-1);">
 							<p style="font-weight:bold;color:white;">Decline Flagged Trade Botters</p>
 						</a>
 						<span style="position:absolute;top:-15px;left:535px;width:210px;background-color:black;padding:10px;border-radius:10px;display:none;" class="panel-button-info">Decline all trades from users you have flagged as trade bots.</span>
 					</li>
 					<li class="panel-button" style="display: block;margin:10px;position:relative;">
 						<a style="width:100%;color:white;background-color:#0084DD;" class="btn-growth-md btn-secondary-md" id="declineSuspectedTradeBotters">
-							<img src="https://ropro.io/images/robot_white2.png" style="margin:-3px;width:30px;float:left;transform: scaleX(-1);">
+							<img src="${chrome.runtime.getURL('/images/robot_white2.png')}" style="margin:-3px;width:30px;float:left;transform: scaleX(-1);">
 							<p style="font-weight:bold;color:white;">Decline Suspected Trade Botters</p>
 						</a>
 						<span style="position:absolute;top:-30px;left:535px;width:210px;background-color:black;padding:10px;border-radius:10px;display:none;" class="panel-button-info">Decline all trades from users who are suspected to be trade botters based on RoPro community flags.</span>
 					</li>
 					<li class="panel-button" style="display: block;margin:10px;padding-bottom:15px;border-bottom: 3px solid #FFFFFF;position:relative;">
 						<a style="width:100%;color:white;background-color:#0084DD;" class="btn-growth-md btn-secondary-md" id="declineOldTrades">
-							<img src="https://ropro.io/images/timer_light.svg" style="width:30px;float:left;filter:invert(1);margin-left:-3px;margin-top:-2px;margin-bottom:-5px;">
+							<img src="${chrome.runtime.getURL('/images/timer_light.svg')}" style="width:30px;float:left;filter:invert(1);margin-left:-3px;margin-top:-2px;margin-bottom:-5px;">
 							<p style="font-weight:bold;color:white;">Decline Old Trades</p>
 						</a>
 						<span style="position:absolute;top:-15px;left:535px;width:210px;background-color:black;padding:10px;border-radius:10px;display:none;" class="panel-button-info">Decline trades which are older than a certain age in hours/days.</span>
@@ -2151,41 +2119,41 @@ async function addTradePanel() {
 					</li>
 					<li class="panel-button" style="display: block;margin:10px;position:relative;">
 						<a style="width:100%;color:white;background-color:#${more ? '0084DD' : 'D8D8D8'};${more ? '' : 'pointer-events:none;'}" class="btn-growth-md btn-secondary-md" id="declineAllInboundLosses">
-							<img src="https://ropro.io/images/down_arrow.png" style="width:20px;float:left;filter:contrast(0) sepia(400%) hue-rotate(190deg) brightness(1000%) ${more ? '' : 'invert(0.5)'};">
+							<img src="${chrome.runtime.getURL('/images/down_arrow.png')}" style="width:20px;float:left;filter:contrast(0) sepia(400%) hue-rotate(190deg) brightness(1000%) ${more ? '' : 'invert(0.5)'};">
 							<p style="font-weight:bold;color:${more ? 'white' : '#939393'};">Decline All Inbound Losses</p>
 						</a>
 						<span style="position:absolute;top:-45px;left:535px;width:250px;background-color:black;padding:10px;border-radius:10px;display:none;" class="panel-button-info">Decline inbound trades in which you lose beyond a certain threshold. Losses are calculated automatically using real-time Rolimons.com item values.</span>
 						</li>
 					<li class="panel-button" style="display: block;margin:10px;position:relative;">
 						<a style="width:100%;color:white;background-color:#${more ? '0084DD' : 'D8D8D8'};${more ? '' : 'pointer-events:none;'}" class="btn-growth-md btn-secondary-md" id="cancelAllOutboundLosses">
-							<img src="https://ropro.io/images/down_arrow.png" style="width:20px;float:left;filter:contrast(0) sepia(100%) hue-rotate(190deg) brightness(1000%) ${more ? '' : 'invert(0.5)'};">
+							<img src="${chrome.runtime.getURL('/images/down_arrow.png')}" style="width:20px;float:left;filter:contrast(0) sepia(100%) hue-rotate(190deg) brightness(1000%) ${more ? '' : 'invert(0.5)'};">
 							<p style="font-weight:bold;color:${more ? 'white' : '#939393'};">Cancel All Outbound Losses</p>
 						</a>
 						<span style="position:absolute;top:-45px;left:535px;width:250px;background-color:black;padding:10px;border-radius:10px;display:none;" class="panel-button-info">Decline outbound trades in which you lose beyond a certain threshold. Losses are calculated automatically using real-time Rolimons.com item values.</span>					</li>
 					<li class="panel-button" style="display: block;margin:10px;position:relative">
 						<a style="width:100%;color:white;background-color:#${more ? '0084DD' : 'D8D8D8'};${more ? '' : 'pointer-events:none;'}" class="btn-growth-md btn-secondary-md" id="declineInvalidInbounds">
-							<img src="https://ropro.io/images/inbound_icon.png" style="width:20px;float:left;filter:contrast(0) sepia(100%) hue-rotate(190deg) brightness(1000%) ${more ? '' : 'invert(0.5)'};">
+							<img src="${chrome.runtime.getURL('/images/inbound_icon.png')}" style="width:20px;float:left;filter:contrast(0) sepia(100%) hue-rotate(190deg) brightness(1000%) ${more ? '' : 'invert(0.5)'};">
 							<p style="font-weight:bold;color:${more ? 'white' : '#939393'};">Decline Invalid Inbounds</p>
 						</a>
 						<span style="position:absolute;top:-35px;left:535px;width:250px;background-color:black;padding:10px;border-radius:10px;display:none;" class="panel-button-info">Decline inbound trades in which either you or the other player no longer have one of the items being offered (impossible trades).</span>
 					</li>
 					<li class="panel-button" style="display: block;margin:10px;position:relative;">
 						<a style="width:100%;color:white;background-color:#${more ? '0084DD' : 'D8D8D8'};${more ? '' : 'pointer-events:none;'}" class="btn-growth-md btn-secondary-md" id="declineProjectedInbounds">
-							<img src="https://ropro.io/images/inbound_icon.png" style="width:20px;float:left;filter:contrast(0) sepia(100%) hue-rotate(190deg) brightness(1000%) ${more ? '' : 'invert(0.5)'};">
+							<img src="${chrome.runtime.getURL('/images/inbound_icon.png')}" style="width:20px;float:left;filter:contrast(0) sepia(100%) hue-rotate(190deg) brightness(1000%) ${more ? '' : 'invert(0.5)'};">
 							<p style="font-weight:bold;color:${more ? 'white' : '#939393'};">Decline Projected Inbounds</p>
 						</a>
 						<span style="position:absolute;top:-17px;left:535px;width:250px;background-color:black;padding:10px;border-radius:10px;display:none;" class="panel-button-info">Decline inbound trades from which you would receive a projected item.</span>
 					</li>
 					<li class="panel-button" style="display: block;margin:10px;position:relative;">
 						<a style="width:100%;color:white;background-color:#${more ? '0084DD' : 'D8D8D8'};${more ? '' : 'pointer-events:none;'}" class="btn-growth-md btn-secondary-md" id="filterTradesByItem">
-							<img src="https://ropro.io/images/dominusicon.png" style="width:27px;float:left;margin-left:-3px;filter: ${more ? '' : 'invert(0.5)'};">
+							<img src="${chrome.runtime.getURL('/images/dominusicon.png')}" style="width:27px;float:left;margin-left:-3px;filter: ${more ? '' : 'invert(0.5)'};">
 							<p style="font-weight:bold;color:${more ? 'white' : '#939393'};">Filter Trades By Item</p>
 						</a>
 						<span style="position:absolute;top:-15px;left:535px;width:250px;background-color:black;padding:10px;border-radius:10px;display:none;" class="panel-button-info">Filter your inbound trades list by trades which contain a certain item.</span>
 					</li>
 					<li class="panel-button" style="display: block;margin:10px;display:none;position:relative;">
 						<a style="width:100%;color:white;background-color:#${more ? '0084DD' : 'D8D8D8'};${more ? '' : 'pointer-events:none;'}" class="btn-growth-md btn-secondary-md" id="upgrade-now-button">
-							<img src="https://ropro.io/images/chart_icon.svg" style="width:27px;float:left;filter:contrast(0) sepia(100%) hue-rotate(190deg) brightness(1000%) ${more ? '' : 'invert(0.5)'};margin:-3px;">
+							<img src="${chrome.runtime.getURL('/images/chart_icon.svg')}" style="width:27px;float:left;filter:contrast(0) sepia(100%) hue-rotate(190deg) brightness(1000%) ${more ? '' : 'invert(0.5)'};margin:-3px;">
 							<p style="font-weight:bold;color:${more ? 'white' : '#939393'};">Calculate Daily Profit</p>
 						</a>
 					</li>
@@ -2215,9 +2183,9 @@ async function addTradePanel() {
 	})
 	$("#declineAllInbounds").click(function() {
 		secondaryHTML = `<div style="background-color:#232527;position:absolute;width:600px;height:275px;left:2000px;top:calc(50% - 150px);" id="secondaryModal" class="dark-theme modal-content secondary-modal-content">
-		<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="https://ropro.io/images/ropro_logo.svg"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
+		<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="${chrome.runtime.getURL('/images/ropro_logo.png')}"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
 		<div style="position:absolute;top:110px;width:550px;height:250px;left:25px;"><li style="display: block;margin:10px;text-align:center;"><h3 id="secondaryTitle">Decline All Inbounds?</h3></li>
-		<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="https://ropro.io/images/ropro_icon_animated.gif"><span id="secondaryInfo"></span></p></li>
+		<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="${chrome.runtime.getURL('/images/ropro_icon_animated.webp')}"><span id="secondaryInfo"></span></p></li>
 		<li style="display: block;margin:10px;margin-top:20px;"><a style="width:240px;color:white;background-color:#393B3D;float:left;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryCancel"><p style="font-weight:bold;color:white;">Cancel</p></a><a style="width:240px;color:white;background-color:#0084DD;float:right;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryContinue"><p style="font-weight:bold;color:white;">Continue</p></a></li></div>
 		</div>`
 		div = document.createElement('div')
@@ -2237,9 +2205,9 @@ async function addTradePanel() {
 	})
 	$("#cancelAllOutbounds").click(function() {
 		secondaryHTML = `<div style="background-color:#232527;position:absolute;width:600px;height:275px;left:2000px;top:calc(50% - 150px);" id="secondaryModal" class="dark-theme modal-content secondary-modal-content">
-		<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="https://ropro.io/images/ropro_logo.svg"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
+		<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="${chrome.runtime.getURL('/images/ropro_logo.png')}"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
 		<div style="position:absolute;top:110px;width:550px;height:250px;left:25px;"><li style="display: block;margin:10px;text-align:center;"><h3 id="secondaryTitle">Cancel All Outbounds?</h3></li>
-		<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="https://ropro.io/images/ropro_icon_animated.gif"><span id="secondaryInfo"></span></p></li>
+		<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="${chrome.runtime.getURL('/images/ropro_icon_animated.webp')}"><span id="secondaryInfo"></span></p></li>
 		<li style="display: block;margin:10px;margin-top:20px;"><a style="width:240px;color:white;background-color:#393B3D;float:left;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryCancel"><p style="font-weight:bold;color:white;">Cancel</p></a><a style="width:240px;color:white;background-color:#0084DD;float:right;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryContinue"><p style="font-weight:bold;color:white;">Continue</p></a></li></div>
 		</div>`
 		div = document.createElement('div')
@@ -2259,9 +2227,9 @@ async function addTradePanel() {
 	})
 	$("#declineFlaggedTradeBotters").click(function() {
 		secondaryHTML = `<div style="background-color:#232527;position:absolute;width:600px;height:275px;left:2000px;top:calc(50% - 150px);" id="secondaryModal" class="dark-theme modal-content secondary-modal-content">
-		<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="https://ropro.io/images/ropro_logo.svg"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
+		<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="${chrome.runtime.getURL('/images/ropro_logo.png')}"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
 		<div style="position:absolute;top:110px;width:550px;height:250px;left:25px;"><li style="display: block;margin:10px;text-align:center;"><h3 id="secondaryTitle">Decline Users You've Flagged as Trade Botters?</h3></li>
-		<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="https://ropro.io/images/ropro_icon_animated.gif"><span id="secondaryInfo"></span></p></li>
+		<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="${chrome.runtime.getURL('/images/ropro_icon_animated.webp')}"><span id="secondaryInfo"></span></p></li>
 		<li style="display: block;margin:10px;margin-top:20px;"><a style="width:240px;color:white;background-color:#393B3D;float:left;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryCancel"><p style="font-weight:bold;color:white;">Cancel</p></a><a style="width:240px;color:white;background-color:#0084DD;float:right;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryContinue"><p style="font-weight:bold;color:white;">Continue</p></a></li></div>
 		</div>`
 		div = document.createElement('div')
@@ -2281,7 +2249,7 @@ async function addTradePanel() {
 	})
 	$("#declineSuspectedTradeBotters").click(function() {
 		secondaryHTML = `<div style="background-color:#232527;position:absolute;width:600px;height:325px;left:2000px;top:calc(50% - 150px);" id="secondaryModal" class="dark-theme modal-content secondary-modal-content">
-		<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="https://ropro.io/images/ropro_logo.svg"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
+		<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="${chrome.runtime.getURL('/images/ropro_logo.png')}"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
 		<div style="position:absolute;top:110px;width:550px;height:250px;left:25px;"><li style="display: block;margin:10px;text-align:center;"><h3 id="secondaryTitle">Decline Suspected Trade Botters?</h3></li>
 		<div style="margin-left:160px;height:50px;"><p>Decline Traders Who Are:</p>
 		<div id="susDropdown" style="overflow:visible;margin-top:-5px;margin-left:0px;float:left;width:150px;margin-left:25px;" class="input-group-btn">
@@ -2302,7 +2270,7 @@ async function addTradePanel() {
 		<a genre="Mad Sus" class="susChoice">
 			<span ng-bind="tab.label" class="ng-binding">Mad Sus</span>
 		</a></li></ul></div></div>
-		<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="https://ropro.io/images/sus_spin2.gif"><span id="secondaryInfo"></span></p></li>
+		<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="${chrome.runtime.getURL('/images/ropro_icon_animated.webp')}"><span id="secondaryInfo"></span></p></li>
 		<li style="display: block;margin:10px;margin-top:20px;"><a style="width:240px;color:white;background-color:#393B3D;float:left;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryCancel"><p style="font-weight:bold;color:white;">Cancel</p></a><a style="width:240px;color:white;background-color:#0084DD;float:right;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryContinue"><p style="font-weight:bold;color:white;">Continue</p></a></li></div>
 		</div>`
 		div = document.createElement('div')
@@ -2326,7 +2294,7 @@ async function addTradePanel() {
 	})
 	$("#declineOldTrades").click(function() {
 		secondaryHTML = `<div style="background-color:#232527;position:absolute;width:600px;height:365px;left:2000px;top:calc(50% - 150px);" id="secondaryModal" class="dark-theme modal-content secondary-modal-content">
-		<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="https://ropro.io/images/ropro_logo.svg"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
+		<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="${chrome.runtime.getURL('/images/ropro_logo.png')}"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
 		<div style="position:absolute;top:110px;width:550px;height:250px;left:25px;"><li style="display: block;margin:10px;text-align:center;"><h3 id="secondaryTitle">Decline Old Trades?</h3></li>
 		<div style="margin-left:145px;height:50px;"><div id="minimumAgeDiv"><p style="margin-left:40px;">Minimum Trade Age:</p>
 		<div style="float:left;width:350px;margin-left:0px;margin-top:-2px;">
@@ -2348,7 +2316,7 @@ async function addTradePanel() {
 		</ul>
 		</div>
 		</div>
-		<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="https://ropro.io/images/ropro_icon_animated.gif"><span id="secondaryInfo"></span></p></li>
+		<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="${chrome.runtime.getURL('/images/ropro_icon_animated.webp')}"><span id="secondaryInfo"></span></p></li>
 		<li style="display: block;margin:10px;margin-top:20px;"><a style="width:240px;color:white;background-color:#393B3D;float:left;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryCancel"><p style="font-weight:bold;color:white;">Cancel</p></a><a style="width:240px;color:white;background-color:#0084DD;float:right;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryContinue"><p style="font-weight:bold;color:white;">Continue</p></a></li></div>
 		</div>`
 		div = document.createElement('div')
@@ -2373,7 +2341,7 @@ async function addTradePanel() {
 	$("#declineAllInboundLosses").click(async function() {
 		if (await fetchSetting('moreTradePanel')) {
 			secondaryHTML = `<div style="background-color:#232527;position:absolute;width:600px;height:325px;left:2000px;top:calc(50% - 150px);" id="secondaryModal" class="dark-theme modal-content secondary-modal-content">
-			<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="https://ropro.io/images/ropro_logo.svg"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
+			<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="${chrome.runtime.getURL('/images/ropro_logo.png')}"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
 			<div style="position:absolute;top:110px;width:550px;height:250px;left:25px;"><li style="display: block;margin:10px;text-align:center;"><h3 id="secondaryTitle">Decline Inbound Losses?</h3></li>
 			<div style="margin-left:145px;height:50px;"><div id="minimumLossDiv"><p>Minimum Value Loss Percentage:</p>
 			<div style="float:left;width:350px;margin-left:0px;margin-top:-2px;">
@@ -2382,7 +2350,7 @@ async function addTradePanel() {
 
 			<div style="margin-top:5px;"><output style="margin-left:10px;font-size:14px;height:30px;">10% Value Loss</output></div>
 			</div></div></div>
-			<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="https://ropro.io/images/ropro_icon_animated.gif"><span id="secondaryInfo"></span></p></li>
+			<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="${chrome.runtime.getURL('/images/ropro_icon_animated.webp')}"><span id="secondaryInfo"></span></p></li>
 			<li style="display: block;margin:10px;margin-top:20px;"><a style="width:240px;color:white;background-color:#393B3D;float:left;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryCancel"><p style="font-weight:bold;color:white;">Cancel</p></a><a style="width:240px;color:white;background-color:#0084DD;float:right;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryContinue"><p style="font-weight:bold;color:white;">Continue</p></a></li></div>
 			</div>`
 			div = document.createElement('div')
@@ -2405,7 +2373,7 @@ async function addTradePanel() {
 	$("#cancelAllOutboundLosses").click(async function() {
 		if (await fetchSetting('moreTradePanel')) {
 			secondaryHTML = `<div style="background-color:#232527;position:absolute;width:600px;height:325px;left:2000px;top:calc(50% - 150px);" id="secondaryModal" class="dark-theme modal-content secondary-modal-content">
-			<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="https://ropro.io/images/ropro_logo.svg"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
+			<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="${chrome.runtime.getURL('/images/ropro_logo.png')}"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
 			<div style="position:absolute;top:110px;width:550px;height:250px;left:25px;"><li style="display: block;margin:10px;text-align:center;"><h3 id="secondaryTitle">Cancel Outbound Losses?</h3></li>
 			<div style="margin-left:145px;height:50px;"><div id="minimumLossDiv"><p>Minimum Value Loss Percentage:</p>
 			<div style="float:left;width:350px;margin-left:0px;margin-top:-2px;">
@@ -2413,7 +2381,7 @@ async function addTradePanel() {
 			<input id="lossPercentage" oninput="this.nextElementSibling.childNodes[0].value = this.value + '% Value Loss' + (this.value == 0 ? ' (Equal)' : '')" value="10" max="100" min="0" type="range" style="float: left; width: 150px; height: 30px; margin-top: 2px;" step="5">
 			<div style="margin-top:5px;"><output style="margin-left:10px;font-size:14px;height:30px;">10% Value Loss</output></div>
 			</div></div></div>
-			<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="https://ropro.io/images/ropro_icon_animated.gif"><span id="secondaryInfo"></span></p></li>
+			<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="${chrome.runtime.getURL('/images/ropro_icon_animated.webp')}"><span id="secondaryInfo"></span></p></li>
 			<li style="display: block;margin:10px;margin-top:20px;"><a style="width:240px;color:white;background-color:#393B3D;float:left;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryCancel"><p style="font-weight:bold;color:white;">Cancel</p></a><a style="width:240px;color:white;background-color:#0084DD;float:right;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryContinue"><p style="font-weight:bold;color:white;">Continue</p></a></li></div>
 			</div>`
 			div = document.createElement('div')
@@ -2436,9 +2404,9 @@ async function addTradePanel() {
 	$("#declineInvalidInbounds").click(async function() {
 		if (await fetchSetting('moreTradePanel')) {
 			secondaryHTML = `<div style="background-color:#232527;position:absolute;width:600px;height:275px;left:2000px;top:calc(50% - 150px);" id="secondaryModal" class="dark-theme modal-content secondary-modal-content">
-			<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="https://ropro.io/images/ropro_logo.svg"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
+			<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="${chrome.runtime.getURL('/images/ropro_logo.png')}"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
 			<div style="position:absolute;top:110px;width:550px;height:250px;left:25px;"><li style="display: block;margin:10px;text-align:center;"><h3 id="secondaryTitle">Decline Invalid Inbounds?</h3></li>
-			<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="https://ropro.io/images/ropro_icon_animated.gif"><span id="secondaryInfo"></span></p></li>
+			<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="${chrome.runtime.getURL('/images/ropro_icon_animated.webp')}"><span id="secondaryInfo"></span></p></li>
 			<li style="display: block;margin:10px;margin-top:20px;"><a style="width:240px;color:white;background-color:#393B3D;float:left;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryCancel"><p style="font-weight:bold;color:white;">Cancel</p></a><a style="width:240px;color:white;background-color:#0084DD;float:right;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryContinue"><p style="font-weight:bold;color:white;">Continue</p></a></li></div>
 			</div>`
 			div = document.createElement('div')
@@ -2460,7 +2428,7 @@ async function addTradePanel() {
 	$("#declineProjectedInbounds").click(async function() {
 		if (await fetchSetting('moreTradePanel')) {
 			secondaryHTML = `<div style="background-color:#232527;position:absolute;width:600px;height:325px;left:2000px;top:calc(50% - 150px);" id="secondaryModal" class="dark-theme modal-content secondary-modal-content">
-			<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="https://ropro.io/images/ropro_logo.svg"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
+			<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="${chrome.runtime.getURL('/images/ropro_logo.png')}"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
 			<div style="position:absolute;top:110px;width:550px;height:250px;left:25px;"><li style="display: block;margin:10px;text-align:center;"><h3 id="secondaryTitle">Decline Projected Item Inbounds?</h3></li>
 			<div style="margin-left:160px;height:50px;"><p>Projected Item Detection:</p>
 			<div id="susDropdown" style="overflow:visible;margin-top:-5px;margin-left:0px;float:left;width:150px;margin-left:25px;" class="input-group-btn">
@@ -2475,7 +2443,7 @@ async function addTradePanel() {
 				<span ng-bind="tab.label" class="ng-binding">Rolimons Manual Projected Label</span>
 			</a></li>
 			</ul></div></div>
-			<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="https://ropro.io/images/ropro_icon_animated.gif"><span id="secondaryInfo"></span></p></li>
+			<li id="secondaryBody" style="display:none;margin:10px;margin-top:20px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="${chrome.runtime.getURL('/images/ropro_icon_animated.webp')}"><span id="secondaryInfo"></span></p></li>
 			<li style="display: block;margin:10px;margin-top:20px;"><a style="width:240px;color:white;background-color:#393B3D;float:left;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryCancel"><p style="font-weight:bold;color:white;">Cancel</p></a><a style="width:240px;color:white;background-color:#0084DD;float:right;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryContinue"><p style="font-weight:bold;color:white;">Continue</p></a></li></div>
 			</div>`
 			div = document.createElement('div')
@@ -2501,7 +2469,7 @@ async function addTradePanel() {
 	$("#filterTradesByItem").click(async function() {
 		if (await fetchSetting('moreTradePanel')) {
 			secondaryHTML = `<div style="background-color:#232527;position:absolute;width:600px;height:325px;left:2000px;top:calc(50% - 150px);" id="secondaryModal" class="dark-theme modal-content secondary-modal-content">
-			<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="https://ropro.io/images/ropro_logo.svg"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
+			<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;"><img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="${chrome.runtime.getURL('/images/ropro_logo.png')}"><p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Trade Panel <b style="font-size:20px;">v1.3</b></p></h2><video style="pointer-events: none;position:absolute;top:-85px;right:-20px;width:250px;" src="https://ropro.io/dances/dance${(16 + Math.floor(Math.random() * 4))}.webm" autoplay="" loop="" muted=""></video>
 			<div style="position:absolute;top:110px;width:550px;height:250px;left:25px;"><li style="display: block;margin:10px;text-align:center;"><h3 id="secondaryTitle">Filter Inbound Trades By Item?</h3></li>
 			<div style="margin-left:100px;height:50px;">
 			<div id="filterSearchBar" style="overflow:visible;margin-top:-5px;margin-left:0px;float:left;width:340px;margin-left:0px;position:relative;" class="input-group-btn">
@@ -2510,7 +2478,7 @@ async function addTradePanel() {
 			<ul id="itemSearchSelection" style="position:absolute;top:48px;width:100%;"></ul>
 			</div>
 			</div>
-			<li id="secondaryBody" style="display:none;margin:10px;margin-top:-60px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="https://ropro.io/images/ropro_icon_animated.gif"><span id="secondaryInfo"></span></p></li>
+			<li id="secondaryBody" style="display:none;margin:10px;margin-top:-60px;margin-left:auto;text-align:center;"><p style="font-weight:bold;color:white;"><img style="width:30px;margin-right:10px;margin-bottom:3px;" src="${chrome.runtime.getURL('/images/ropro_icon_animated.webp')}"><span id="secondaryInfo"></span></p></li>
 			<li style="display: block;margin:10px;margin-top:20px;"><a style="width:240px;color:white;background-color:#393B3D;float:left;margin:10px;" class="btn-growth-md btn-secondary-md" id="secondaryCancel"><p style="font-weight:bold;color:white;">Cancel</p></a><a style="width:240px;color:white;background-color:#CCCCCC;float:right;margin:10px;" class="btn-growth-md btn-secondary-md" active=false id="secondaryContinue"><p style="font-weight:bold;color:gray;">Continue</p></a></li></div>
 			</div>`
 			div = document.createElement('div')
@@ -2551,7 +2519,7 @@ async function addTradePanel() {
 							li.style.borderBottom = '1px solid hsla(0,0%,100%,.1)'
 							li.setAttribute('itemid', parseInt(items[j].id))
 							li.setAttribute('itemname', stripTags(items[j].name))
-							li.innerHTML = `<div style="z-index:1000;margin-top:0px;padding-left:5px;height:30px;position:relative;"><div style="margin-left:0px;display:inline-block;width:335px;text-align:left;overflow:hidden;white-space: nowrap;"><img style="width:30px;margin-left:-4px;margin-right:5px;margin-bottom:3px;" src="https://www.roblox.com/asset-thumbnail/image?assetId=${parseInt(items[j].id)}&amp;width=420&amp;height=420&amp;format=png" id="tradeFilterImage"><span id="tradeFilterText">${stripTags(items[j].name)}</span></div></div>`
+							li.innerHTML = `<div style="z-index:1000;margin-top:0px;padding-left:5px;height:30px;position:relative;"><div style="margin-left:0px;display:inline-block;width:335px;text-align:left;overflow:hidden;white-space: nowrap;"><img style="width:30px;margin-left:-4px;margin-right:5px;margin-bottom:3px;" src="https://api.ropro.io/getAssetThumbnail.php?id=${parseInt(items[j].id)}" id="tradeFilterImage"><span id="tradeFilterText">${stripTags(items[j].name)}</span></div></div>`
 							list.appendChild(li)
 							li.addEventListener('click', function(){
 								itemName = this.getAttribute('itemname')
@@ -2559,7 +2527,7 @@ async function addTradePanel() {
 								selection_li = document.createElement('li')
 								selection_li.setAttribute('itemid', parseInt(itemId))
 								selection_li.setAttribute('itemname', stripTags(itemName))
-								selection_li.innerHTML = `<div style="border-radius:5px;padding-top:2px;background-color:#393B3D;margin-top:-3px;padding-left:5px;height:30px;position:relative;"><div style="margin-left:auto;margin-right:auto;display:inline-block;text-align:left;overflow:hidden;white-space: nowrap;"><img style="float:left;width:30px;margin-left:-4px;margin-right:5px;margin-bottom:3px;" src="https://www.roblox.com/asset-thumbnail/image?assetId=${parseInt(itemId)}&amp;width=420&amp;height=420&amp;format=png" id="tradeFilterImage"><div style="float:left;display:inline-block;height:30px;margin-top:3px;width:280px;">${stripTags(itemName)}</div></div><p class="close-selection" style="position:absolute;right:5px;top:0px;font-size:18px;cursor:pointer;">x</p></div>`
+								selection_li.innerHTML = `<div style="border-radius:5px;padding-top:2px;background-color:#393B3D;margin-top:-3px;padding-left:5px;height:30px;position:relative;"><div style="margin-left:auto;margin-right:auto;display:inline-block;text-align:left;overflow:hidden;white-space: nowrap;"><img style="float:left;width:30px;margin-left:-4px;margin-right:5px;margin-bottom:3px;" src="https://api.ropro.io/getAssetThumbnail.php?id=${parseInt(itemId)}" id="tradeFilterImage"><div style="float:left;display:inline-block;height:30px;margin-top:3px;width:280px;">${stripTags(itemName)}</div></div><p class="close-selection" style="position:absolute;right:5px;top:0px;font-size:18px;cursor:pointer;">x</p></div>`
 								document.getElementById('itemSearchSelection').innerHTML = ''
 								document.getElementById('itemSearchSelection').appendChild(selection_li)
 								document.getElementById('itemSearchList').innerHTML = ''
@@ -2636,10 +2604,6 @@ function pageCheck() {
 						link = links[0]
 						link.removeAttribute('href')
 						link.innerHTML = "<a target='_blank' href='https://www.rolimons.com/catalog'>Rolimon's Catalog</a>"
-						//img = document.createElement('img')
-						//img.setAttribute("style", "width:600px;z-index:10000;position:absolute;left:0px;top:20px;")
-						//img.setAttribute("src", "https://ropro.io/images/value_chart.png")
-						//img.style.display = "none";
 					}
 				} else {
 					setTimeout(check, 500)
@@ -2682,7 +2646,7 @@ async function main() {
 			parent.location.hash = ""
 		}
 		try {
-			document.getElementsByClassName('content')[0].setAttribute('style', 'margin-bottom:300px;')
+			document.getElementsByClassName('content')[0].style.marginBottom = "300px"
 		} catch (e) {
 			console.log(e)
 		}
@@ -2800,47 +2764,11 @@ async function main() {
 					}
 					hideButtonImage = $('.hide-button')
 					if (hideButtonImage.length > 0) {
-						hideButtonImage.get(0).src = "https://ropro.io/images/serials_on"+theme2+".png"
+						hideButtonImage.get(0).src = chrome.runtime.getURL('/images/serials_on' + theme2 + '.png')
 						hideButtonImage.get(0).parentNode.classList.add("inactive")
 					}
 				})
 			}
-			/**highlightTrades = true
-			if (highlightTrades) {
-				tradeTitle = $(".trades-header-nowrap .paired-name:not('.ng-hide'):not('.highlight-button-inserted')")
-				for (i = 0; i < tradeTitle.length; i++) {
-					if (!tradeTitle.get(i).parentNode.parentNode.classList.contains('trade-request-window')) {
-						addHighlightButton(tradeTitle.get(i))
-					}
-				}
-				if ($('.light-theme').length > 0) {
-					theme3 = "lightmode"
-				} else {
-					theme3 = "darkmode"
-				}
-				highlightButtonImage = $('.highlight-button')
-				if (highlightButtonImage.length > 0 && document.getElementsByClassName('trade-row selected highlighted-trade').length > 0) {
-					highlightButtonImage.get(0).src = "https://ropro.io/images/highlighter_active_"+theme3+".png"
-					highlightButtonImage.get(0).parentNode.classList.remove("inactive")
-				}
-				$(".trade-row-container").click(function(){
-					if ($('.light-theme').length > 0) {
-						theme3 = "lightmode"
-					} else {
-						theme3 = "darkmode"
-					}
-					highlightButtonImage = $('.highlight-button')
-					if (highlightButtonImage.length > 0) {
-						if (this.parentNode.classList.contains("highlighted-trade")) {
-							highlightButtonImage.get(0).src = "https://ropro.io/images/highlighter_active_"+theme3+".png"
-							highlightButtonImage.get(0).parentNode.classList.remove("inactive")
-						} else {
-							highlightButtonImage.get(0).src = "https://ropro.io/images/highlighter_inactive_"+theme3+".png"
-							highlightButtonImage.get(0).parentNode.classList.add("inactive")
-						}
-					}
-				})
-			}**/
 			tradeRowDetails = $(".trade-row-details:not(.rolimons-user-link-added)")
 			if (tradeRowDetails.length > 0) {
 				tradeRows = []

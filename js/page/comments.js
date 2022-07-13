@@ -2,7 +2,7 @@
 
 RoPro (https://ropro.io) v1.3
 
-RoPro was wholly designed and coded by:
+The RoPro extension is developed by:
                                
 ,------.  ,--. ,-----.,------. 
 |  .-.  \ |  |'  .--./|  .---' 
@@ -144,7 +144,7 @@ async function generateComment(commentArray) {
 	}
 	commentHTML = `                <div class="comment-item list-item" data-comment-id="">
 						<div class="comment-user list-header">
-							<div class="Avatar avatar avatar-headshot-md roblox-avatar-image" data-user-id="${parseInt(userid)}" data-image-size="small"><div style="position: relative;"><a href="https://www.roblox.com/users/${parseInt(userid)}/profile"><img title="${stripTags(username)}" alt="${stripTags(username)}" border="0" src="https://www.roblox.com/bust-thumbnail/image?userId=${parseInt(userid)}&width=420&height=420&format=png"></a></div></div>
+							<div class="Avatar avatar avatar-headshot-md roblox-avatar-image" data-user-id="${parseInt(userid)}" data-image-size="small"><div style="position: relative;"><a href="https://www.roblox.com/users/${parseInt(userid)}/profile"><img title="${stripTags(username)}" alt="${stripTags(username)}" border="0" src="https://www.roblox.com/headshot-thumbnail/image?userId=${parseInt(userid)}&width=420&height=420&format=png"></a></div></div>
 						</div>
 						<div class="comment-body list-body">
 							<a class="text-name" href="https://www.roblox.com/users/${parseInt(userid)}/profile">${stripTags(username)}</a>${linkIcon}
@@ -193,6 +193,16 @@ function getComments(itemID, page) {
 	})
 }
 
+function checkVerification() {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "CheckVerification"}, 
+			function(data) {
+				resolve(data)
+			}
+		)
+	})
+}
+
 async function refreshComments() {
 	itemID = getIdFromURL(location.href)
 	commentsJSON = await getComments(itemID, 0)
@@ -214,33 +224,37 @@ async function refreshComments() {
 async function postComment() {
 	itemID = getIdFromURL(location.href)
 	message = document.getElementById('messageBox')
-	if (message.value.length != 0) {
-		if (message.value.length <= 200) {
-			closeError()
-			userID = await getUserId()
-			json = {itemid: itemID, userid: userID, comment: message.value}
-			return new Promise(resolve => {
+	if (await checkVerification()) {
+		if (message.value.length != 0) {
+			if (message.value.length <= 200) {
+				closeError()
+				userID = await getUserId()
+				json = {itemid: itemID, userid: userID, comment: message.value}
 				return new Promise(resolve => {
-					chrome.runtime.sendMessage({greeting: "PostURL", url:"https://api.ropro.io/postComment.php", jsonData: json}, 
-						function(data) {
-							response = JSON.parse(data)
-							if ('error' in response) { // Comment post errored
-								commentError(response['error'])
-							} else { // Successfully posted comment
-								message.value = ""
-								refreshComments()
+					return new Promise(resolve => {
+						chrome.runtime.sendMessage({greeting: "PostURL", url:"https://api.ropro.io/postComment.php", jsonData: json}, 
+							function(data) {
+								response = JSON.parse(data)
+								if ('error' in response) { // Comment post errored
+									commentError(response['error'])
+								} else { // Successfully posted comment
+									message.value = ""
+									refreshComments()
+								}
+								resolve(data)
+								
 							}
-							resolve(data)
-							
-						}
-					)
+						)
+					})
 				})
-			})
+			} else {
+				commentError(`Maximum comment length is 200 characters. (${message.value.length}/200)`)
+			}
 		} else {
-			commentError(`Maximum comment length is 200 characters. (${message.value.length}/200)`)
+			commentError("You must enter a comment.")
 		}
 	} else {
-		commentError("You must enter a comment.")
+		alert("You must verify your user with RoPro at roblox.com/home before posting comments.")
 	}
 }
 

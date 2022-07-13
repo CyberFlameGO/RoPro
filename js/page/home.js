@@ -2,7 +2,7 @@
 
 RoPro (https://ropro.io) v1.3
 
-RoPro was wholly designed and coded by:
+The RoPro extension is developed by:
                                
 ,------.  ,--. ,-----.,------. 
 |  .-.  \ |  |'  .--./|  .---' 
@@ -38,12 +38,12 @@ if ($('.light-theme').length > 0) {
 
 mostPlayedHTML = `<div id="scrollLeft" style="margin-top:33px;height:95px;margin-left:6px;width:20px;" class="scroller prev disabled" role="button" aria-hidden="true"><div class="arrow"><span style="transform:scale(0.8);margin-left:-4px;" class="icon-games-carousel-left"></span></div></div>
 <div class="container-header games-filter-changer">
-<h3 style="font-size:17px;margin-top:2px;margin-bottom:-10px;position:absolute;">My Most Played<!--<img src="https://ropro.io/images/ropro_logo_small.png" style="filter: drop-shadow(1px 1px 1px #363636);width:35px;margin-left:5px;margin-bottom:2px;">--></h3>
-<div id="timeDropdown" style="overflow:visible;margin-top:-2px;margin-left:10px;float:right;width:150px;transform:scale(0.8);margin-right:-12px;z-index:10;margin-bottom:-10px;" class="input-group-btn group-dropdown">
+<h3 style="font-size:17px;margin-top:2px;margin-bottom:-10px;float:left;">Your Most Played</h3>
+<div id="timeDropdown" style="overflow:visible;margin-top:-4px;margin-left:98px;width:150px;margin-right:-12px;z-index:10;float:left;margin-bottom:-7px;" class="input-group-btn group-dropdown">
 <button style="border:none;" type="button" class="input-dropdown-btn" data-toggle="dropdown" aria-expanded="false"> 
-<span style="float:right;" class="icon-down-16x16"></span><span id="timeLabel" class="rbx-selection-label ng-binding" ng-bind="layout.selectedTab.label" style="font-size:14px;float:right;margin-right:5px;">Past 7 Days</span> 
+<span style="float:right;" class="icon-down-16x16"></span><span id="timeLabel" class="rbx-selection-label ng-binding" ng-bind="layout.selectedTab.label" style="font-size:9px;float:right;margin-right:1px;">Past 30 Days</span> 
 </button>
-<ul style="max-height:1000px;width:130px;margin-left:35px;" id="timeOptions" data-toggle="dropdown-menu" class="dropdown-menu" role="menu"> 
+<ul style="max-height:1000px;width:130px;margin-left:30px;z-index:2;margin-top:-20px;transform:scale(0.8);" id="timeOptions" data-toggle="dropdown-menu" class="dropdown-menu" role="menu"> 
 <li>
 <a time="pastWeek" class="timeChoice">
     <span ng-bind="tab.label" class="ng-binding" style="font-size:14px;">Past 7 Days</span>
@@ -56,11 +56,22 @@ mostPlayedHTML = `<div id="scrollLeft" style="margin-top:33px;height:95px;margin
 </a></li><li>
 <a time="allTime" class="timeChoice">
     <span style="font-size:14px;" ng-bind="tab.label" class="ng-binding">All Time</span>
-</a></li></ul></div></div>
+</a></li></ul></div>
+<div id="displayOnProfile" style="width:150px;position:absolute;right:-10px;top:6px;float:right;display:none;" class="input-group-btn group-dropdown">
+<button id="btn-toggle-off" class="btn-toggle" style="transform:scale(0.6);float:right;">
+  <span class="toggle-flip"></span>
+  <span id="toggle-on" class="toggle-on"></span>
+  <span id="toggle-off" class="toggle-off"></span>
+</button><div style="margin-right:-1px;margin-top:4px;right:50px;font-size:11px;float:right;color:#bdbebe;">Display on Profile</div>
+</div>
+<div style="display:none;width:150px;position:absolute;right:55px;top:60px;float:right;" class="input-group-btn group-dropdown" id="emptyPlaytimeLabel">
+<div style="text-align:center;z-index:1;margin-right:-1px;margin-top:4px;font-size:11px;float:right;">No playtime info available yet for your user.<br>RoPro will show your most played experiences here.</div>
+</div>
+</div>
 <ul style="overflow:hidden;" id="mostPlayedContainer" class="hlist game-cards">
 <span id="mostPlayedLoadingBar" style="float: right; display: inline-block; transform: scale(0.8); width: 200px; height: 25px; visibility: initial !important;margin-right:100px;margin-top:35px;" class="spinner spinner-default"></span>
 </ul>
-<div id="scrollRight" style="margin-top:33px;height:95px;margin-right:15px;width:20px;" class="scroller next disabled" role="button" aria-hidden="true"><div style="transform:scale(0.8);margin-right:-9px;" class="arrow"><span class="icon-games-carousel-right"></span></div></div>`
+<div id="scrollRight" style="margin-top:33px;height:95px;margin-right:15px;width:20px;z-index:1;" class="scroller next disabled" role="button" aria-hidden="true"><div style="transform:scale(0.8);margin-right:-9px;" class="arrow"><span class="icon-games-carousel-right"></span></div></div>`
 
 roproHomePanelHTML = `<div class="ropro-home-panel" style="position:absolute;right:30px;top:30px;width:350px;height:auto;"><div class="ropro-message-box" style="padding:3px;width:auto;height:auto;background-color:#191B1D;border-radius:10px;margin:10px;margin-left:0px;margin-right:0px;"><div style="background-color:#232527;margin:10px;padding:10px;box-shadow:inset 0 -4px 0 0 #fff;position:relative;"><h3 style="display:inline-block;">Messages</h3><div style="display:inline-block;float:right;position:absolute;top:18px;right:8px;" class="checkbox">
 <input type="checkbox" id="checkbox3">
@@ -119,6 +130,26 @@ function fetchGameIcons(universeIds) {
 			function(data) {
 					resolve(data)
 			})
+	})
+}
+
+function checkVerification() {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "CheckVerification"}, 
+			function(data) {
+				resolve(data)
+			}
+		)
+	})
+}
+
+function doVerification() {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "HandleUserVerification"}, 
+			function(data) {
+				resolve(data)
+			}
+		)
 	})
 }
 
@@ -182,7 +213,7 @@ function addGame(name, id, url, thumbnail, time) {
     <div class="game-card-thumb-container" style="width:90px;height:90px;"><div style="width:90px;height:90px;" class="game-card-thumb">
     <span class="thumbnail-2d-container"><img style="width:90px;height:90px;" class="game-card-thumb" src="${stripTags(thumbnail)}" alt="${stripTags(name)}" title="${stripTags(name)}"></span>
     </div></div><div style="margin-top:-3px;font-size:12px;padding:0px;text-overflow: ellipsis;white-space: nowrap;" class="game-card-name game-name-title" title="${stripTags(name)}">${stripTags(name)}</div><div style="margin-top:-5px;" class="game-card-info">
-    <img style="background-image:none;margin:-6px;margin-top:0px;margin-bottom:0.5px;transform:scale(0.4);border:none;margin-left:-8px;margin-right:-5px;margin-top:-0.6px;" src="https://ropro.io/images/timer_${theme}.svg" class="info-label icon-pastname"><span style="padding:0px;font-size:10.5px;" title="Played for ${parseInt(time)} minutes" class="info-label vote-percentage-label">${formatTime(time)}</span>
+    <img style="background-image:none;margin:-6px;margin-top:0px;margin-bottom:0.5px;transform:scale(0.4);border:none;margin-left:-8px;margin-right:-5px;margin-top:-0.6px;" src="${chrome.runtime.getURL(`/images/timer_${theme}.svg`)}" class="info-label icon-pastname"><span style="padding:0px;font-size:10.5px;" title="Played for ${parseInt(time)} minutes" class="info-label vote-percentage-label">${formatTime(time)}</span>
     </div></a></div>`
     li = document.createElement('li')
     li.setAttribute("style", "height:120px;width:100px;")
@@ -200,7 +231,7 @@ function createUpgradeModal() {
     modalDiv.style.zIndex = 100000
     modalHTML = `<div id="standardUpgradeModal" style="z-index:10000;display:block;" class="upgrade-modal"><div style="background-color:#232527;position:absolute;width:500px;height:500px;left:-webkit-calc(50% - 250px);top:-webkit-calc(50% - 250px);" class="modal-content upgrade-modal-content">
     <span style="margin-top:5px;margin-right:5px;font-size:40px;" class="upgrade-modal-close">×</span>
-    <h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:20px;left:40px;"><img style="width:70px;left:0px;" src="https://ropro.io/images/standard_icon.png"> Standard Tier Feature</h2><div style="font-family:HCo Gotham SSm;color:white;font-size:20px;position:absolute;top:115px;left:200px;width:270px;">Sorting your playtime by Month, Year, and All Time is only available for<br><b><img style="width:20px;margin-top:-3px;margin-right:3px;" src="https://ropro.io/images/standard_icon.png">RoPro Standard Tier+</b><br>subscribers.</div><div style="font-family:HCo Gotham SSm;color:white;font-size:18px;position:absolute;top:270px;left:200px;width:270px;"><u>More Subscription Benefits:</u>
+    <h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:20px;left:40px;"><img style="width:70px;left:0px;" src="${chrome.runtime.getURL('/images/standard_icon.png')}"> Standard Tier Feature</h2><div style="font-family:HCo Gotham SSm;color:white;font-size:20px;position:absolute;top:115px;left:200px;width:270px;">Sorting your playtime by Month, Year, and All Time is only available for<br><b><img style="width:20px;margin-top:-3px;margin-right:3px;" src="${chrome.runtime.getURL('/images/standard_icon.png')}">RoPro Standard Tier+</b><br>subscribers.</div><div style="font-family:HCo Gotham SSm;color:white;font-size:18px;position:absolute;top:270px;left:200px;width:270px;"><u>More Subscription Benefits:</u>
     <ul style="margin-left:20px;font-size:12px;font-family:HCo Gotham SSm;">
     <li style="list-style-type:circle;">Fastest Server &amp; Server Size Sort</li>
     <li style="list-style-type:circle;">More Game Filters &amp; Like Ratio Filter</li><li style="list-style-type:circle;">Trade Value &amp; Demand Calculator</li><li style="list-style-type:circle;">Save Sandbox Outfits &amp; Use Bundles</li><li style="list-style-type:circle;">And many more! Find a full list <a style="text-decoration:underline;cursor:pointer;" href="https://ropro.io#standard" target="_blank">here</a>.</li></ul>
@@ -264,6 +295,11 @@ async function renderMostPlayed(time) {
             return second[1] - first[1];
         });
         playTimes = playTimes.slice(0, 24)
+        if (playTimes.length == 0) {
+            document.getElementById('emptyPlaytimeLabel').style.display = "block"
+        } else {
+            document.getElementById('emptyPlaytimeLabel').style.display = "none"
+        }
         universeIds = []
         for (i = 0; i < playTimes.length; i++) {
             universeIds.push(playTimes[i][0])
@@ -313,8 +349,8 @@ async function renderMostPlayed(time) {
 
 async function mainHome() {
     if (await fetchSetting("mostPlayedGames")) {
-        div = document.createElement('div')
-        div.setAttribute("style", "height:150px;margin-left:auto;width:400px;display:inline-block;float:right;margin-right:0px;position:relative;min-width:380px;")
+        var div = document.createElement('div')
+        div.setAttribute("style", "height:150px;margin-left:auto;width:400px;display:inline-block;float:right;margin-right:0px;position:relative;min-width:380px;margin-bottom:10px;")
         div.innerHTML = mostPlayedHTML
         if (document.getElementsByClassName('home-header').length > 0) {
             document.getElementsByClassName('home-header')[0].appendChild(div)
@@ -332,13 +368,17 @@ async function mainHome() {
                 if (document.getElementsByClassName('home-header').length == 0) {
                     username = stripTags(currentuser.name)
                     usericon = `https://www.roblox.com/headshot-thumbnail/image?userId=${parseInt(currentuser.id)}&width=420&height=420&format=png`
-                    newHomeText = `<span>Welcome Home,</span><br><img class="avatar avatar-headshot-xs active" src="${stripTags(usericon)}" style="width:70px;height:auto;margin-top:0px;margin-left:5px;margin-right:5px;" id="myGlower"><h1 style="margin-bottom:7px;display:inline-block;">${premium}${stripTags(username)}</h1>`
+                    avatarHeadshot = `<img class="avatar avatar-headshot-xs active" src="${stripTags(usericon)}" style="width:70px;height:auto;margin-top:0px;margin-left:5px;margin-right:5px;" id="myGlower">`
                     document.getElementsByClassName('home-container')[0].getElementsByTagName('h1')[0].style.height = "50px"
-                    document.getElementsByClassName('home-container')[0].getElementsByTagName('h1')[0].innerHTML = newHomeText
                 }
             //})
         }
-        renderMostPlayed(7)
+        if (await checkVerification()) {
+            renderMostPlayed(30)
+        } else {
+            document.getElementById('mostPlayedLoadingBar').style.display = "none"
+            document.getElementById('timeLabel').parentNode.style.pointerEvents = "none"
+        }
         document.getElementById('scrollLeft').addEventListener('click', (event) => {
             if (page > 0) {
                 for (i = 0; i < pages[page].length; i++) {
@@ -373,7 +413,7 @@ async function mainHome() {
                 }
             }
         })
-        morePlaytimeSorts = await fetchSetting("morePlaytimeSorts")
+        morePlaytimeSorts = true
         $('.timeChoice').click(function(){
             time = this.getAttribute("time")
             if (time == "pastWeek") {
@@ -404,6 +444,23 @@ async function mainHome() {
                 } else {
                     upgradeModal()
                 }
+            }
+        })
+    }
+    if (!(await checkVerification())) {
+        var verifyDiv = document.createElement('div')
+        verifyDiv.innerHTML = `<div style="position:absolute;right:30px;top:35px;width:350px;z-index:100;"><p style="font-size:11px;margin-bottom:-6px;">Your user has not yet been verified in the current installation of RoPro. Some RoPro features require verification.</p><br><li class="rbx-upgrade-now" style="display: block;text-align:center;"><a id="roproVerifyButton" class="btn-growth-md btn-secondary-md">Verify My User (One Click)</a><span class="ropro-verify-info icon-moreinfo" style="cursor:pointer;margin-left:5px;position:relative;"><div style="display:none;position:absolute;left:-135px;top:-95px;font-size:13px;width:300px;background-color:#191B1D;padding:10px;border-radius:10px;" class="dark-theme ropro-verify-info-tooltip"><u>How verification works:</u><br>RoPro will automatically favorite then unfavorite a test game in order to verify your Roblox username &amp; ID.</div></span></li></div>`
+        if (document.getElementById('home-header') != null) {
+            document.getElementById('home-header').appendChild(verifyDiv)
+        } else {
+            document.getElementsByClassName('container-header')[0].appendChild(verifyDiv)
+        }
+        document.getElementById('roproVerifyButton').addEventListener('click', async function() {
+            verifyResult = await doVerification()
+            if (verifyResult == true) {
+                location.reload()
+            } else {
+                alert("RoPro Automatic Verification failed. Please try again. If this issue persists please try reloading or reinstalling RoPro.")
             }
         })
     }

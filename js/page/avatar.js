@@ -2,7 +2,7 @@
 
 RoPro (https://ropro.io) v1.3
 
-RoPro was wholly designed and coded by:
+The RoPro extension is developed by:
                                
 ,------.  ,--. ,-----.,------. 
 |  .-.  \ |  |'  .--./|  .---' 
@@ -58,7 +58,7 @@ var wearingHTML = `<div style="float:left;position:relative;width:277px;margin-b
 </span></div></span></div>
 <h3 style="padding-bottom:0px;margin-top:10px;position:relative;" class="ng-binding bodySelectorText">Body Selector <div style="position: absolute; top: 7px; right: 53px; z-index: 100;border-radius:0px;background:none;transform:scale(0.8);" class="avatar-type-toggle pill-toggle ng-scope" data-toggle="tooltip" title="Switch between classic R6 avatar and more expressive next generation R15 avatar"> <input type="radio" value="R6" onclick="document.getElementsByClassName('ropro-R6-label')[0].classList.add('ropro-active-radio');document.getElementsByClassName('ropro-R15-label')[0].classList.remove('ropro-active-radio');" class="ng-pristine ng-untouched ng-valid ng-not-empty" name="15"> <label onclick="document.getElementsByClassName('ropro-R6-label')[0].classList.add('ropro-active-radio');document.getElementsByClassName('ropro-R15-label')[0].classList.remove('ropro-active-radio');" class="ropro-R6-label" for="radio-R6">R6</label> <input type="radio" onclick="document.getElementsByClassName('ropro-R6-label')[0].classList.remove('ropro-active-radio');document.getElementsByClassName('ropro-R15-label')[0].classList.add('ropro-active-radio');" value="R15" class="ng-pristine ng-untouched ng-valid ng-not-empty" name="16"> <label onclick="document.getElementsByClassName('ropro-R6-label')[0].classList.remove('ropro-active-radio');document.getElementsByClassName('ropro-R15-label')[0].classList.add('ropro-active-radio');" class="ropro-R15-label" for="radio-R15">R15</label> </div><p id="defaultScales" style="position:absolute;right:17px;font-size:9px;display:inline-block;cursor:pointer;top:13px;font-weight:bold;" class="ng-binding clickAnItemText">Default</p><div></div>
 </h3>
-<div style="line-height:0px;pointer-events:initial;height:150px;width:275px;background-color:#1A1B1C;margin-top:5px;padding:5px;border-radius:15px;overflow:hidden;position:relative;" id="bodySelectorContainer"><div id="bodyColorContainer" style="float:left;transform:scaleX(0.8) scaleY(0.8);background-color:initial;padding:17px;margin:-17px;margin-top:-12px;border-radius:20px;margin-left:-7px;position:absolute;top:7px;left:0px;"><div style="width: 25px; height: 25px; margin-left: 37.5px; cursor: pointer; background-color: initial;" id="roproHeadColor"></div><div style="width: 25px; height: 50px; margin-left: 0px; margin-top: 2px; float: left; cursor: pointer; background-color: initial;" id="roproLeftArmColor"></div><div style="width: 46px; height: 50px; margin-left: 2px; margin-top: 2px; float: left; cursor: pointer; background-color: initial;" id="roproTorsoColor"></div><div style="width: 25px; height: 50px; margin-left: 2px; margin-top: 2px; float: left; cursor: pointer; background-color: initial;" id="roproRightArmColor"></div><br><div style="width: 22px; height: 50px; margin-left: 27px; margin-top: 2px; float: left; cursor: pointer; background-color: initial;" id="roproLeftLegColor"></div><div style="width: 22px; height: 50px; margin-left: 2px; margin-top: 2px; float: left; cursor: pointer; background-color: initial;" id="roproRightLegColor"></div></div><div id="bodyStyleBox" style="width:150px;float:right;position:absolute;top:16px;left:105px;"><img id="bodyStyleSelector" style="position:absolute;height:20px;top:88px;left:64.5px;cursor:pointer;-webkit-user-drag: none; user-select: none; display: none;" src="https://ropro.io/images/selector_icon.png"><img src="https://ropro.io/images/body_selector.svg"></div><div id="bodySizeBox" style="width:130px;float:right;margin-top:0px;position:absolute;top:5px;left:265px;"><img id="bodySizeSelector" style="position: absolute; height: 20px; top: 38.875px; left: 104.5px; cursor: pointer; -webkit-user-drag: none; user-select: none; display: none;" src="https://ropro.io/images/selector_icon.png"><img style="pointer-events:none;" src="https://ropro.io/images/body_size.svg"></div><div class="head-slider" id="headSizeBox" style="width:110px;float:right;margin-top:0px;position:absolute;top:25px;left:405px;"><img style="pointer-events: none; height: 80px; margin-left: 20px; transform: scale(1);" src="https://ropro.io/images/head_light.png" id="headSizeImage"><input type="range" oninput="document.getElementById('headSizeImage').style.transform='scale('+(0.9+this.value/50)+')';this.classList.remove('pr100');this.classList.remove('pr80');this.classList.remove('pr60');this.classList.remove('pr40');this.classList.remove('pr20');this.classList.remove('pr0');this.classList.add('pr' + (this.value * 20));" class="pr100" id="headSlider" step="1" min="0" max="5" value="5"></div></div>
+<div style="line-height:0px;pointer-events:initial;height:150px;width:275px;background-color:#1A1B1C;margin-top:5px;padding:5px;border-radius:15px;overflow:hidden;position:relative;" id="bodySelectorContainer"><div id="bodyColorContainer" style="float:left;transform:scaleX(0.8) scaleY(0.8);background-color:initial;padding:17px;margin:-17px;margin-top:-12px;border-radius:20px;margin-left:-7px;position:absolute;top:7px;left:0px;"><div style="width: 25px; height: 25px; margin-left: 37.5px; cursor: pointer; background-color: initial;" id="roproHeadColor"></div><div style="width: 25px; height: 50px; margin-left: 0px; margin-top: 2px; float: left; cursor: pointer; background-color: initial;" id="roproLeftArmColor"></div><div style="width: 46px; height: 50px; margin-left: 2px; margin-top: 2px; float: left; cursor: pointer; background-color: initial;" id="roproTorsoColor"></div><div style="width: 25px; height: 50px; margin-left: 2px; margin-top: 2px; float: left; cursor: pointer; background-color: initial;" id="roproRightArmColor"></div><br><div style="width: 22px; height: 50px; margin-left: 27px; margin-top: 2px; float: left; cursor: pointer; background-color: initial;" id="roproLeftLegColor"></div><div style="width: 22px; height: 50px; margin-left: 2px; margin-top: 2px; float: left; cursor: pointer; background-color: initial;" id="roproRightLegColor"></div></div><div id="bodyStyleBox" style="width:150px;float:right;position:absolute;top:16px;left:105px;"><img id="bodyStyleSelector" style="position:absolute;height:20px;top:88px;left:64.5px;cursor:pointer;-webkit-user-drag: none; user-select: none; display: none;" src="${chrome.runtime.getURL('/images/selector_icon.png')}"><img src="${chrome.runtime.getURL('/images/body_selector.svg')}"></div><div id="bodySizeBox" style="width:130px;float:right;margin-top:0px;position:absolute;top:5px;left:265px;"><img id="bodySizeSelector" style="position: absolute; height: 20px; top: 38.875px; left: 104.5px; cursor: pointer; -webkit-user-drag: none; user-select: none; display: none;" src="${chrome.runtime.getURL('/images/selector_icon.png')}"><img style="pointer-events:none;" src="${chrome.runtime.getURL('/images/body_size.svg')}"></div><div class="head-slider" id="headSizeBox" style="width:110px;float:right;margin-top:0px;position:absolute;top:25px;left:405px;"><img style="pointer-events: none; height: 80px; margin-left: 20px; transform: scale(1);" src="${chrome.runtime.getURL('/images/head_light.png')}" id="headSizeImage"><input type="range" oninput="document.getElementById('headSizeImage').style.transform='scale('+(0.9+this.value/50)+')';this.classList.remove('pr100');this.classList.remove('pr80');this.classList.remove('pr60');this.classList.remove('pr40');this.classList.remove('pr20');this.classList.remove('pr0');this.classList.add('pr' + (this.value * 20));" class="pr100" id="headSlider" step="1" min="0" max="5" value="5"></div></div>
 <h3 style="padding-bottom:0px;margin-top:5px;" class="ng-binding backgroundText">Background
 <button id="saveBackgroundButton" type="button" class="btn-fixed-width-lg btn-growth-lg" style="margin-top:7px;background-color:#0084dd;border:0px;width:130px;font-size:12px;padding:2px;float:right;display:none;">Save Background</button>
 </h3>
@@ -71,7 +71,8 @@ var backgroundContainerHTML = `<div style="line-height:0px;pointer-events:initia
 var wearing = []
 var wearingCostDict = {}
 var wearingInfoDict = {}
-var backgrounds = ["default"]
+var backgrounds = [{"name": "default", "image": "https://images.rbxcdn.com/a9755c3db57524e4bae224d4e5e99ba7-avatar-upsell-background.svg"}]
+var backgroundsDict = {"default": "https://images.rbxcdn.com/a9755c3db57524e4bae224d4e5e99ba7-avatar-upsell-background.svg"}
 var backgroundsPage = 0
 var avatarBackground = "default"
 var savedAvatarBackground = "default"
@@ -191,9 +192,9 @@ function fetchCurrentlyWearing(userId) {
 
 function fetchBackgrounds() {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getAvatarBackgrounds.php"}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getAvatarEditorBackgrounds.php"}, 
 			function(data) {
-					resolve(data.split(","))
+				resolve(data)
 			})
 	})
 }
@@ -224,6 +225,31 @@ function equipItem(assetId, assetTypeName) {
 	setTimeout(function() {
 		loadCurrentlyWearing()
 	}, 250)
+}
+
+var thumbnailCache = {}
+
+function setAssetThumbnail(id, dataSrc = false) {
+	if (id in thumbnailCache) {
+		if (dataSrc) {
+			$('.ropro-image-' + parseInt(id)).attr("data-src", stripTags(thumbnailCache[id]))
+		} else {
+			$('.ropro-image-' + parseInt(id)).attr("src", stripTags(thumbnailCache[id]))
+		}
+		return thumbnailCache[id]
+	}
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({greeting: "GetURLCached", url:"https://api.ropro.io/getAssetThumbnailUrl.php?id=" + parseInt(id)}, 
+			function(data) {
+					thumbnailCache[id] = data
+					resolve(data)
+					if (dataSrc) {
+						$('.ropro-image-' + parseInt(id)).attr("data-src", stripTags(data))
+					} else {
+						$('.ropro-image-' + parseInt(id)).attr("src", stripTags(data))
+					}
+			})
+	})
 }
 
 function setScales(height, width, proportion, bodyType, head) {
@@ -271,7 +297,7 @@ function addQuickEquipItem(item) {
 	li.setAttribute('class', 'qeitem')
 	li.innerHTML = `<div class="section-content" style="padding:0px;width:529px;height:70px;position:absolute;left:5px;margin-bottom:10px;">
 	<a target="_blank" href="https://www.roblox.com/catalog/${parseInt(item.assetId)}/Item">
-		<img style="margin-left:10px;width:60px;float:left;" class="border-bottom" data-src="https://www.roblox.com/asset-thumbnail/image?assetId=${parseInt(item.assetId)}&amp;width=420&amp;height=420&amp;format=png" src=""></a><div class="border-bottom" style="position:absolute;right:5px;"><div style="float:right;"><a href="https://www.roblox.com/catalog/${parseInt(item.assetId)}/Item">
+		<img style="margin-left:10px;width:60px;float:left;" class="border-bottom ropro-image-${parseInt(item.assetId)}" data-src="${chrome.runtime.getURL('/images/empty.png')}" src=""></a><div class="border-bottom" style="position:absolute;right:5px;"><div style="float:right;"><a href="https://www.roblox.com/catalog/${parseInt(item.assetId)}/Item">
 	</a>
 <button type="button" class="btn-growth-lg add-quick-equip-item-button" itemassettypename="${stripTags(item.assetType)}" itemid="${parseInt(item.assetId)}" itemname="${stripTags(item.name)}" style="margin:5px;margin-left:10px;margin-top:15px;height:40px;width:40px;background-color:#0084DD;border:0px;font-size:30px;padding:5px;float:right;">+</button></div></div>
 	<span style="" class="rbx-divider"></span>
@@ -284,6 +310,7 @@ function addQuickEquipItem(item) {
 		document.getElementById('quickEquipModal').parentNode.remove()
 	})
 	document.getElementById('quickEquipInventoryList').appendChild(li)
+	setAssetThumbnail(item.assetId, true)
 }
 
 function remove_duplicates(arr) {
@@ -310,7 +337,7 @@ async function addQuickEquipModal() {
 		<div style="background-color:#232527;position:absolute;width:600px;height:575px;left:calc(50% - 300px);top:calc(50% - 300px);" class="dark-theme modal-content upgrade-modal-content">
 			<span style="margin-top:5px;margin-right:5px;font-size:40px;" class="upgrade-modal-close">×</span>
 			<h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:25px;left:25px;width:550px;margin-top:10px;">
-				<img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="https://ropro.io/images/ropro_logo.svg">
+				<img style="width:119px;left:0px;margin-right:10px;margin-top:-20px;margin-left:35px;" src="${chrome.runtime.getURL('/images/ropro_logo.png')}">
 				<p style="color:white;display:inline-block;font-size:31px;font-weight:650;">Quick Equip Items</p>
 			</h2>
 			<span id="quickEquipLoading" style="margin:-7px;transform: scale(1.2); width: 100px; height: 25px; position:absolute;top:270px;left:250px;" class="spinner spinner-default"></span><div style="position:absolute;top:110px;width:550px;height:450px;left:25px;display:none;" id="inventoryDiv">
@@ -393,7 +420,7 @@ function createUpgradeModal() {
     modalDiv.style.zIndex = 100000
     modalHTML = `<div id="standardUpgradeModal" style="z-index:10000;display:block;" class="upgrade-modal"><div style="background-color:#232527;position:absolute;width:500px;height:500px;left:-webkit-calc(50% - 250px);top:-webkit-calc(50% - 250px);" class="modal-content upgrade-modal-content">
     <span style="margin-top:5px;margin-right:5px;font-size:40px;" class="upgrade-modal-close">×</span>
-    <h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:20px;left:40px;"><img style="width:70px;left:0px;" src="https://ropro.io/images/standard_icon.png"> Standard Tier Feature</h2><div style="font-family:HCo Gotham SSm;color:white;font-size:16px;position:absolute;top:115px;left:200px;width:270px;">RoPro Outfit Swapper is only available for<br><b><img style="width:20px;margin-top:-3px;margin-right:3px;" src="https://ropro.io/images/standard_icon.png">RoPro Standard Tier+</b><br>subscribers. This feature switches your avatar to a randomly chosen outfit you've made at a chosen time interval.</div><div style="font-family:HCo Gotham SSm;color:white;font-size:18px;position:absolute;top:270px;left:200px;width:270px;"><u>More Subscription Benefits:</u>
+    <h2 style="padding-bottom:5px;border-bottom: 3px solid #FFFFFF;font-family:HCo Gotham SSm;color:white;font-size:30px;position:absolute;top:20px;left:40px;"><img style="width:70px;left:0px;" src="${chrome.runtime.getURL('/images/standard_icon.png')}"> Standard Tier Feature</h2><div style="font-family:HCo Gotham SSm;color:white;font-size:16px;position:absolute;top:115px;left:200px;width:270px;">RoPro Outfit Swapper is only available for<br><b><img style="width:20px;margin-top:-3px;margin-right:3px;" src="${chrome.runtime.getURL('/images/standard_icon.png')}">RoPro Standard Tier+</b><br>subscribers. This feature switches your avatar to a randomly chosen outfit you've made at a chosen time interval.</div><div style="font-family:HCo Gotham SSm;color:white;font-size:18px;position:absolute;top:270px;left:200px;width:270px;"><u>More Subscription Benefits:</u>
     <ul style="margin-left:20px;font-size:12px;font-family:HCo Gotham SSm;">
     <li style="list-style-type:circle;">Fastest Server &amp; Server Size Sort</li>
     <li style="list-style-type:circle;">More Game Filters &amp; Like Ratio Filter</li><li style="list-style-type:circle;">Trade Value &amp; Demand Calculator</li><li style="list-style-type:circle;">More Game Playtime Sorts</li><li style="list-style-type:circle;">And many more! Find a full list <a style="text-decoration:underline;cursor:pointer;" href="https://ropro.io#standard" target="_blank">here</a>.</li></ul>
@@ -429,7 +456,7 @@ function upgradeModal() {
 
 async function addOutfitSwapper() {
 	div = document.createElement('div')
-	outfitRandomizerButtonHTML = `<button id="outfitRandomizerButton" style="margin-right:150px;" ng-if="selectedMenu.name !== 'PresetCostumes'" ng-type="button" class="btn-secondary-xs btn-float-right ng-binding ng-scope" ng-click="createOutfitClicked()"> <img class="outfit-randomizer-icon" style="width:15px;margin-top:-12px;margin-bottom:-10px;margin-right:4px;" src="https://ropro.io/images/random_game.svg">Outfit Swapper </button>`
+	outfitRandomizerButtonHTML = `<button id="outfitRandomizerButton" style="margin-right:150px;" ng-if="selectedMenu.name !== 'PresetCostumes'" ng-type="button" class="btn-secondary-xs btn-float-right ng-binding ng-scope" ng-click="createOutfitClicked()"> <img class="outfit-randomizer-icon" style="width:15px;margin-top:-12px;margin-bottom:-10px;margin-right:4px;" src="${chrome.runtime.getURL('/images/random_game.svg')}">Outfit Swapper </button>`
 	div.innerHTML = outfitRandomizerButtonHTML
 	button = div.childNodes[0]
 	document.getElementsByClassName('btn-secondary-xs btn-float-right ng-binding ng-scope')[0].parentNode.appendChild(button)
@@ -441,7 +468,13 @@ async function addOutfitSwapper() {
 async function addBackgrounds() {
 	avatarBackgrounds = await fetchBackgrounds()
 	for (i = 0; i < avatarBackgrounds.length; i++) {
-		backgrounds.push(stripTags(avatarBackgrounds[i].split('.png')[0]))
+		if (avatarBackgrounds[i].name != "none") {
+			backgrounds.push(avatarBackgrounds[i])
+		}
+		backgroundsDict[avatarBackgrounds[i].name] = avatarBackgrounds[i].image
+	}
+	if (avatarBackground != "default" && typeof avatarBackground != "undefined") {
+		setAvatarBackground(avatarBackground)
 	}
 	loadBackgroundPage()
 	document.getElementById('saveBackgroundButton').addEventListener('click', function() {
@@ -458,7 +491,7 @@ async function loadBackgroundPage() {
 	$('.avatar-background-selector').remove()
 	for (i = 0; i < 5; i++) {
 		index = (backgroundsPage * 5) + i
-		backgroundName = backgrounds[index]
+		backgroundName = backgrounds[index].name
 		div = document.createElement('div')
 		div.classList.add('avatar-background-selector')
 		if (avatarBackground == backgroundName) {
@@ -466,7 +499,7 @@ async function loadBackgroundPage() {
 		}
 		div.setAttribute('style', `display:inline-block;height:63px;width:50px;overflow:hidden;margin-left:${i == 0 ? '2.5' : '5'}px;`)
 		div.setAttribute('background-name', backgroundName.length >= 5 ? 'default' : backgroundName)
-		imageSrc = backgroundName.length >= 5 ? 'https://images.rbxcdn.com/a9755c3db57524e4bae224d4e5e99ba7-avatar-upsell-background.svg' : 'https://ropro.io/avatar_backgrounds/' + backgroundName + '.png'
+		imageSrc = backgroundsDict[backgroundName]
 		div.innerHTML = `<img style="height:63px;" src="${imageSrc}">`
 		document.getElementById('backgroundContainer').appendChild(div)
 		div.addEventListener('click', function() {
@@ -489,7 +522,7 @@ function setAvatarBackground(backgroundName) {
 		document.getElementById('saveBackgroundButton').style.display = 'none'
 	}
 	avatarBackground = backgroundName.length >= 5 ? 'default' : backgroundName
-	imageSrc = backgroundName.length >= 5 ? 'https://images.rbxcdn.com/a9755c3db57524e4bae224d4e5e99ba7-avatar-upsell-background.svg' : 'https://ropro.io/avatar_backgrounds/' + backgroundName + '.png'
+	imageSrc = backgroundsDict[backgroundName]
 	if (avatarBackground == 'default') {
 		document.getElementsByClassName('avatar-back')[0].style.backgroundImage = ''
 		document.getElementsByClassName('avatar-back')[0].style.backgroundSize = ''
@@ -511,10 +544,11 @@ function updateCurrentlyWearing() {
 		<span style="font-size:12px;" class="rbx-text-navbar-right text-header wearing-robux-${item}">${wearingCostDict[item] == null ? "Offsale" : addCommas(parseInt(wearingCostDict[item]))}</span></div>
 		</div>
 		<div style="display:inline-block;width:50px;height:50px;" class="thumbnail-2d-container wearing-card">
-		<a><img itemid="${item}" class="item-card-thumb-container ${item}" style="width:100%;height:100%;" src="https://www.roblox.com/asset-thumbnail/image?assetId=${item}&width=420&height=420&format=png">
+		<a><img itemid="${item}" class="item-card-thumb-container ${item} ropro-image-${parseInt(item)}" style="width:100%;height:100%;" src="${chrome.runtime.getURL('/images/empty.png')}">
 		</a></div>`
 		div.setAttribute("class", "wearing-div")
 		wearingContainer.appendChild(div)
+		setAssetThumbnail(item)
 		itemImage = div.getElementsByTagName("img")[0]
 		function listen(itemImage) {
 			itemImage.addEventListener("click", async function(){
@@ -526,11 +560,11 @@ function updateCurrentlyWearing() {
 		listen(itemImage)
 	}
 	div = document.createElement('div')
-	div.innerHTML += `<div class="wearing-div"><div style="height:25px!important;margin-top:15px;z-index:1000;" class="wearing-name input-group input-field"><a style="font-size:13px;font-weight:bold;"><img src="https://ropro.io/images/ropro_logo_small.png" style="height:18px;margin-top:-2px;filter: drop-shadow(rgb(57,59,61) 2px 2px 1px);"> Quick Equip</a>
+	div.innerHTML += `<div class="wearing-div"><div style="height:25px!important;margin-top:15px;z-index:1000;" class="wearing-name input-group input-field"><a style="font-size:13px;font-weight:bold;"><img src="${chrome.runtime.getURL('/images/ropro_logo_small.png')}" style="height:18px;margin-top:-2px;filter: drop-shadow(rgb(57,59,61) 2px 2px 1px);"> Quick Equip</a>
 	<br>
 	</div>
 	<div style="display:inline-block;width:50px;height:50px;" class="thumbnail-2d-container wearing-card">
-	<a><img class="item-card-thumb-container" style="width:100%;height:100%;filter:invert(0.7);" src="https://ropro.io/images/quick_add.png">
+	<a><img class="item-card-thumb-container" style="width:100%;height:100%;filter:invert(0.7);" src="${chrome.runtime.getURL('/images/quick_add.png')}">
 	</a></div></div>`
 	div.setAttribute("class", "wearing-div")
 	div.addEventListener('click', function() {
@@ -743,7 +777,7 @@ async function mainAvatar() {
 			backgroundDiv = document.createElement('div')
 			backgroundDiv.innerHTML = backgroundContainerHTML
 			document.getElementById('wearing').insertBefore(backgroundDiv, document.getElementsByClassName('backgroundText')[0].nextElementSibling)
-			document.getElementsByClassName('content')[0].setAttribute('style', "margin-bottom:400px;")
+			document.getElementsByClassName('content')[0].style.marginBottom = "400px"
 			document.getElementsByClassName('backgrounds-scroll-right')[0].addEventListener('click', function() {
 				if (backgroundsPage * 5 < backgrounds.length - 5) {
 					backgroundsPage++
@@ -767,9 +801,6 @@ async function mainAvatar() {
 			savedAvatarBackground = await getStorage("avatarBackground")
 			avatarBackground = savedAvatarBackground
 			addBackgrounds()
-			if (avatarBackground != "default" || typeof avatarBackground != "undefined") {
-				setAvatarBackground(avatarBackground)
-			}
 			//addOutfitSwapper()
 			$("#roproHeadColor").click(function(){
 				selectBodyPart(this.id)

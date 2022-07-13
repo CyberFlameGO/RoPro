@@ -2,7 +2,7 @@
 
 RoPro (https://ropro.io) v1.3
 
-RoPro was wholly designed and coded by:
+The RoPro extension is developed by:
                                
 ,------.  ,--. ,-----.,------. 
 |  .-.  \ |  |'  .--./|  .---' 
@@ -153,7 +153,7 @@ function getValueHTML(theirValue, ourValue) {
 	}
 	ourValue = stripTags(addCommas(ourValue))
 	theirValue = stripTags(addCommas(theirValue))
-	valueHTML = `<span style="margin-top: 25px;background-color:${color};padding-left:5px;padding-right:5px;" class="font-caption-body text-date-hint text trade-sent-date ng-binding" ng-bind="trade.created | date:'shortDate'"><span class="icon icon-robux-16x16" style="background-image:url(https://ropro.io/images/ropro_icon_small.png);background-position:1px 0px;background-size:80%;"></span>${ourValue}<hr style="padding:0px;margin:0px"><span class="icon icon-robux-16x16" style="background-image:url(https://ropro.io/images/ropro_icon_small.png);background-position:1px 0px;background-size:80%;"></span>${theirValue}</span>`
+	valueHTML = `<span style="margin-top: 25px;background-color:${color};padding-left:5px;padding-right:5px;" class="font-caption-body text-date-hint text trade-sent-date ng-binding" ng-bind="trade.created | date:'shortDate'"><span class="icon icon-robux-16x16" style="background-image:url(${chrome.runtime.getURL('/images/ropro_icon_small.png')});background-position:1px 0px;background-size:80%;"></span>${ourValue}<hr style="padding:0px;margin:0px"><span class="icon icon-robux-16x16" style="background-image:url(${chrome.runtime.getURL('/images/ropro_icon_small.png')});background-position:1px 0px;background-size:80%;"></span>${theirValue}</span>`
 	return valueHTML
 }
 

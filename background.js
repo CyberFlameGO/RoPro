@@ -2,7 +2,7 @@
 
 RoPro (https://ropro.io) v1.3
 
-RoPro was wholly designed and coded by:
+The RoPro extension is developed by:
                                
 ,------.  ,--. ,-----.,------. 
 |  .-.  \ |  |'  .--./|  .---' 
@@ -36,12 +36,23 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse)
 {
 	switch(request.greeting) {
 		case "GetURL":
-			if (request.url.includes("ropro.io")) {
-				$.post(request.url, function(data) {
-					sendResponse(data);
-				}).fail(function() {
-					sendResponse("ERROR")
-				})
+			if (request.url.startsWith('https://ropro.io') || request.url.startsWith('https://api.ropro.io')) {
+				async function doPost() {
+					verificationDict = await getStorage('userVerification')
+					userID = await getStorage('rpUserID')
+					roproVerificationToken = "none"
+					if (typeof verificationDict != 'undefined') {
+						if (verificationDict.hasOwnProperty(userID)) {
+							roproVerificationToken = verificationDict[userID]
+						}
+					}
+					$.post({'url':request.url, 'headers': {'ropro-verification': roproVerificationToken, 'ropro-id': userID}}, function(data) {
+						sendResponse(data);
+					}).fail(function() {
+						sendResponse("ERROR")
+					})
+				}
+				doPost()
 			} else {
 				$.get(request.url, function(data) {
 					sendResponse(data);
@@ -50,15 +61,45 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse)
 				})
 			}
 			break;
-		case "PostURL":
-			$.ajax({
-				url: request.url,
-				type: "POST",
-				data: request.jsonData,
-				success: function(data) {
-					sendResponse(data);
-				}
+		case "GetURLCached":
+			$.get({url: request.url, headers: {'Cache-Control': 'public, max-age=604800', 'Pragma': 'public, max-age=604800'}}, function(data) {
+				sendResponse(data);
+			}).fail(function() {
+				sendResponse("ERROR")
 			})
+			break;
+		case "PostURL":
+			if (request.url.startsWith('https://ropro.io') || request.url.startsWith('https://api.ropro.io')) {
+				async function doPostURL() {
+					verificationDict = await getStorage('userVerification')
+					userID = await getStorage('rpUserID')
+					roproVerificationToken = "none"
+					if (typeof verificationDict != 'undefined') {
+						if (verificationDict.hasOwnProperty(userID)) {
+							roproVerificationToken = verificationDict[userID]
+						}
+					}
+					$.ajax({
+						url: request.url,
+						type: "POST",
+						headers: {'ropro-verification': roproVerificationToken, 'ropro-id': userID},
+						data: request.jsonData,
+						success: function(data) {
+							sendResponse(data);
+						}
+					})
+				}
+				doPostURL()
+			} else {
+				$.ajax({
+					url: request.url,
+					type: "POST",
+					data: request.jsonData,
+					success: function(data) {
+						sendResponse(data);
+					}
+				})
+			}
 			break;
 		case "PostValidatedURL":
 			$.ajax({
@@ -73,46 +114,31 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse)
 					} else {
 						sendResponse(null)
 					}
-				}
-			}).fail(async function(){
-				console.log("TOKEN FAILED, FETCHING NEW TOKEN")
-				myToken = await loadToken()
-				$.ajax({
-					url: request.url,
-					type: "POST",
-					headers: {"X-CSRF-TOKEN": myToken},
-					contentType: 'application/json',
-					data: request.jsonData,
-					success: function(data) {
-						if (!("errors" in data)) {
-							sendResponse(data);
-						} else {
+				},
+				error: function(response) {
+					if (response.status != 403) {
+						sendResponse(null)
+					}
+					token = response.getResponseHeader('x-csrf-token')
+					myToken = token
+					$.ajax({
+						url: request.url,
+						type: "POST",
+						headers: {"X-CSRF-TOKEN": myToken},
+						contentType: 'application/json',
+						data: request.jsonData,
+						success: function(data) {
+							if (!("errors" in data)) {
+								sendResponse(data);
+							} else {
+								sendResponse(null)
+							}
+						},
+						error: function(response) {
 							sendResponse(null)
 						}
-					}
-				}).fail(function(){
-					console.log("TOKEN FAILED AGAIN, PERFORMING BACKUP TOKEN FETCH")
-					$.post('https://catalog.roblox.com/v1/catalog/items/details').fail(function(r,e,s){
-						token = r.getResponseHeader('x-csrf-token')
-						myToken = token
-						chrome.storage.sync.set({'token': token})
-						console.log("New Token: " + token)
-						$.ajax({
-							url: request.url,
-							type: "POST",
-							headers: {"X-CSRF-TOKEN": myToken},
-							contentType: 'application/json',
-							data: request.jsonData,
-							success: function(data) {
-								if (!("errors" in data)) {
-									sendResponse(data);
-								} else {
-									sendResponse(null)
-								}
-							}
-						})
 					})
-				})
+				}
 			})
 			break;
 		case "GetStatusCode": 
@@ -138,8 +164,8 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse)
 			})
 			break;
 		case "GetUserID":
-			$.get('https://www.roblox.com/mobileapi/userinfo', function(data,error,res) {
-				sendResponse(data['UserID'])
+			$.get('https://users.roblox.com/v1/users/authenticated', function(data,error,res) {
+				sendResponse(data['id'])
 			})
 			break;
 		case "GetCachedTrades":
@@ -273,6 +299,44 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse)
 			}
 			getSettingValidity()
 			break;
+		case "GetSettingValidityInfo":
+			async function getSettingValidityInfo(){
+				valid = await loadSettingValidityInfo(request.setting)
+				sendResponse(valid)
+			}
+			getSettingValidityInfo()
+			break;
+		case "CheckVerification":
+			async function getUserVerification(){
+				verificationDict = await getStorage('userVerification')
+				if (typeof verificationDict == 'undefined') {
+					sendResponse(false)
+				} else {
+					if (verificationDict.hasOwnProperty(await getStorage('rpUserID'))) {
+						sendResponse(true)
+					} else {
+						sendResponse(false)
+					}
+				}
+			}
+			getUserVerification()
+			break;
+		case "HandleUserVerification":
+			async function doUserVerification(){
+				verification = await verifyUser()
+				verificationDict = await getStorage('userVerification')
+				if (typeof verificationDict == 'undefined') {
+					sendResponse(false)
+				} else {
+					if (verificationDict.hasOwnProperty(await getStorage('rpUserID'))) {
+						sendResponse(true)
+					} else {
+						sendResponse(false)
+					}
+				}
+			}
+			doUserVerification()
+			break;
 		case "SyncSettings":
 			syncSettings()
 			setTimeout(function(){
@@ -368,6 +432,13 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse)
 				});
 			})
 			break;
+		case "UpdateGlobalTheme":
+			async function doLoadGlobalTheme(){
+				await loadGlobalTheme()
+				sendResponse()
+			}
+			doLoadGlobalTheme()
+			break;
 	}
 
 	return true;
@@ -375,7 +446,7 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse)
 
 var disabledFeatures = "";
 
-$.get("https://api.ropro.io/disabledFeatures.php", function(data) {
+$.post("https://api.ropro.io/disabledFeatures.php", function(data) {
 		disabledFeatures = data
 })
 
@@ -442,6 +513,7 @@ var defaultSettings = {
 	itemInfoCard: true,
 	ownerHistory: true,
 	profileThemes: true,
+	globalThemes: false,
 	lastOnline: true,
 	roproEggCollection: true,
 	profileValue: true,
@@ -483,6 +555,7 @@ var defaultSettings = {
 	underOverRAP: true,
 	winLossDisplay: true,
 	mostPlayedGames: true,
+	mostPopularSort: true,
 	experienceQuickSearch: true,
 	avatarEditorChanges: true,
 	playtimeTracking: true,
@@ -515,6 +588,10 @@ async function initializeSettings() {
 					await setStorage("rpSettings", initialSettings)
 				}
 			}
+			userVerification = await getStorage('userVerification')
+			if (typeof userVerification === "undefined") {
+				await setStorage("userVerification", {})
+			}
 		}
 		checkSettings()
 	})
@@ -526,7 +603,7 @@ async function binarySearchServers(gameID, playerCount, maxLoops = 20) {
 		return new Promise(resolve2 => {
 			$.get("https://api.ropro.io/getServerCursor.php?startIndex=" + index + "&placeId=" + gameID, async function(data) {
 				var cursor = data.cursor == null ? "" : data.cursor
-				$.get("https://games.roblox.com/v1/games/" + gameID + "/servers/Public?cursor=" + cursor + "&sortOrder=Asc", function(data) {
+				$.get("https://games.roblox.com/v1/games/" + gameID + "/servers/Public?cursor=" + cursor + "&sortOrder=Asc&limit=100", function(data) {
 					resolve2(data)
 				})
 			})
@@ -576,7 +653,7 @@ async function maxPlayerCount(gameID, count) {
 				var done = false
 				function getReversePage(cursor) {
 					return new Promise(resolve2 => {
-						$.get("https://games.roblox.com/v1/games/" + gameID + "/servers/Public?cursor=" + cursor + "&sortOrder=Asc", function(data) {
+						$.get("https://games.roblox.com/v1/games/" + gameID + "/servers/Public?cursor=" + cursor + "&sortOrder=Asc&limit=100", function(data) {
 							if (data.hasOwnProperty('data')) {
 								for (var i = 0; i < data.data.length; i++) {
 									serverDict[data.data[i].id] = data.data[i]
@@ -629,7 +706,7 @@ async function serverFilterReverseOrder(gameID) {
 				var done = false
 				function getReversePage(cursor) {
 					return new Promise(resolve2 => {
-						$.get("https://games.roblox.com/v1/games/" + gameID + "/servers/Public?cursor=" + cursor + "&sortOrder=Asc", function(data) {
+						$.get("https://games.roblox.com/v1/games/" + gameID + "/servers/Public?cursor=" + cursor + "&sortOrder=Asc&limit=100", function(data) {
 							if (data.hasOwnProperty('data')) {
 								for (var i = 0; i < data.data.length; i++) {
 									serverDict[data.data[i].id] = data.data[i]
@@ -686,7 +763,7 @@ async function serverFilterRandomShuffle(gameID, minServers = 150) {
 								if (cursor == null) {
 									cursor = ""
 								}
-								$.get("https://games.roblox.com/v1/games/" + gameID + "/servers/Public?cursor=" + cursor + "&sortOrder=Asc", function(data) {
+								$.get("https://games.roblox.com/v1/games/" + gameID + "/servers/Public?cursor=" + cursor + "&sortOrder=Asc&limit=100", function(data) {
 									if (data.hasOwnProperty('data')) {
 										for (var i = 0; i < data.data.length; i++) {
 											if (data.data[i].hasOwnProperty('playing') && data.data[i].playing < data.data[i].maxPlayers) {
@@ -1026,7 +1103,7 @@ async function mutualFriends(userId) {
 						for (i = 0; i < theirFriends.data.length; i++) {
 							friend = theirFriends.data[i]
 							if (friend.id in friends) {
-								mutuals.push({"name": stripTags(friend.name), "link": "/users/" + parseInt(friend.id) + "/profile", "icon": "https://www.roblox.com/bust-thumbnail/image?userId=" + parseInt(friend.id) + "&width=420&height=420&format=png", "additional": friend.isOnline ? "Online" : "Offline"})
+								mutuals.push({"name": stripTags(friend.name), "link": "/users/" + parseInt(friend.id) + "/profile", "icon": "https://www.roblox.com/headshot-thumbnail/image?userId=" + parseInt(friend.id) + "&width=420&height=420&format=png", "additional": friend.isOnline ? "Online" : "Offline"})
 							}
 						}
 						console.log("Mutual Friends:", mutuals)
@@ -1047,7 +1124,7 @@ async function mutualFriends(userId) {
 						for (i = 0; i < theirFriends.data.length; i++) {
 							friend = theirFriends.data[i]
 							if (friend.id in friends) {
-								mutuals.push({"name": stripTags(friend.name), "link": "/users/" + parseInt(friend.id) + "/profile", "icon": "https://www.roblox.com/bust-thumbnail/image?userId=" + parseInt(friend.id) + "&width=420&height=420&format=png", "additional": friend.isOnline ? "Online" : "Offline"})
+								mutuals.push({"name": stripTags(friend.name), "link": "/users/" + parseInt(friend.id) + "/profile", "icon": "https://www.roblox.com/headshot-thumbnail/image?userId=" + parseInt(friend.id) + "&width=420&height=420&format=png", "additional": friend.isOnline ? "Online" : "Offline"})
 							}
 						}
 						console.log("Mutual Friends:", mutuals)
@@ -1074,7 +1151,7 @@ async function mutualFollowing(userId) {
 						for (i = 0; i < theirFriends.data.length; i++) {
 							friend = theirFriends.data[i]
 							if (friend.id in friends) {
-								mutuals.push({"name": stripTags(friend.name), "link": "/users/" + parseInt(friend.id) + "/profile", "icon": "https://www.roblox.com/bust-thumbnail/image?userId=" + parseInt(friend.id) + "&width=420&height=420&format=png", "additional": friend.isOnline ? "Online" : "Offline"})
+								mutuals.push({"name": stripTags(friend.name), "link": "/users/" + parseInt(friend.id) + "/profile", "icon": "https://www.roblox.com/headshot-thumbnail/image?userId=" + parseInt(friend.id) + "&width=420&height=420&format=png", "additional": friend.isOnline ? "Online" : "Offline"})
 							}
 						}
 						console.log("Mutual Following:", mutuals)
@@ -1102,7 +1179,7 @@ async function mutualFollowers(userId) {
 						for (i = 0; i < theirFriends.data.length; i++) {
 							friend = theirFriends.data[i]
 							if (friend.id in friends) {
-								mutuals.push({"name": stripTags(friend.name), "link": "/users/" + parseInt(friend.id) + "/profile", "icon": "https://www.roblox.com/bust-thumbnail/image?userId=" + parseInt(friend.id) + "&width=420&height=420&format=png", "additional": friend.isOnline ? "Online" : "Offline"})
+								mutuals.push({"name": stripTags(friend.name), "link": "/users/" + parseInt(friend.id) + "/profile", "icon": "https://www.roblox.com/headshot-thumbnail/image?userId=" + parseInt(friend.id) + "&width=420&height=420&format=png", "additional": friend.isOnline ? "Online" : "Offline"})
 							}
 						}
 						console.log("Mutual Followers:", mutuals)
@@ -1198,7 +1275,7 @@ async function mutualItems(userId) {
 			mutuals = []
 			for (let item in theirItems) {
 				if (item in myItems) {
-					mutuals.push({"name": stripTags(myItems[item].name), "link": stripTags("https://www.roblox.com/catalog/" + myItems[item].assetId), "icon": "https://www.roblox.com/asset-thumbnail/image?assetId=" + myItems[item].assetId + "&width=420&height=420&format=png", "additional": ""})
+					mutuals.push({"name": stripTags(myItems[item].name), "link": stripTags("https://www.roblox.com/catalog/" + myItems[item].assetId), "icon": "https://api.ropro.io/getAssetThumbnail.php?id=" + myItems[item].assetId, "additional": ""})
 				}
 			}
 			console.log("Mutual Items:", mutuals)
@@ -1221,7 +1298,7 @@ async function mutualLimiteds(userId) {
 			mutuals = []
 			for (let item in theirLimiteds) {
 				if (item in myLimiteds) {
-					mutuals.push({"name": stripTags(myLimiteds[item].name), "link": stripTags("https://www.roblox.com/catalog/" + myLimiteds[item].assetId), "icon": "https://www.roblox.com/asset-thumbnail/image?assetId=" + myLimiteds[item].assetId + "&width=420&height=420&format=png", "additional": "Quantity: " + parseInt(theirLimiteds[item].quantity)})
+					mutuals.push({"name": stripTags(myLimiteds[item].name), "link": stripTags("https://www.roblox.com/catalog/" + myLimiteds[item].assetId), "icon": "https://api.ropro.io/getAssetThumbnail.php?id=" + myLimiteds[item].assetId, "additional": "Quantity: " + parseInt(theirLimiteds[item].quantity)})
 				}
 			}
 			console.log("Mutual Limiteds:", mutuals)
@@ -1475,13 +1552,13 @@ function addCommas(nStr){
 	return x1 + x2;
 }
 
-var myToken;
+var myToken = null;
 
 function loadToken() {
 	return new Promise(resolve => {
 		try {
 			$.ajax({
-				url:'https://roblox.com',
+				url:'https://roblox.com/home',
 				type:'GET',
 				success: function(data) {
 					token = data.split('data-token=')[1].split(">")[0].replace('"', '').replace('"', '').split(" ")[0]
@@ -1493,7 +1570,7 @@ function loadToken() {
 				}
 			}).fail(function() {
 				$.ajax({
-					url:'https://roblox.com/home',
+					url:'https://roblox.com',
 					type:'GET',
 					success: function(data) {
 						token = data.split('data-token=')[1].split(">")[0].replace('"', '').replace('"', '').split(" ")[0]
@@ -1545,52 +1622,6 @@ function loadToken() {
 	})
 }
 
-async function fetchSharedSecret() { //Because Roblox offers no public OAuth API (at the time of writing this), RoPro uses a shared secret between the user & server for validation. This shared secret is the Message ID of their first welcome message from Builderman.
-	return new Promise(resolve => {
-		try {
-			$.ajax({
-				url: 'https://privatemessages.roblox.com/v1/messages?pageNumber=999999999&pageSize=1&messageTab=inbox', //The first Message ID from Builderman is only used because it is secret to the user, so we can use it to validate that the user is who they say they are later on, we do not store the content of any messages; just the ID of the first one from Builderman. Roblox, if you are reading this please consider adding a public OAuth API so I don't have to do something this hacky.
-				type: 'GET',
-				success: function(data) {
-					if (data.collection.length != 1) {
-						$.ajax({
-							url: 'https://privatemessages.roblox.com/v1/messages?pageNumber=999999999&pageSize=1&messageTab=archive',
-							type: 'GET',
-							success: function(data2) {
-								if (data2.collection.length != 1) {
-									resolve([0, 0])
-								} else {
-									resolve([data2.collection[0].id, new Date(data2.collection[0].created).getTime()])
-								}
-							}
-						})
-					} else {
-						if (data.collection[0].sender.name.toLowerCase() == "builderman") {
-							resolve([data.collection[0].id, new Date(data.collection[0].created).getTime()])
-						} else {
-							$.ajax({
-								url: 'https://privatemessages.roblox.com/v1/messages?pageNumber=999999999&pageSize=1&messageTab=archive',
-								type: 'GET',
-								success: function(data2) {
-									if (data2.collection.length != 1) {
-										resolve([data.collection[0].id, new Date(data.collection[0].created).getTime()])
-									} else {
-										resolve([data2.collection[0].id, new Date(data2.collection[0].created).getTime()])
-									}
-								}
-							})
-						}
-					}
-				}, error: function(xhr, ajaxOptions, thrownError) {
-					resolve([0, 0])
-				}
-			})
-		} catch (e) {
-			resolve([0, 0])
-		}
-	})
-}
-
 async function sha256(message) {
     const msgBuffer = new TextEncoder().encode(message);                    
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -1602,7 +1633,7 @@ async function sha256(message) {
 async function handleAlert() {
 	timestamp = new Date().getTime()
 	$.ajax({
-		url:"https://api.ropro.io/handleAlert.php?timestamp=" + timestamp,
+		url:"https://api.ropro.io/handleRoProAlert.php?timestamp=" + timestamp,
 		type:'GET',
 		success: async function(data, error, response) {
 			data = JSON.parse(atob(data))
@@ -1611,8 +1642,14 @@ async function handleAlert() {
 				validation = response.getResponseHeader('validation' + (await sha256(timestamp % 1024)).split("a")[0])
 				if (await sha256(validation) == validationHash) {
 					alreadyAlerted = await getLocalStorage("alreadyAlerted")
-					if (alreadyAlerted != data.message) {
-						setLocalStorage("rpAlert", data.message)
+					linkHTML = ""
+					if (data.hasOwnProperty('link') && data.hasOwnProperty('linktext')) {
+						linkHTML = `<a href=\'${stripTags(data.link)}\' target=\'_blank\' style=\'margin-left:10px;text-decoration:underline;\' class=\'text-link\'><b>${stripTags(data.linktext)}</b></a>`
+					}
+					closeAlertHTML = `<div style=\'opacity:0.6;margin-right:5px;display:inline-block;margin-left:45px;cursor:pointer;\'class=\'alert-close\'><b>Close Alert<b></div>`
+					message = stripTags(data.message) + linkHTML + closeAlertHTML
+					if (alreadyAlerted != message) {
+						setLocalStorage("rpAlert", message)
 					}
 				} else {
 					console.log("Validation failed! Not alerting user.")
@@ -1631,55 +1668,71 @@ setInterval(function() {
 }, 10 * 60 * 1000)
 
 const SubscriptionManager = () => {
-	let subscription = fetchSubscription()
+	let subscription = getStorage('rpSubscription')
 	let date = Date.now()
 	function fetchSubscription() {
 		return new Promise(resolve => {
 			async function doGet(resolve) {
-				$.post("https://api.ropro.io/getSubscription.php?key=" + await getStorage("subscriptionKey"), function(data){
+				verificationDict = await getStorage('userVerification')
+				userID = await getStorage('rpUserID')
+				roproVerificationToken = "none"
+				if (typeof verificationDict != 'undefined') {
+					if (verificationDict.hasOwnProperty(userID)) {
+						roproVerificationToken = verificationDict[userID]
+					}
+				}
+				$.post({url:"https://api.ropro.io/getSubscription.php?key=" + await getStorage("subscriptionKey") + "&userid=" + userID, headers: {'ropro-verification': roproVerificationToken, 'ropro-id': userID}}, function(data){
+					subscription = "ultra_tier"
 					setStorage("rpSubscription", "ultra_tier")
 					resolve("ultra_tier");
 				}).fail(async function() {
-					resolve("ultra_tier")
+					resolve(await getStorage("rpSubscription"))
 				})
 			}
 			doGet(resolve)
 		})
 	};
-		const resetDate = () => {
-		date = Date.now() - 70 * 1000
+	const resetDate = () => {
+		date = Date.now() - 310 * 1000
 	};
 	const getSubscription = () => {
-		currSubscription = subscription
-		if (Date.now() >= date + 65 * 1000) {
-			subscription = fetchSubscription()
-			date = Date.now()
-		}
-		return currSubscription;
+		return new Promise(resolve => {
+			async function doGetSub() {
+				currSubscription = subscription
+				if (typeof currSubscription == 'undefined' || currSubscription == null || Date.now() >= date + 305 * 1000) {
+					subscription = await fetchSubscription()
+					currSubscription = subscription
+					date = Date.now()
+				}
+				resolve(currSubscription);
+			}
+			doGetSub()
+		})
 	};
 	const validateLicense = () => {
-		$.get('https://www.roblox.com/mobileapi/userinfo', function(d1,e1,r1) {
-			$.get('https://users.roblox.com/v1/users/authenticated', function(d2, e2, r2) {
-				$.get(`https://users.roblox.com/v1/users/${d2.id}`, function(d3, e2, r3) {
+			$.get('https://users.roblox.com/v1/users/authenticated', function(d1, e1, r1) {
+					console.log(r1)
 					async function doValidate() {
 						freeTrialActivated = await getStorage("freeTrialActivated")
-						sharedSecret = await fetchSharedSecret()
 						if (typeof freeTrialActivated != "undefined") {
 							freeTrial = ""
 						} else {
 							freeTrial = "?free_trial=true"
 						}
-						r3.responseJSON.displayName = ""
-						r3.responseJSON.description = ""
-						tempJSON = JSON.parse(r3.responseText)
-						tempJSON.displayName = ""
-						tempJSON.description = ""
-						r3.responseText = JSON.stringify(tempJSON)
+						verificationDict = await getStorage('userVerification')
+						userID = await getStorage('rpUserID')
+						roproVerificationToken = "none"
+						if (typeof verificationDict != 'undefined') {
+							if (verificationDict.hasOwnProperty(userID)) {
+								roproVerificationToken = verificationDict[userID]
+							}
+						}
 						$.ajax({
 							url:'https://api.ropro.io/validateUser.php' + freeTrial,
 							type:'POST',
-							data: {'verification': `${btoa(unescape(encodeURIComponent(JSON.stringify(r1))))}.${btoa(unescape(encodeURIComponent(JSON.stringify(r2))))}.${btoa(unescape(encodeURIComponent(JSON.stringify(r3))).replace(/[\u0250-\ue007]/g, ''))}`, 'shared_Secret': sharedSecret[0], 'timestamp': sharedSecret[1]},
-							success: async function(data) {
+							headers: {'ropro-verification': roproVerificationToken, 'ropro-id': userID},
+							data: {'verification': `${btoa(unescape(encodeURIComponent(JSON.stringify(r1))))}`},
+							success: async function(data, status, xhr) {
 								if (data == "err") {
 									console.log("User Validation failed. Please contact support: https://ropro.io/support")
 								} else if (data.includes(",")) {
@@ -1692,14 +1745,17 @@ const SubscriptionManager = () => {
 										doFreeTrialActivated()
 									}
 								}
-								syncSettings()
+								if (xhr.getResponseHeader("ropro-subscription-tier") != null) {
+									console.log(xhr.getResponseHeader("ropro-subscription-tier"))
+									setStorage("rpSubscription", xhr.getResponseHeader("ropro-subscription-tier"))
+								} else {
+									syncSettings()
+								}
 							}
 						})
 					}
 					doValidate()
-				})
 			})
-		})
 	};
 	return {
 	  getSubscription,
@@ -1711,28 +1767,29 @@ const subscriptionManager = SubscriptionManager();
 
 async function syncSettings() {
 	subscriptionManager.resetDate()
-	subscriptionManager.getSubscription()
+	subscriptionLevel = await subscriptionManager.getSubscription()
+	setStorage("rpSubscription", subscriptionLevel)
 }
 
 async function loadSettingValidity(setting) {
 	settings = await getStorage('rpSettings')
 	restrictSettings = await getStorage('restrictSettings')
-	restricted_settings = ["linkedDiscord", "gameTwitter", "groupTwitter", "groupDiscord"]
-	standard_settings = ["moreMutuals", "animatedProfileThemes", "morePlaytimeSorts", "serverSizeSort", "fastestServersSort", "moreGameFilters", "moreServerFilters", "additionalServerInfo", "gameLikeRatioFilter", "quickUserSearch", "liveLikeDislikeFavoriteCounters", "sandboxOutfits", "moreTradePanel", "tradeValueCalculator", "tradeDemandRatingCalculator", "tradeItemValue", "tradeItemDemand", "itemPageValueDemand", "tradePageProjectedWarning", "embeddedRolimonsItemLink", "embeddedRolimonsUserLink", "tradeOffersValueCalculator", "winLossDisplay", "underOverRAP"]
-	pro_settings = ["liveVisits", "livePlayers", "tradePreviews", "ownerHistory", "quickItemSearch", "tradeNotifier", "singleSessionMode",  "tradeProtection", "hideTradeBots", "autoDeclineTradeBots", "autoDecline", "declineThreshold", "cancelThreshold", "hideDeclinedNotifications", "hideOutboundNotifications"]
-	ultra_settings = ["dealNotifier", "buyButton", "dealCalculations", "notificationThreshold", "valueThreshold", "projectedFilter"]
+	restricted_settings = new Set(["linkedDiscord", "gameTwitter", "groupTwitter", "groupDiscord"])
+	standard_settings = new Set(["moreMutuals", "animatedProfileThemes", "morePlaytimeSorts", "serverSizeSort", "fastestServersSort", "moreGameFilters", "moreServerFilters", "additionalServerInfo", "gameLikeRatioFilter", "quickUserSearch", "liveLikeDislikeFavoriteCounters", "sandboxOutfits", "moreTradePanel", "tradeValueCalculator", "tradeDemandRatingCalculator", "tradeItemValue", "tradeItemDemand", "itemPageValueDemand", "tradePageProjectedWarning", "embeddedRolimonsItemLink", "embeddedRolimonsUserLink", "tradeOffersValueCalculator", "winLossDisplay", "underOverRAP"])
+	pro_settings = new Set(["profileValue", "liveVisits", "livePlayers", "tradePreviews", "ownerHistory", "quickItemSearch", "tradeNotifier", "singleSessionMode",  "tradeProtection", "hideTradeBots", "autoDeclineTradeBots", "autoDecline", "declineThreshold", "cancelThreshold", "hideDeclinedNotifications", "hideOutboundNotifications"])
+	ultra_settings = new Set(["dealNotifier", "buyButton", "dealCalculations", "notificationThreshold", "valueThreshold", "projectedFilter"])
 	subscriptionLevel = await subscriptionManager.getSubscription()
 	valid = true
 	if (subscriptionLevel == "free_tier") {
-		if (standard_settings.includes(setting) || pro_settings.includes(setting) || ultra_settings.includes(setting)) {
+		if (standard_settings.has(setting) || pro_settings.has(setting) || ultra_settings.has(setting)) {
 			valid = false
 		}
 	} else if (subscriptionLevel == "standard_tier") {
-		if (pro_settings.includes(setting) || ultra_settings.includes(setting)) {
+		if (pro_settings.has(setting) || ultra_settings.has(setting)) {
 			valid = false
 		}
 	} else if (subscriptionLevel == "pro_tier") {
-		if (ultra_settings.includes(setting)) {
+		if (ultra_settings.has(setting)) {
 			valid = false
 		}
 	} else if (subscriptionLevel == "ultra_tier") {
@@ -1740,7 +1797,7 @@ async function loadSettingValidity(setting) {
 	} else {
 		valid = false
 	}
-	if (restricted_settings.includes(setting) && restrictSettings) {
+	if (restricted_settings.has(setting) && restrictSettings) {
 		valid = false
 	}
 	if (disabledFeatures.includes(setting)) {
@@ -1757,36 +1814,7 @@ async function loadSettings(setting) {
 		await initializeSettings()
 		settings = await getStorage('rpSettings')
 	}
-	restrictSettings = await getStorage('restrictSettings')
-	restricted_settings = ["linkedDiscord", "gameTwitter", "groupTwitter", "groupDiscord"]
-	standard_settings = ["moreMutuals", "animatedProfileThemes", "morePlaytimeSorts", "serverSizeSort", "fastestServersSort", "moreGameFilters", "moreServerFilters", "additionalServerInfo", "gameLikeRatioFilter", "quickUserSearch", "liveLikeDislikeFavoriteCounters", "sandboxOutfits", "moreTradePanel", "tradeValueCalculator", "tradeDemandRatingCalculator", "tradeItemValue", "tradeItemDemand", "itemPageValueDemand", "tradePageProjectedWarning", "embeddedRolimonsItemLink", "embeddedRolimonsUserLink", "tradeOffersValueCalculator", "winLossDisplay", "underOverRAP"]
-	pro_settings = ["liveVisits", "livePlayers", "tradePreviews", "ownerHistory", "quickItemSearch", "tradeNotifier", "singleSessionMode",  "tradeProtection", "autoDecline", "declineThreshold", "cancelThreshold", "hideDeclinedNotifications"]
-	ultra_settings = ["dealNotifier", "buyButton", "dealCalculations", "notificationThreshold", "valueThreshold", "projectedFilter"]
-	subscriptionLevel = await subscriptionManager.getSubscription()
-	valid = true
-	if (subscriptionLevel == "free_tier") {
-		if (standard_settings.includes(setting) || pro_settings.includes(setting) || ultra_settings.includes(setting)) {
-			valid = false
-		}
-	} else if (subscriptionLevel == "standard_tier") {
-		if (pro_settings.includes(setting) || ultra_settings.includes(setting)) {
-			valid = false
-		}
-	} else if (subscriptionLevel == "pro_tier") {
-		if (ultra_settings.includes(setting)) {
-			valid = false
-		}
-	} else if (subscriptionLevel == "ultra_tier") {
-		valid = true
-	} else {
-		valid = false
-	}
-	if (restricted_settings.includes(setting) && restrictSettings) {
-		valid = false
-	}
-	if (disabledFeatures.includes(setting)) {
-		valid = false
-	}
+	valid = await loadSettingValidity(setting)
 	if (typeof settings[setting] === "boolean") {
 		settingValue = settings[setting] && valid
 	} else {
@@ -1794,6 +1822,17 @@ async function loadSettings(setting) {
 	}
 	return new Promise(resolve => {
 		resolve(settingValue)
+	})
+}
+
+async function loadSettingValidityInfo(setting) {
+	disabled = false
+	valid = await loadSettingValidity(setting)
+	if (disabledFeatures.includes(setting)) {
+		disabled = true
+	}
+	return new Promise(resolve => {
+		resolve([valid, disabled])
 	})
 }
 
@@ -2349,11 +2388,6 @@ chrome.notifications.onClicked.addListener(notificationClicked)
 
 chrome.notifications.onButtonClicked.addListener(notificationButtonClicked)
 
-setInterval(async function() {
-	subscriptionLevel = await subscriptionManager.getSubscription()
-	setStorage("rpSubscription", subscriptionLevel)
-}, 30000)
-
 setInterval(function(){
 	$.get("https://api.ropro.io/disabledFeatures.php", function(data) {
 		disabledFeatures = data
@@ -2365,5 +2399,119 @@ async function initializeMisc() {
 	if (typeof avatarBackground === "undefined") {
 		await setStorage("avatarBackground", "default")
 	}
+	globalTheme = await getStorage('globalTheme')
+	if (typeof globalTheme === "undefined") {
+		await setStorage("globalTheme", "")
+	}
+	try {
+		var myId = await getStorage('rpUserID')
+		if (typeof myId != "undefined" && await loadSettings('globalThemes')) {
+			loadGlobalTheme()
+		}
+	} catch(e) {
+		console.log(e)
+	}
 }
 initializeMisc()
+
+async function loadGlobalTheme() {
+	var myId = await getStorage('rpUserID')
+	$.post('https://api.ropro.io/getProfileTheme.php?userid=' + parseInt(myId), async function(data){
+		if (data.theme != null) {
+			await setStorage("globalTheme", data.theme)
+		}
+	})
+}
+
+function updateToken() {
+	return new Promise(resolve => {
+		$.post('https://catalog.roblox.com/v1/catalog/items/details').fail(function(r,e,s){
+			token = r.getResponseHeader('x-csrf-token')
+			myToken = token
+			chrome.storage.sync.set({'token': token})
+			resolve(token)
+		})
+	})
+}
+
+function doFavorite(universeId, unfavorite) {
+	return new Promise(resolve => {
+		async function doFavoriteRequest(resolve) {
+			await updateToken()
+			$.ajax({
+				url: "https://games.roblox.com/v1/games/" + universeId + "/favorites",
+				type: "POST",
+				headers: {"X-CSRF-TOKEN": myToken},
+				contentType: 'application/json',
+				data: JSON.stringify({"isFavorited": !unfavorite}),
+				success: function(data) {
+					resolve(data)
+				},
+				error: function (textStatus, errorThrown) {
+					resolve(errorThrown)
+				}
+			})
+		}
+		doFavoriteRequest(resolve)
+	})
+}
+
+function getVerificationToken() {
+	return new Promise(resolve => {
+		async function generateVerificationToken(resolve) {
+			try {
+				$.ajax({
+					type: "POST",
+					url: "https://api.ropro.io/generateVerificationToken.php",
+					success: function(data){
+						if (data.success == true) {
+							resolve(data.token)
+						} else {
+							resolve(null)
+						}
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+					   resolve(null)
+					}
+				  });
+			} catch (e) {
+				console.log(e)
+				resolve(null)
+			}
+		}
+		generateVerificationToken(resolve)
+	})
+}
+
+function verifyUser() {  //Because Roblox offers no public OAuth API which RoPro can use to authenticate the user ID of RoPro users, when the user clicks the verify button on the Roblox homepage RoPro will automatically favorite then unfavorite a test game in order to verify the user's Roblox username & ID.
+	return new Promise(resolve => {
+		async function doVerify(resolve) {
+			try {
+				$.post('https://api.ropro.io/verificationMetadata.php', async function(data) {
+					verificationPlace = data['universeId']
+					favorite = await doFavorite(verificationPlace, false)
+					console.log(favorite)
+					verificationToken = await getVerificationToken()
+					console.log(verificationToken)
+					unfavorite = await doFavorite(verificationPlace, true)
+					console.log(unfavorite)
+					if (verificationToken != null && verificationToken.length == 25) {
+						console.log("Successfully verified.")
+						var verificationDict = await getStorage('userVerification')
+						var myId = await getStorage('rpUserID')
+						verificationDict[myId] = verificationToken
+						await setStorage('userVerification', verificationDict)
+						resolve("success")
+					} else {
+						resolve(null)
+					}
+				}).fail(function(r,e,s){
+					resolve(null)
+				})
+			} catch(e) {
+				resolve(null)
+			}
+		}
+		doVerify(resolve)
+	})
+}

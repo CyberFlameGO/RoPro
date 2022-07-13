@@ -2,7 +2,7 @@
 
 RoPro (https://ropro.io) v1.3
 
-RoPro was wholly designed and coded by:
+The RoPro extension is developed by:
                                
 ,------.  ,--. ,-----.,------. 
 |  .-.  \ |  |'  .--./|  .---' 
@@ -35,7 +35,7 @@ https://ropro.io/privacy-policy
 var followsYouHTML = `<span style="margin-left:7px;border-radius:10px;padding:5px;background-color:#232527;color:#E8E8E8;font-size:11px;padding-top:1px;padding-bottom:1px;">Follows You</span>`
 var reputationDivPosition = document.getElementsByClassName('header-userstatus-text').length == 0 && document.getElementsByClassName('profile-display-name').length == 0 ? "margin-bottom" : "margin-top"
 
-function fetchValue(userID) {
+function fetchProfileValue(userID) {
 	return new Promise(resolve => {
 		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/profileBackend.php?userid=" + userID}, 
 			function(data) {
@@ -78,7 +78,7 @@ function fetchInfo(userID, myId) {
 
 function fetchTheme(userID) {
 	return new Promise(resolve => {
-		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getTheme.php?userid=" + userID}, 
+		chrome.runtime.sendMessage({greeting: "GetURL", url:"https://api.ropro.io/getProfileTheme.php?userid=" + userID}, 
 			function(data) {
 				resolve(data)
 			}
@@ -149,8 +149,8 @@ async function getTheme(userID) {
 	return response
 }
 
-async function getJSON(userID) {
-	response = await fetchValue(userID)
+async function getProfileValue(userID) {
+	response = await fetchProfileValue(userID)
 	json = JSON.parse(response)
 	return json
 }
@@ -183,8 +183,8 @@ async function addMutuals() {
 }
 
 function addThemeMain(theme) {
-	console.log(theme)
 	themeName = theme['name']
+	profileThemeName = theme['name']
 	if ('repeat' in theme){
 		repeat = theme['repeat']
 	} else {
@@ -200,17 +200,30 @@ function addThemeMain(theme) {
 	} else {
 		color = ""
 	}
+	themeImages = theme['images'].split(",")
 	mainContainer = document.getElementById('container-main')
 	profileContainer = document.getElementsByClassName('profile-container')[0]
 	profileContainer.style.padding = "20px"
 	profileContainer.style.paddingTop = "10px"
-	mainContainer.style.backgroundImage = `url(https://ropro.io/themes/${themeName})`
-	mainContainer.style.backgroundSize = width
+	if (themeImages.length == 1) {
+		mainContainer.style.backgroundImage = `url(${stripTags(themeImages[0])})`
+		mainContainer.style.backgroundSize = width
+	} else {
+		mainContainer.style.backgroundImage = `url(${stripTags(themeImages[0])}), url(${stripTags(themeImages[1])})`
+		mainContainer.style.backgroundPosition = "left top, right top"
+		if (width == "100% 100%") {
+			mainContainer.style.backgroundSize = "50% 100%"
+		} else {
+			mainContainer.style.backgroundSize = "50%"
+		}
+		if (repeat == "repeat") {
+			repeat = "repeat-y"
+		}
+	}
 	mainContainer.style.backgroundColor = color
 	mainContainer.style.backgroundRepeat = repeat
 	mainContainer.style.borderRadius = "20px"
 	mainContainer.style.padding = "20px"
-	//document.getElementById('accoutrements-slider').setAttribute('style', 'width:470px;transform:scale(0.95);margin-left:-7px;')\
 	favoritesContainer = document.getElementsByClassName('favorite-games-container')
 	if (favoritesContainer.length > 0) {
 		favoritesContainer[0].style.overflowX = 'hidden'
@@ -219,30 +232,33 @@ function addThemeMain(theme) {
 	if (accoutrementsContainer.length > 0) {
 		accoutrementsContainer[0].setAttribute('style', 'width:105%;transform:scale(0.95);margin-left:-2.5%;')
 	}
+	contentContainer = document.getElementsByClassName('content')
+	contentContainer = contentContainer[0]
+	contentContainer.style.borderRadius = "10px"
 }
 
 async function addRoProInfo(tier, user_since, subscribed_for) {
 	tierName = "Free Tier"
-	icon = "https://ropro.io/images/free_icon_shadow.png"
+	icon = chrome.runtime.getURL('/images/free_icon_shadow.png')
 	link = "https://ropro.io/"
 	subscriber = false
 	if (tier == "free_tier") {
 		tierName = "Free Tier"
-		icon = "https://ropro.io/images/free_icon_shadow.png"
+		icon = chrome.runtime.getURL('/images/free_icon_shadow.png')
 		link = "https://ropro.io/"
 	} else if (tier == "standard_tier") {
 		tierName = "Standard Tier"
-		icon = "https://ropro.io/images/standard_icon_shadow.png"
+		icon = chrome.runtime.getURL('/images/standard_icon_shadow.png')
 		link = "https://ropro.io#upgrade-standard"
 		subscriber = true
 	} else if (tier == "pro_tier") {
 		tierName = "Pro Tier"
-		icon = "https://ropro.io/images/pro_icon_shadow.png"
+		icon = chrome.runtime.getURL('/images/pro_icon_shadow.png')
 		link = "https://ropro.io#upgrade-pro"
 		subscriber = true
 	} else if (tier == "ultra_tier") {
 		tierName = "Ultra Tier"
-		icon = "https://ropro.io/images/ultra_icon_shadow.png"
+		icon = chrome.runtime.getURL('/images/ultra_icon_shadow.png')
 		link = "https://ropro.io#upgrade-ultra"
 		subscriber = true
 	}
@@ -258,7 +274,7 @@ async function addRoProInfo(tier, user_since, subscribed_for) {
 			header.insertBefore(div, header.childNodes[header.childNodes.length - 1])
 		}
 		div.innerHTML += `<div class="ropro-info-card" style="pointer-events:none;filter:drop-shadow(2px 2px 2px #363636);display:none;z-index:1000;top:${subscriber ? "-19" : "-4"}px;left:${document.getElementsByClassName('header-caption')[0].getElementsByClassName('ropro-profile-icon')[0].getBoundingClientRect().left - document.getElementsByClassName('header-caption')[0].getBoundingClientRect().left + 35}px;position:absolute;"><div style="position:relative;"><div style="height:${subscriber ? "78" : "55"}px;" class="input-group input-field">
-		<div style="text-align:center;"><a style="font-size:13px;font-weight:bold;" target="_blank" href="${link}"><img src="https://ropro.io/images/ropro_logo.png" style="filter: drop-shadow(1px 1px 1px #363636);width:35px;margin-left:5px;margin-bottom:2px;"> ${tierName} User</a></div>
+		<div style="text-align:center;"><a style="font-size:13px;font-weight:bold;" target="_blank" href="${link}"><img src="${chrome.runtime.getURL('/images/ropro_logo.png')}" style="filter: drop-shadow(1px 1px 1px #363636);width:35px;margin-left:5px;margin-bottom:2px;"> ${tierName} User</a></div>
 		${subscriber ? `<div style="text-align:center;"><a style="font-size:13px;" href="${link}"><img class="ropro-profile-icon" src="${icon}" style="width:12px;margin-top:-1.5px;"> Subscriber for ${stripTags(subscribed_for)}</a></div>` : ``}
 		<div style="text-align:center;"><a style="font-size:13px;" href="${link}">RoPro User for ${stripTags(user_since)}</a></div></div></div></div>`
 		$(".linkpath").css("fill", $('body').css("color"))
@@ -308,7 +324,6 @@ function addValue(value, userID) {
 	size = "15px"
 	icon = "value_icon_small"
 	maxSize = 70
-	console.log(value.toString())
 	if (value.toString().length > 6) {
 		icon = "value_icon"
 		maxSize = 130
@@ -328,10 +343,15 @@ function addValue(value, userID) {
 		value = "Private Inventory"
 		maxSize = 120
 	}
-	valueHTML = `<a id="valueLink" target="_blank" href="https://www.rolimons.com/player/${parseInt(userID)}"><img style="margin-right:5px;" src="https://ropro.io/images/${stripTags(icon)}.png" height="24px"><h5 id="valueAmount" style="text-align:right;color:#E8E8E8;line-height:0px;padding:0px;font-size:${stripTags(size)};vertical-align:center!important;position:absolute;margin-left:-${parseInt(margin)}px;margin-top:13px;display:initial!important;">${prefix}${isNaN(parseInt(value)) ? stripTags(value) : addCommas(parseInt(value))}</h5></a>`
+	var div = document.createElement('div')
+	valueHTML = `<a id="valueLink" target="_blank" href="https://www.rolimons.com/player/${parseInt(userID)}"><img style="margin-right:5px;" src="${chrome.runtime.getURL(`/images/${stripTags(icon)}.png`)}" height="24px"><h5 id="valueAmount" style="text-align:right;color:#E8E8E8;line-height:0px;padding:0px;font-size:${stripTags(size)};vertical-align:center!important;position:absolute;margin-left:-${parseInt(margin)}px;margin-top:13px;display:initial!important;">${prefix}${isNaN(parseInt(value)) ? stripTags(value) : addCommas(parseInt(value))}</h5></a>`
+	div.innerHTML = valueHTML
 	reputationDiv = document.getElementById("reputationDiv")
-	reputationDiv.innerHTML = valueHTML + reputationDiv.innerHTML
-	reputationDiv.setAttribute("style", stripTags(reputationDivPosition) + ":6px;visibility:hidden;")
+	if (reputationDiv.childNodes.length > 0) {
+		reputationDiv.insertBefore(div.childNodes[0], reputationDiv.childNodes[0])
+	} else {
+		reputationDiv.appendChild(div.childNodes[0])
+	}
 	count = 1
 	while ($("#valueAmount").get(0).clientWidth > maxSize && count < 14) {
 		$("#valueAmount").css("font-size", 15 - count + "px")
@@ -344,7 +364,7 @@ function addDiscord(discord) {
 	caption = document.getElementsByClassName('header-caption')[0]
 	margin = 145
 	size = "15px"
-	discordHTML = `<a id="discordLink" href="discord://"><img style="margin-right:5px;" src="https://ropro.io/images/discord_bar.png" height="24px"><h5 id="discordName" style="text-align:right;color:#E8E8E8;line-height:0px;padding:0px;font-size:${stripTags(size)};vertical-align:center!important;position:absolute;margin-left:-${parseInt(margin)}px;margin-top:13px;display:initial!important;">${stripTags(discord)}</h5></a>`
+	discordHTML = `<a id="discordLink" href="discord://"><img style="margin-right:5px;" src="${chrome.runtime.getURL('/images/discord_bar.png')}" height="24px"><h5 id="discordName" style="text-align:right;color:#E8E8E8;line-height:0px;padding:0px;font-size:${stripTags(size)};vertical-align:center!important;position:absolute;margin-left:-${parseInt(margin)}px;margin-top:13px;display:initial!important;">${stripTags(discord)}</h5></a>`
 	reputationDiv = document.getElementById("reputationDiv")
 	reputationDiv.innerHTML = discordHTML + reputationDiv.innerHTML
 	reputationDiv.setAttribute("style", stripTags(reputationDivPosition) + ":6px;visibility:hidden;text-align:center;")
@@ -358,10 +378,10 @@ function addDiscord(discord) {
 }
 
 function swapImage(elem) {
-	if (elem.getAttribute("src") == "https://ropro.io/images/like1.png") {
-		elem.setAttribute("src", "https://ropro.io/images/like2.png")
+	if (elem.getAttribute("src") == chrome.runtime.getURL('/images/like1.png')) {
+		elem.setAttribute("src", chrome.runtime.getURL('/images/like2.png'))
 	} else {
-		elem.setAttribute("src", "https://ropro.io/images/like1.png")
+		elem.setAttribute("src", chrome.runtime.getURL('/images/like1.png'))
 	}
 }
 
@@ -375,12 +395,12 @@ function changeReputation() {
 		likeImage = document.getElementsByClassName('rolilike')[0]
 		repValue = parseInt(document.getElementById('repValue').innerHTML.replace(chrome.i18n.getMessage("Reputation") + ": ", ""))
 		if (likeButton.getAttribute("liked") == "true") {
-			likeImage.setAttribute("src", "https://ropro.io/images/like1.png")
+			likeImage.setAttribute("src", chrome.runtime.getURL('/images/like1.png'))
 			likeButton.setAttribute("liked", "false")
 			type = "remove"
 			document.getElementById('repValue').innerHTML = stripTags(chrome.i18n.getMessage("Reputation")) + ": " + (repValue - 1)
 		} else {
-			likeImage.setAttribute("src", "https://ropro.io/images/like2.png")
+			likeImage.setAttribute("src", chrome.runtime.getURL('/images/like2.png'))
 			likeButton.setAttribute("liked", "true")
 			type = "add"
 			document.getElementById('repValue').innerHTML = stripTags(chrome.i18n.getMessage("Reputation")) + ": " + (repValue + 1)
@@ -399,12 +419,12 @@ async function addReputation(reputation, liked, isMe) {
 		size = 14
 		margin = 140
 	}
-	reputationHTML = `<img src="https://ropro.io/images/blank_icon_black.png" height="25px"><h5 id="repValue" style="color:#E8E8E8;line-height:0px;padding:0px;font-size:${parseInt(size)}px;vertical-align:center!important;position:absolute;margin-left:-${parseInt(margin)}px;margin-top:13px;display:initial!important;">${chrome.i18n.getMessage("Reputation")}: ${reputation}</h5>`
+	reputationHTML = `<img src="${chrome.runtime.getURL('/images/blank_icon_black.png')}" height="25px"><h5 id="repValue" style="color:#E8E8E8;line-height:0px;padding:0px;font-size:${parseInt(size)}px;vertical-align:center!important;position:absolute;margin-left:-${parseInt(margin)}px;margin-top:13px;display:initial!important;">${chrome.i18n.getMessage("Reputation")}: ${reputation}</h5>`
 	reputationDiv.innerHTML += reputationHTML
 	if (liked) {
-		likeImage = "https://ropro.io/images/like2.png"
+		likeImage = chrome.runtime.getURL('/images/like2.png')
 	} else {
-		likeImage = "https://ropro.io/images/like1.png"
+		likeImage = chrome.runtime.getURL('/images/like1.png')
 	}
 	liked = liked == true
 	addReputationHTML = `<a liked=${liked} id="likeButton"><img class="rolilike" style="margin-left:5px;" src="${likeImage}" width="23"></a>`
@@ -440,7 +460,7 @@ async function addEggCollection(userID) {
 	div.classList.add('section')
 	div.id = 'roblox-badges-container' //${eggs.length}/${parseInt(numEggs)}
 	div.style.minHeight = '130px'
-	eggCollectionHTML = `<div class="container-header"><h3>RoPro Egg Collection<img src="https://ropro.io/images/egg_icon.png" style="margin-top:-2px;margin-left:5px;width:22px!important;height:22px!important;${$('.dark-theme').length > 0 ? "" : "filter:invert(0.8);"}"></h3><a class="btn-secondary-xs btn-more see-all-link-icon" href="${linkUrl}">${linkName}</a><br><a class="btn-fixed-width btn-secondary-xs btn-more see-all-link" id="eggsCollectionSeeMoreButton" style="margin-right:7px;margin-top:3px;display:none;">See More</a></div><div class="section-content remove-panel"><ul class="hlist badge-list" style="max-height:initial;overflow:visible!important;"><p style="position:absolute;top:calc(50% + 10px);left:calc(50% - 125px);font-size:13px;display:block;text-align:center;${eggs.length == 0 ? "display:block;" : "display:none;"}">${userID == myId ? "You haven't" : "This user hasn't"} collected any eggs yet.<br>Visit <a href="https://ropro.io/eggs"><b>ropro.io/eggs</b></a> for more info.</p></ul></div>`
+	eggCollectionHTML = `<div class="container-header"><h3>RoPro Egg Collection<img src="${chrome.runtime.getURL('/images/egg_icon.png')}" style="margin-top:-2px;margin-left:5px;width:22px!important;height:22px!important;${$('.dark-theme').length > 0 ? "" : "filter:invert(0.8);"}"></h3><a class="btn-secondary-xs btn-more see-all-link-icon" href="${linkUrl}">${linkName}</a><br><a class="btn-fixed-width btn-secondary-xs btn-more see-all-link" id="eggsCollectionSeeMoreButton" style="margin-right:7px;margin-top:3px;display:none;">See More</a></div><div class="section-content remove-panel"><ul class="hlist badge-list" style="max-height:initial;overflow:visible!important;"><p style="position:absolute;top:calc(50% + 10px);left:calc(50% - 125px);font-size:13px;display:block;text-align:center;${eggs.length == 0 ? "display:block;" : "display:none;"}">${userID == myId ? "You haven't" : "This user hasn't"} collected any eggs yet.<br>Visit <a href="https://ropro.io/eggs"><b>ropro.io/eggs</b></a> for more info.</p></ul></div>`
 	div.innerHTML = eggCollectionHTML
 	document.getElementById('roblox-badges-container').parentNode.insertBefore(div, document.getElementById('roblox-badges-container'))
 	var eggRowSize = 6
@@ -458,7 +478,7 @@ async function addEggCollection(userID) {
 		li.classList.add('asset-item')
 		li.classList.add('ropro-egg-collection-li')
 		li.style.position = "relative"
-		li.innerHTML += `<a title="${stripTags(eggs[i].name)}"><span class="border asset-thumb-container icon-badge-combat-initiation ${eggRowSize == 6 ? Math.round(Math.random()) == 0 ? 'ropro-animated-icon1' : 'ropro-animated-icon2' : ''}" title="${stripTags(eggs[i].name)}" style="background:none;background-size:100%;background-image:url(${stripTags(eggs[i].thumbnail)})!important;"></span><span class="font-header-2 text-overflow item-name">${stripTags(eggs[i].name)}</span></a>`
+		li.innerHTML += `<a title="${stripTags(eggs[i].name)}"><span class="border asset-thumb-container icon-badge-combat-initiation ${eggRowSize == 6 ? Math.round(Math.random()) == 0 ? 'ropro-animated-icon1' : 'ropro-animated-icon2' : ''}" title="${stripTags(eggs[i].name)}" style="background:none;background-size:100%;background-image:url(${chrome.runtime.getURL(`/images/eggs/${stripTags(eggs[i].filename)}.webp`)})!important;"></span><span class="font-header-2 text-overflow item-name">${stripTags(eggs[i].name)}</span></a>`
 		div.getElementsByClassName('badge-list')[0].appendChild(li)
 		if (i >= eggRowSize) {
 			li.style.display = "none"
@@ -545,7 +565,7 @@ async function mainProfile() {
 		try {
 			setTimeout(async function() {
 				userID = getIdFromURL(location.href)
-				info = await getTheme(userID)
+				var info = await getTheme(userID)
 				if (info.theme != null && await fetchSetting("profileThemes")) {
 					addThemeMain(JSON.parse(info.theme))
 				}
@@ -624,11 +644,6 @@ async function mainProfile() {
 				reputationDiv.setAttribute("style", stripTags(reputationDivPosition) + ":6px;visibility:initial;")
 			}, 6000)
 			caption.insertBefore(reputationDiv, caption.getElementsByClassName('header-details')[0])
-			json = await getJSON(userID)
-			if (await fetchSetting("profileValue")) {
-				userValue = json['value']
-				addValue(userValue, userID)
-			}
 			myId = await getStorage("rpUserID")
 			if (userID != myId && await fetchSetting("mutualFriends")) {
 				try {
@@ -637,7 +652,7 @@ async function mainProfile() {
 					console.log(e)
 				}
 			}
-			info = await getInfo(userID, myId)
+			var info = await getInfo(userID, myId)
 			if (await fetchSetting("reputation")) {
 				addReputation(info.reputation, info.liked, myId == userID)
 			}
@@ -694,17 +709,21 @@ async function mainProfile() {
 				test = await getUserId()
 				if(userID == "89313169") {
 					profileIconsSorted = true
-					addProfileIcon("Proyal", "Proyal#0001", "owner.svg", "https://github.com/itsproyal/ropro/")
+					addProfileIcon("Proyal", "Proyal#3192", "owner.svg", "https://github.com/itsproyal/ropro/")
 				}
 				if(test == userID) {
 					profileIconsSorted = true
 					addProfileIcon("RoPro Donor", "This profile icon is awarded to users who supported RoPro development by buying four or more RoPro merch items from the official RoPro group.", "donor2.svg", "https://www.roblox.com/catalog?Category=3&Subcategory=3&CreatorName=RoPro%20IO&CreatorType=Group")
 
 				}
-
 				for (i = 0; i < info.icons.length; i++) {
 					addProfileIcon(info.icons[i].name, info.icons[i].description, info.icons[i].image, info.icons[i].link)
 				}
+			}
+			if (await fetchSetting("profileValue")) {
+				var valueJSON = await getProfileValue(userID)
+				var userValue = valueJSON['value']
+				addValue(userValue, userID)
 			}
 		}
 	}
